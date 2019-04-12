@@ -1,0 +1,22 @@
+user:
+  name1: 消息
+  age: 15
+spring:
+  datasource:
+    username: root
+    password: 158262751
+    url: jdbc:mysql://192.168.26.20:3306/wtf?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis-plus:
+  #配置包扫描位置
+  configuration:
+    #适配驼峰命名法
+    map-underscore-to-camel-case: true #默认为true
+  type-aliases-package: com.java.mybatis.model
+  mapper-locations: classpath:com/java/mybatis/mapper/*.xml
+logging:
+  level:
+    com:
+      java:
+        mybatis:
+          mapper: debug

@@ -1,0 +1,45 @@
+syntax = "proto2";
+
+package com.java.netty.gooleprotobuf;
+
+option optimize_for = SPEED;
+option java_package = "com.java.netty.google.protobuf";
+option java_outer_classname = "MyDataInfo";
+
+// 定义外层变量通过枚举的方式来确定编码的信息
+message Animal{
+
+     enum DataType{
+        StudentType = 1;
+        DogType = 2;
+        CatType = 3;
+     }
+     //必须传递，标志传递的类型
+     required DataType data_type = 1;
+
+     //选取一个 清楚其他信息
+     oneof dataBody{
+        Student student = 2;
+        Dog dog = 3;
+        Cat cat = 4;
+     }
+
+}
+
+message Student{
+    optional string name = 1;
+    optional int32 age = 2;
+    optional string address = 3;
+}
+
+message Dog{
+   optional string name = 1;
+   optional int32 age = 2;
+   optional string nice =3;
+}
+
+message Cat{
+   optional string name = 1;
+   optional int32 age = 2;
+   optional string nice =3;
+}

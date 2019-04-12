@@ -1,0 +1,242 @@
+/*
+ * Copyright 2002-2018 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.java.mvc.resource;
+
+import com.java.mvc.component.adapter.ArgumentResolver;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.MethodParameter;
+import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.lang.Nullable;
+import org.springframework.util.ObjectUtils;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.method.support.HandlerMethodArgumentResolverComposite;
+import org.springframework.web.method.support.ModelAndViewContainer;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
+/**
+ * Extension of {@link HandlerMethod} that invokes the underlying method with
+ * argument values resolved from the current HTTP request through a list of
+ * {@link HandlerMethodArgumentResolver}.
+ *
+ * @author Rossen Stoyanchev
+ * @author Juergen Hoeller
+ * @since 3.1
+ */
+public class InvocableHandlerMethod extends HandlerMethod {
+
+    private static final Object[] EMPTY_ARGS = new Object[0];
+
+
+    @Nullable
+    private WebDataBinderFactory dataBinderFactory;
+
+    private HandlerMethodArgumentResolverComposite resolvers = new HandlerMethodArgumentResolverComposite();
+
+    private ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+
+
+    /**
+     * Create an instance from a {@code HandlerMethod}.
+     */
+    public InvocableHandlerMethod(HandlerMethod handlerMethod) {
+        super(handlerMethod);
+    }
+
+    /**
+     * Create an instance from a bean instance and a method.
+     */
+    public InvocableHandlerMethod(Object bean, Method method) {
+        super(bean, method);
+    }
+
+    /**
+     * Construct a new handler method with the given bean instance, method name and parameters.
+     *
+     * @param bean           the object bean
+     * @param methodName     the method name
+     * @param parameterTypes the method parameter types
+     * @throws NoSuchMethodException when the method cannot be found
+     */
+    public InvocableHandlerMethod(Object bean, String methodName, Class<?>... parameterTypes)
+            throws NoSuchMethodException {
+
+        super(bean, methodName, parameterTypes);
+    }
+
+
+    /**
+     * Set the {@link WebDataBinderFactory} to be passed to argument resolvers allowing them to create
+     * a {@link WebDataBinder} for data binding and type conversion purposes.
+     *
+     * @param dataBinderFactory the data binder factory.
+     */
+    public void setDataBinderFactory(WebDataBinderFactory dataBinderFactory) {
+        this.dataBinderFactory = dataBinderFactory;
+    }
+
+    /**
+     * Set {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers} to use to use for resolving method argument values.
+     */
+    public void setHandlerMethodArgumentResolvers(HandlerMethodArgumentResolverComposite argumentResolvers) {
+        this.resolvers = argumentResolvers;
+    }
+
+    /**
+     * Set the ParameterNameDiscoverer for resolving parameter names when needed
+     * (e.g. default request attribute name).
+     * <p>Default is a {@link org.springframework.core.DefaultParameterNameDiscoverer}.
+     */
+    public void setParameterNameDiscoverer(ParameterNameDiscoverer parameterNameDiscoverer) {
+        this.parameterNameDiscoverer = parameterNameDiscoverer;
+    }
+
+
+    /**
+     * Invoke the method after resolving its argument values in the context of the given request.
+     * <p>Argument values are commonly resolved through
+     * {@link HandlerMethodArgumentResolver HandlerMethodArgumentResolvers}.
+     * The {@code providedArgs} parameter however may supply argument values to be used directly,
+     * i.e. without argument resolution. Examples of provided argument values include a
+     * {@link WebDataBinder}, a {@link SessionStatus}, or a thrown exception instance.
+     * Provided argument values are checked before argument resolvers.
+     * <p>Delegates to {@link #getMethodArgumentValues} and calls {@link #doInvoke} with the
+     * resolved arguments.
+     *
+     * @param request      the current request
+     * @param mavContainer the ModelAndViewContainer for this request
+     * @param providedArgs "given" arguments matched by type, not resolved
+     * @return the raw value returned by the invoked method
+     * @throws Exception raised if no suitable argument resolver can be found,
+     *                   or if the method raised an exception
+     * @see #getMethodArgumentValues
+     * @see #doInvoke
+     */
+    @Nullable
+    public Object invokeForRequest(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
+                                   Object... providedArgs) throws Exception {
+
+        // <y>todo 解析方法的参数们。
+        Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
+        if (logger.isTraceEnabled()) {
+            logger.trace("Arguments: " + Arrays.toString(args));
+        }
+        // 执行调用
+        return doInvoke(args);
+    }
+
+    /**
+     * Get the method argument values for the current request, checking the provided
+     * argument values and falling back to the configured argument resolvers.
+     * <p>The resulting array will be passed into {@link #doInvoke}.
+     *
+     * @since 5.1.2
+     */
+    protected Object[] getMethodArgumentValues(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
+                                               Object... providedArgs) throws Exception {
+
+        if (ObjectUtils.isEmpty(getMethodParameters())) {
+            return EMPTY_ARGS;
+        }
+        // 方法的参数信息的数组
+        MethodParameter[] parameters = getMethodParameters();
+        // 解析后的参数结果数组
+        Object[] args = new Object[parameters.length];
+
+        // 遍历，开始解析
+        for (int i = 0; i < parameters.length; i++) {
+            // 获得当前遍历的 MethodParameter 对象，并设置 parameterNameDiscoverer 到其中
+            MethodParameter parameter = parameters[i];
+            parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
+            // <1> 先从 providedArgs 中获得参数。如果获得到，则进入下一个参数的解析
+            // 默认情况下，providedArgs 参数不会传递，所以可以暂时先忽略。保证核心逻辑的理解。
+            args[i] = findProvidedArgument(parameter, providedArgs);
+            if (args[i] != null) {
+                continue;
+            }
+            /**
+             * <2> 判断 argumentResolvers 是否支持当前的参数解析。如果支持，则进行解析。关于 HandlerMethodArgumentResolverComposite
+             * 的详细解析，见{@link ArgumentResolver}
+             */
+            if (this.resolvers.supportsParameter(parameter)) {
+                try {
+                    // 执行解析。解析成功后，则进入下一个参数的解析
+                    args[i] = this.resolvers.resolveArgument(
+                            parameter, mavContainer, request, this.dataBinderFactory);
+                    continue;
+                } catch (Exception ex) {
+                    // 解析失败，打印日志，并抛出异常
+                    // Leave stack trace for later, e.g. AbstractHandlerExceptionResolver
+                    if (logger.isDebugEnabled()) {
+                        String message = ex.getMessage();
+                        if (message != null && !message.contains(parameter.getExecutable().toGenericString())) {
+                            logger.debug(formatArgumentError(parameter, message));
+                        }
+                    }
+                    throw ex;
+                }
+            }
+            // 解析失败，抛出 IllegalStateException 异常
+            if (args[i] == null) {
+                throw new IllegalStateException(formatArgumentError(parameter, "No suitable resolver"));
+            }
+        }
+
+        // 返回结果
+        return args;
+    }
+
+    /**
+     * Invoke the handler method with the given argument values.
+     */
+    @Nullable
+    protected Object doInvoke(Object... args) throws Exception {
+        // <z1> 设置方法为可访问
+        ReflectionUtils.makeAccessible(getBridgedMethod());
+        try {
+            // <z2> 执行调用,反射调用 @RequestMapping 注解的方法。
+            // 有一点忘记提了，InvocableHandlerMethod 是 HandlerMethod 的子类，所以通过 HandlerMethod 的 #getBridgedMethod()
+            // 方法，可以获得对应的 @RequestMapping 注解的方法。
+            return getBridgedMethod().invoke(getBean(), args);
+        } catch (IllegalArgumentException ex) {
+            assertTargetBean(getBridgedMethod(), getBean(), args);
+            String text = (ex.getMessage() != null ? ex.getMessage() : "Illegal argument");
+            throw new IllegalStateException(formatInvokeError(text, args), ex);
+        } catch (InvocationTargetException ex) {
+            // Unwrap for HandlerExceptionResolvers ...
+            Throwable targetException = ex.getTargetException();
+            if (targetException instanceof RuntimeException) {
+                throw (RuntimeException) targetException;
+            } else if (targetException instanceof Error) {
+                throw (Error) targetException;
+            } else if (targetException instanceof Exception) {
+                throw (Exception) targetException;
+            } else {
+                throw new IllegalStateException(formatInvokeError("Invocation failure", args), targetException);
+            }
+        }
+    }
+
+}

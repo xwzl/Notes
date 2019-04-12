@@ -1,0 +1,37 @@
+archivesBaseName = 'java'
+//apply plugin: "war"
+
+//sourceSets.main.resources.srcDirs = ["src/main/java", "src/main/resources"]
+
+//编译静态资源文件
+task resources(type: Copy) {
+    copy {
+        from("src/main/java") {
+            include("**/*.png")
+            include("**/*.jpg")
+            include("**/*.xml")
+        }
+//        into("${buildDir}/classes/main")
+        into("${rootDir}/java/out/production/classes")
+    }
+//    print "${getRootProject()}";
+//    print "${projectDir}xxxx";
+}
+
+//project.sync {
+//    from "src/main/java";
+//    into "${rootDir}/java/out/production/classes";
+//}
+
+dependencies {
+    // 依赖 core 模块
+//    compile project(":design-patterns")
+
+    compile(
+            "com.baomidou:mybatis-plus-boot-starter:${baomidouVersion}",
+            "com.baomidou:mybatis-plus-generator:${baomidouVersion}",
+            "com.baomidou:mybatis-plus:${baomidouVersion}",
+            "io.netty:netty-all:${nettyAllVersion}",
+            "io.grpc:grpc-netty-shaded:${grpcVersion}",
+    )
+}

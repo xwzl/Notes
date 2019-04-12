@@ -1,0 +1,389 @@
+Spring 注解实现Bean依赖注入之@Qualifier
+时间  2017-11-15
+标签 spring Qualifier 栏目 Spring
+原文   http://blog.csdn.net/lovin_fang/article/details/78537547
+三、@Qualifier：限定描述符，用于细粒度选择候选者；
+
+@Autowired默认是根据类型进行注入的，因此如果有多个类型一样的Bean候选者，则需要限定其中一个候选者，否则将抛出异常
+
+@Qualifier限定描述符除了能根据名字进行注入，更能进行更细粒度的控制如何选择候选者，具体使用方式如下：
+
+
+@Qualifier(value = "限定标识符")
+字段、方法、参数
+
+
+（1）、根据基于XML配置中的<qualifier>标签指定的名字进行注入，使用如下方式指定名称：
+
+
+<qualifier  type="org.springframework.beans.factory.annotation.Qualifier"  value="限定标识符"/>
+其中type属性可选，指定类型，默认就是Qualifier注解类，name就是给Bean候选者指定限定标识符，一个Bean定义中只允许指定类型不同的<qualifier>，如果有多个相同type后面指定的将覆盖前面的。
+
+1、准备测试Bean：
+
+DataSource.java
+
+
+package com.bean;
+
+public interface DataSource {
+
+	public void connection();
+}
+MysqlDriveManagerDataSource.java
+
+package com.bean;
+
+public class MysqlDriveManagerDataSource implements DataSource{
+
+	public void connection() {
+		System.out.println("mysql database connecting...");
+	}
+
+}
+OracleDriveManagerDataSource.java
+
+package com.bean;
+
+public class OracleDriveManagerDataSource implements DataSource{
+
+	public void connection() {
+		System.out.println("oracle database connecting...");
+	}
+
+}
+TestBean.java
+
+package com.bean;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+
+public class TestBean {
+
+	private DataSource dataSource;
+
+	@Autowired
+	public void initDataSource(@Qualifier("oracleDataSource") DataSource dataSource){
+		this.dataSource = dataSource;
+	}
+
+	public DataSource getDataSource() {
+		return dataSource;
+	}
+}
+其中TestBean.java中使用 @Qualifier还有一种方式
+
+
+@Autowired
+@Qualifier(value="oracleDataSource")
+public void initDataSource(DataSource dataSource){
+	this.dataSource = dataSource;
+}
+
+2、在Spring配置文件 添加如下Bean配置：
+
+
+<bean id="testBean" class="com.bean.TestBean"/>
+我们使用@Qualifier("oracleDataSource")来指定候选Bean的限定标识符，我们需要在配置文件中使用<qualifier>标签来指定候选Bean的限定标识符“oracleDataSource”：
+
+
+<bean id="mysqlDataSourceBean" class="com.bean.MysqlDriveManagerDataSource">
+	<qualifier value="mysqlDataSource"/>
+</bean>
+
+<bean id="oracleDataSourceBean" class="com.bean.OracleDriveManagerDataSource">
+	<qualifier value="oracleDataSource"/>
+</bean>
+3、测试方法如下：
+
+
+@Test
+public void autowiredTest(){
+	TestBean bean = ctx.getBean("testBean", TestBean.class);
+	DataSource dataSource = bean.getDataSource();
+	if(dataSource instanceof MysqlDriveManagerDataSource){
+		System.out.println("mysql");
+	}else if(dataSource instanceof OracleDriveManagerDataSource){
+		System.out.println("oracle");
+	}
+	dataSource.connection();
+
+	try{
+		ctx.getBean("mysqlDataSource");
+	}catch(Exception e){
+		if(e instanceof NoSuchBeanDefinitionException){
+			System.out.println("@Qualifier不能作为Bean的标识符");
+		}
+		e.printStackTrace();
+	}
+}
+从测试可以看出使用<qualifier>标签指定的限定标识符只能被@Qualifier使用，不能作为Bean的标识符，如“ctx.getBean("mysqlDataSource")”是获取不到Bean的。
+
+
+
+
+
+（2）、缺省的根据Bean名字注入：最基本方式，是在Bean上没有指定<qualifier>标签时一种容错机制，即缺省情况下使用Bean标识符注入，但如果你指定了<qualifier>标签将不会发生容错。
+
+1、准备测试Bean：
+
+
+package com.bean;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
+
+public class TestBean {
+
+	private DataSource dataSource;
+
+	@Autowired
+	@Qualifier(value="mysqlDataSourceBean")
+	public void initDataSource(DataSource dataSource){
+		this.dataSource = dataSource;
+	}
+
+	public DataSource getDataSource() {
+		return dataSource;
+	}
+}
+
+2、在Spring配置文件 添加如下Bean配置：
+
+
+<bean id="mysqlDataSourceBean" class="com.bean.MysqlDriveManagerDataSource"/>
+<bean id="oracleDataSourceBean" class="com.bean.OracleDriveManagerDataSource"/>
+3、测试方法如下：
+
+
+@Test
+public void autowiredTest(){
+	TestBean bean = ctx.getBean("testBean", TestBean.class);
+	DataSource dataSource = bean.getDataSource();
+	if(dataSource instanceof MysqlDriveManagerDataSource){
+		System.out.println("mysql");
+	}else if(dataSource instanceof OracleDriveManagerDataSource){
+		System.out.println("oracle");
+	}
+	dataSource.connection();
+
+}
+因为配置文件中并没有使用  @Qualifier标签 所以我们在bean中注入的时候是注入 bean
+@Qualifier(value="mysqlDataSourceBean")
+
+
+
+
+（3）、扩展@Qualifier限定描述符注解(不带参数)：对@Qualifier的扩展来提供细粒度选择候选者；
+
+
+具体使用方式就是自定义一个注解并使用@Qualifier注解其即可使用。
+
+
+
+首先让我们考虑这样一个问题，如果我们有两个数据源，分别为Mysql和Oracle，因此注入两者相关资源时就牵扯到数据库相关，如在DAO层注入SessionFactory时，当然可以采用前边介绍的方式，但为了简单和直观我们希望采用自定义注解方式。
+
+
+
+1、扩展@Qualifier限定描述符注解来分别表示Mysql和Oracle数据源
+
+
+package com.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+
+@Target({ElementType.TYPE,ElementType.FIELD,ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface Mysql {
+}
+package com.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+
+@Target({ElementType.TYPE,ElementType.FIELD,ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface Oracle {
+}
+
+2、准备测试Bean：
+
+package com.bean;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.annotation.Mysql;
+import com.annotation.Oracle;
+
+public class TestBean {
+
+	private DataSource mysqlDataSource;
+
+	private DataSource oracleDataSource;
+
+	@Autowired
+	public void initDataSource(@Mysql DataSource mysqlDataSource, @Oracle DataSource oracleDataSource){
+		this.mysqlDataSource = mysqlDataSource;
+		this.oracleDataSource = oracleDataSource;
+	}
+
+	public DataSource getMysqlDataSource() {
+		return mysqlDataSource;
+	}
+
+	public DataSource getOracleDataSource() {
+		return oracleDataSource;
+	}
+}
+
+3、在Spring配置文件 添加如下Bean配置：
+
+<bean id="testBean" class="com.bean.TestBean"/>
+4、在Spring修改定义的两个数据源：
+
+
+<bean id="mysqlDataSourceBean" class="com.bean.MysqlDriveManagerDataSource">
+	<qualifier value="mysqlDataSource"/>
+	<qualifier type="com.annotation.Mysql"/>
+</bean>
+
+<bean id="oracleDataSourceBean" class="com.bean.OracleDriveManagerDataSource">
+	<qualifier value="oracleDataSource"/>
+	<qualifier type="com.annotation.Oracle"/>
+</bean>
+5、测试方法如下：
+
+
+@Test
+public void autowiredTest(){
+	TestBean bean = ctx.getBean("testBean", TestBean.class);
+	DataSource dataSource = bean.getMysqlDataSource();
+	if(dataSource instanceof MysqlDriveManagerDataSource){
+		System.out.println("mysql");
+	}else if(dataSource instanceof OracleDriveManagerDataSource){
+		System.out.println("oracle");
+	}
+	dataSource.connection();
+}
+测试也通过了，说明我们扩展的@Qualifier限定描述符注解也能很好工作。
+
+
+
+
+
+（3）、扩展@Qualifier限定描述符注解(带参数)：对@Qualifier的扩展来提供细粒度选择候选者；
+
+前边演示了不带属性的注解，接下来演示一下带参数的注解：
+
+1、首先定义数据库类型：
+
+
+package com.enumBean;
+
+public enum DataBase {
+	ORACLE,MYSQL;
+}
+2、其次扩展@Qualifier限定描述符注解
+
+
+package com.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+
+import com.enumBean.DataBase;
+
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface DataSourceType {
+	String ip();    //指定ip,用于多数据源情况
+	DataBase database(); //指定数据库类型
+}
+3、准备测试Bean：
+
+
+package com.bean;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.annotation.DataSourceType;
+import com.enumBean.DataBase;
+
+public class TestBean {
+
+	private DataSource mysqlDataSource;
+
+	private DataSource oracleDataSource;
+
+	@Autowired
+	public void initDataSource(@DataSourceType(ip="localhost",database=DataBase.MYSQL) DataSource mysqlDataSource,
+				   @DataSourceType(ip="localhost",database=DataBase.ORACLE) DataSource oracleDataSource){
+		this.mysqlDataSource = mysqlDataSource;
+		this.oracleDataSource = oracleDataSource;
+	}
+
+	public DataSource getMysqlDataSource() {
+		return mysqlDataSource;
+	}
+
+	public DataSource getOracleDataSource() {
+		return oracleDataSource;
+	}
+}
+
+4、在Spring配置文件 添加如下Bean配置：
+
+
+<bean id="testBean" class="com.bean.TestBean"/>
+5、在Spring修改定义的两个数据源：
+
+
+<bean id="mysqlDataSourceBean" class="com.bean.MysqlDriveManagerDataSource">
+	<qualifier value="mysqlDataSource"/>
+	<qualifier type="com.annotation.DataSourceType">
+		<attribute key="ip" value="localhost"/>
+		<attribute key="database" value="MYSQL"/>
+	</qualifier>
+</bean>
+
+<bean id="oracleDataSourceBean" class="com.bean.OracleDriveManagerDataSource">
+	<qualifier value="oracleDataSource"/>
+	<qualifier type="com.annotation.DataSourceType">
+		<attribute key="ip" value="localhost"/>
+		<attribute key="database" value="ORACLE"/>
+	</qualifier>
+</bean>
+
+6、测试方法如下：
+
+
+@Test
+public void autowiredTest(){
+	TestBean bean = ctx.getBean("testBean", TestBean.class);
+	DataSource dataSource = bean.getMysqlDataSource();
+	if(dataSource instanceof MysqlDriveManagerDataSource){
+		System.out.println("mysql");
+	}else if(dataSource instanceof OracleDriveManagerDataSource){
+		System.out.println("oracle");
+	}
+	dataSource.connection();
+}

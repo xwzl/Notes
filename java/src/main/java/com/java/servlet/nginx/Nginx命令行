@@ -1,0 +1,14 @@
+Windows 下
+
+nginx 下载地址 http://nginx.org/
+
+session 不共享解决方案 https://blog.csdn.net/u012383839/article/details/79756368
+
+
+start nginx
+
+nginx -s reload 重新加载 nginx.conf 配置文件
+
+nginx -T 检查配置的文件语法是否符合规则
+
+-Dserver.port=8080 配置不同的请求端口

@@ -1,0 +1,46 @@
+// https://www.jianshu.com/p/a7b947c86650
+// https://www.jianshu.com/p/a41769bf5118?from=groupmessage
+
+task hello {
+    doLast {
+        println 'Hello World!'
+    }
+}
+
+task resources(type: Copy) {
+    copy {
+        from("src/main/java") {
+            include("**/*.png")
+            include("**/*.jpg")
+            include("**/*.xml")
+        }
+        into("${rootDir}/common/out/production/classes")
+    }
+}
+// 法方一，在doFirst动作中添加
+    hello.doFirst {
+        println 'Hello doFirst'
+    }
+
+// 法方二 在doLast动作中添加
+    hello.doLast {
+        println 'Hello doLast1'
+    }
+
+// 法方三 在doLast动作中添加
+    hello {
+        doLast {
+            println 'Hello doLast2'
+        }
+    }
+
+
+    dependencies {
+        compile(
+                "org.apache.poi:poi-ooxml:3.11",
+                "org.apache.poi:poi:3.11",
+                "io.springfox:springfox-swagger2:2.9.2",
+                "io.springfox:springfox-swagger2:2.9.2",
+                "org.dom4j:dom4j:2.1.1"
+        )
+    }

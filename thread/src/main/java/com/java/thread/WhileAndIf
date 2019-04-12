@@ -1,0 +1,36 @@
+多线程线程通信while和if的区别
+
+假设对象锁有一个list成员变量
+
+同步方法一
+public synchronized void methodA (){
+  if(list.size!=1) this.wait();
+  list.remove(0);
+}
+
+public synchronized void methodB(){
+  list.add("xxx");
+  this.notify();
+}
+
+
+假如线程一 执行methodA方法，线程处于等待状态
+假如线程二 执行methodA方法，线程处于等待状态
+假如线程三 执行methodA方法，线程处于等待状态
+假如线程四 执行methodA方法，线程处于等待状态
+假如线程五 执行methodA方法，线程处于等待状态
+
+Thread.sleep(10000);
+
+假如线程六 执行methodB方法，线程处于等待状态
+
+随机唤醒1—5中的某个线程
+
+ 三线程执行remove方法，移除methodB添加的变量值
+ 唤醒其它线程 发生这种情况的原因是因为条件发生了变化并没有得到及时的响应
+ 假如四线程抢到线程锁 执行后面的方法 list下标将会越界
+
+如果if->换成while?
+
+ 启动程序，假如四线程抢到线程锁 会继续判断list.size的大小会不会出现下标越界的情况
+

@@ -1,0 +1,6 @@
+dependencies {
+    compile(
+            "com.aliyun:aliyun-java-sdk-core:${sdkCoreVersion}",
+            "com.aliyun:aliyun-java-sdk-dysmsapi:${sdkDysmsapiVersion}",
+    )
+}

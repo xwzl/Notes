@@ -1,0 +1,7 @@
+di主要用于理解Spring依赖注入
+
+起始分析类为DependedInjectBean
+
+重要类 CreateBean 完成Bean的创建
+
+BeanSummery 为Bean注入分析的总结

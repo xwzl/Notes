@@ -1,0 +1,129 @@
+buildscript {
+
+    repositories {
+        mavenLocal()
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        mavenCentral()
+    }
+
+    dependencies {
+//        classpath('com.google.protobuf:protobuf-gradle-plugin:0.8.7')
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.1.4.RELEASE")
+    }
+
+}
+
+
+plugins {
+//    id "com.google.protobuf" version "0.8.7"
+    id "java"
+}
+
+//定义变量
+ext {
+    springBootVersion = '2.1.4.RELEASE'
+    grpcVersion = '1.17.1'
+    reflectionsVersion = '0.9.11'
+    libthriftVersion = '0.11.0'
+    protobufVersion = '3.6.1'
+    sdkCoreVersion = "4.2.2"
+    sdkDysmsapiVersion = "1.1.0"
+    nettyAllVersion = "4.1.32.Final"
+    gsonVersion = "2.8.5"
+    jodaTimeVersion = "2.10.1"
+    lombokVersion = "1.18.4"
+    junitVersion = "4.13-beta-1"
+    baomidouVersion = "3.0.5"
+    mysqlVersion = "8.0.15"
+}
+
+configure(allprojects) { project ->
+    group 'com.java'
+    version '1.0.0'
+
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    def commonCompilerArgs =
+            ["-Xlint:serial", "-Xlint:cast", "-Xlint:classfile", "-Xlint:dep-ann",
+             "-Xlint:divzero", "-Xlint:empty", "-Xlint:finally", "-Xlint:overrides",
+             "-Xlint:path", "-Xlint:processing", "-Xlint:static", "-Xlint:try", "-Xlint:-options"]
+
+    compileJava.options*.compilerArgs = commonCompilerArgs +
+            ["-Xlint:varargs", "-Xlint:fallthrough", "-Xlint:rawtypes",
+             "-Xlint:deprecation", "-Xlint:unchecked", "-Werror"]
+
+    compileTestJava.options*.compilerArgs = commonCompilerArgs +
+            ["-Xlint:-varargs", "-Xlint:-fallthrough", "-Xlint:-rawtypes",
+             "-Xlint:-deprecation", "-Xlint:-unchecked"]
+
+    compileJava {
+        sourceCompatibility = '11'  // can be switched to 8 for testing
+        targetCompatibility = '11'
+        options.encoding = "UTF-8"
+    }
+
+    compileTestJava {
+        sourceCompatibility = '11'  // can be switched to 8 for testing
+        targetCompatibility = '11'
+        options.encoding = "UTF-8"
+        options.compilerArgs += "-parameters"
+    }
+
+    repositories {
+        mavenLocal()
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+        mavenCentral()
+        jcenter()
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url 'http://maven.springframework.org/release' }
+    }
+
+    dependencies {
+
+        compile(
+//                "io.grpc:grpc-netty-shaded:${grpcVersion}",
+//                "io.grpc:grpc-protobuf:${grpcVersion}",
+//                "io.grpc:grpc-stub:${grpcVersion}",
+                "org.reflections:reflections:${reflectionsVersion}",
+//                "org.apache.thrift:libthrift:${libthriftVersion}",
+                "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
+                "org.springframework.boot:spring-boot-starter-web:${springBootVersion}",
+//                "com.google.protobuf:protobuf-java:${protobufVersion}",
+//                "com.google.protobuf:protobuf-java-util:${protobufVersion}",
+//                "com.aliyun:aliyun-java-sdk-core:${sdkCoreVersion}",
+//                "com.aliyun:aliyun-java-sdk-dysmsapi:${sdkDysmsapiVersion}",
+                "mysql:mysql-connector-java:${mysqlVersion}",
+//                "io.netty:netty-all:${nettyAllVersion}",
+                "junit:junit:${junitVersion}",
+                "com.google.code.gson:gson:${gsonVersion}",
+                "joda-time:joda-time:${jodaTimeVersion}",
+                "org.projectlombok:lombok:${lombokVersion}"
+        )
+        implementation('org.springframework.boot:spring-boot-starter-web')
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    jar {
+        manifest {
+            attributes("Implementation-Title": "Gradle")
+        }
+    }
+
+    configurations {
+    }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
+
+}
+

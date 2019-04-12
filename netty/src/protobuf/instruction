@@ -1,0 +1,25 @@
+D:\>protoc -I=D:\test_protoc --java_out=D:\test_protoc SubscribeReq.proto
+protoc -I=源地址 --java_out=目标地址  源地址/xxx.proto
+
+protoc --java_out=src/main/java src/protobuf/Student.proto
+protoc --java_out=netty/src/main/java netty/src/protobuf/Student.proto
+
+使用Git作为版本控制工具: git
+
+  submodule: 仓库里面的一个仓库 (已淘汰)
+
+  branch:
+
+    develop: 配置最低
+    test: 与product环境一致
+    product: 与test环境一致
+
+    develop:
+    test:
+    product:
+
+  git subtree
+
+      ServerProduct: 拉取代码
+      Protobuf-Java: 中间java代码
+      ClientProduct: 拉取代码

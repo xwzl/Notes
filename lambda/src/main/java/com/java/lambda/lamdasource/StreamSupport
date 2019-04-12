@@ -1,0 +1,4 @@
+public static <T> Stream<T> stream(Spliterator<T> spliterator, boolean parallel)
+  通过Spliterator创建一个新的串行流或者并行流;
+  1.分割迭代器只有在终止操作操作后才会估算分割，查询，遍历的大小。
+  2.

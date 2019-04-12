@@ -1,0 +1,12 @@
+task resources(type: Copy) {
+    copy {
+        from("src/main/java") {
+            include("**/*.png")
+            include("**/*.jpg")
+        }
+//        into("${buildDir}/classes/main")
+        into("${rootDir}/thread/out/production/classes")
+    }
+//    print "${getRootProject()}";
+//    print "${projectDir}xxxx";
+}

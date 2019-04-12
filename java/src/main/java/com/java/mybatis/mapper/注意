@@ -1,0 +1,6 @@
+水平有限，xml文件只有项目构建的时候能编译
+
+修改或者新增的时候无法重新编译，所以执行一次
+gradle>java>Tasks>other>resources  resources任务
+
+http://www.mybatis.org/mybatis-3/zh/configuration.html
