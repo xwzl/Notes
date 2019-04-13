@@ -1,12 +1,10 @@
 package com.java.base.annotation.ioc;
 
-import java.util.List;
-
 /**
  * @author xuweizhi
  * @date 2019/04/11 20:49
  */
-public class MySqlMapping {
+public class MyLocalMethodMapping {
 
     private String value;
 
@@ -14,13 +12,16 @@ public class MySqlMapping {
 
     private String className;
 
-    private List<String> methodParamClass;
+    private Class<?>[] methodParamClass;
 
-    private List<String> methodParamValues;
+    private String[] methodParamValues;
 
     private String description;
 
-    public MySqlMapping(String value, String methodName, String className, List<String> methodParamClass, List<String> methodParamValues, String description) {
+    public MyLocalMethodMapping() {
+    }
+
+    public MyLocalMethodMapping(String value, String methodName, String className, Class<?>[] methodParamClass, String[] methodParamValues, String description) {
         this.value = value;
         this.methodName = methodName;
         this.className = className;
@@ -53,19 +54,19 @@ public class MySqlMapping {
         this.className = className;
     }
 
-    public List<String> getMethodParamClass() {
+    public Class<?>[] getMethodParamClass() {
         return methodParamClass;
     }
 
-    public void setMethodParamClass(List<String> methodParamClass) {
+    public void setMethodParamClass(Class<?>[] methodParamClass) {
         this.methodParamClass = methodParamClass;
     }
 
-    public List<String> getMethodParamValues() {
+    public String[] getMethodParamValues() {
         return methodParamValues;
     }
 
-    public void setMethodParamValues(List<String> methodParamValues) {
+    public void setMethodParamValues(String[] methodParamValues) {
         this.methodParamValues = methodParamValues;
     }
 

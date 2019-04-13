@@ -1,4 +1,4 @@
-package com.java.servlet.proxy;
+package com.java.base.proxy;
 
 import org.junit.Test;
 import org.springframework.cglib.proxy.Enhancer;
@@ -8,15 +8,15 @@ import org.springframework.cglib.proxy.MethodProxy;
 import java.lang.reflect.Method;
 
 /**
- * @author xuweizhi
- * @date 2019/03/16 18:37
- * @description Cglib则是基于asm框架，实现了无反射机制进行代理，利用空间来换取了时间，代理效率高于jdk
+ * Cglib则是基于asm框架，实现了无反射机制进行代理，利用空间来换取了时间，代理效率高于jdk
  * <p>
  * 使用JDK创建动态代理有一个限制, 即它只能为接口创建代理实例. 对于没有定义接口的业务方法的类,使用CGlib 进行动态代理.
  * <p>
  * CGLib是一个强大的, 高性能的代码生成库. 被广泛应用于 AOP 框架. 用以提供方法拦截操作.
  * <p>
  * CGLib采用底层的字节码技术, 可以为一个类创建子类,  在子类中采用方法拦截的技术拦截所有父类方法的调用, 并织入横切逻辑.
+ * @author xuweizhi
+ * @date 2019/03/16 18:37
  */
 public class CGLIB {
 
@@ -51,7 +51,7 @@ class HelloService {
         return null;
     }
 
-    public void sayHello() {
+    void sayHello() {
         System.out.println("HelloService:sayHello");
     }
 }

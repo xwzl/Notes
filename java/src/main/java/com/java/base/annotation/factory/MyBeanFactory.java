@@ -5,11 +5,14 @@ import com.java.base.annotation.auto.MyAutowired;
 import com.java.base.annotation.auto.MyComponent;
 import com.java.base.annotation.auto.MyValue;
 import com.java.base.annotation.exception.MyApplicationException;
+import com.java.base.annotation.ioc.MyLocalMethodMapping;
+import com.java.base.annotation.proxy.MyMapperProxy;
 import com.java.base.annotation.util.ClassUtils;
 import com.java.base.annotation.util.MyResourcesUtils;
 import com.java.base.annotation.util.StringUntils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
+import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.core.NamedThreadLocal;
 
 import java.lang.reflect.Constructor;
@@ -140,6 +143,8 @@ public class MyBeanFactory {
             initBean();
             // 3. todo 为初始化 bean 赋值
             assignmentBean();
+            // 4. 注册 mapper 代理对象
+            registerMapperProxy();
             return this;
         } else {
             try {
@@ -150,6 +155,34 @@ public class MyBeanFactory {
         }
         return null;
 
+    }
+
+    /**
+     * 注册 mapper 的动态代理 bean 们
+     */
+    private void registerMapperProxy() {
+        Map<String, Map<String, MyLocalMethodMapping>> mapperBeans = configure.mapperBeans;
+        for (Map.Entry<String, Map<String, MyLocalMethodMapping>> entry : mapperBeans.entrySet()) {
+            Map<String, MyLocalMethodMapping> value = entry.getValue();
+            try {
+                Class<?> mapperProxy = Class.forName(entry.getKey());
+                Object proxyMapperBean = getProxyMapperBean(mapperProxy, entry.getValue());
+                this.singletonObject.put(mapperProxy.getName(), proxyMapperBean);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    public <T> T getProxyMapperBean(Class<T> mapperProxy, Map<String, MyLocalMethodMapping> mapper) {
+        Enhancer enhancer = new Enhancer();
+        // 设置enhancer对象的父类
+        enhancer.setSuperclass(mapperProxy);
+        // 设置enhancer的回调对象
+        enhancer.setCallback(new MyMapperProxy(mapper, mapperProxy));
+        // 创建代理对象
+        return (T) enhancer.create();
     }
 
     public void initBean() {
@@ -240,7 +273,7 @@ public class MyBeanFactory {
                         }
                     }
                 }
-                System.out.println(keyId.contains("#")+"            "+keyId);
+                System.out.println(keyId.contains("#") + "            " + keyId);
                 if (!keyId.contains("#")) {
                     singletonObject.put(keyId, instance);
                 } else {

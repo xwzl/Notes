@@ -1,9 +1,10 @@
 package com.java.base.annotation.factory;
 
 import com.java.base.annotation.auto.MyComponent;
-import com.java.base.annotation.auto.MySql;
+import com.java.base.annotation.auto.MyLocalMethod;
+import com.java.base.annotation.auto.MyLocalMethodReinforce;
 import com.java.base.annotation.ioc.MyAnnotationAssistant;
-import com.java.base.annotation.ioc.MySqlMapping;
+import com.java.base.annotation.ioc.MyLocalMethodMapping;
 import com.java.base.annotation.util.LogUtils;
 import com.java.base.annotation.util.MyResourcesUtils;
 import com.java.base.annotation.util.StringUntils;
@@ -13,7 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.java.base.annotation.util.LogUtils.printLog;
@@ -58,9 +62,9 @@ public class MyConfigure {
     Set<Class<?>> scanClasses = new HashSet<>();
 
     /**
-     * 一个MySql注解对应一个 MySqlMapping 实例
+     * 一个MySql注解对应一个 MyLocalMethodMapping 实例
      */
-    final Map<String, Map<String, MySqlMapping>> mapperBeans = new ConcurrentHashMap<>(256);
+    final Map<String, Map<String, MyLocalMethodMapping>> mapperBeans = new ConcurrentHashMap<>(256);
 
     /**
      * 已经注册好了 bean 的 Class 对象
@@ -162,7 +166,7 @@ public class MyConfigure {
 
         Method[] methods = currentBean.getDeclaredMethods();
 
-        Map<String, MySqlMapping> mappingMap = null;
+        Map<String, MyLocalMethodMapping> mappingMap = null;
         String beanName = currentBean.getName();
 
         if (!mapperBeans.containsKey(beanName)) {
@@ -171,29 +175,56 @@ public class MyConfigure {
 
         for (Method method : methods) {
             // 解析方法们
-            Annotation mySql = method.getAnnotation(component.get("MySql"));
+            Annotation myLocalMethod = method.getAnnotation(component.get("MyLocalMethod"));
             //用来存放 解析实体的建
-            String id = this.currentBean.getName() + "\\." + method.getName();
-            if (mySql != null) {
-                if (mySql instanceof MySql) {
-                    MySql sql = (MySql) mySql;
-                    String className = sql.className();
-                    String methodName = sql.methodName();
-                    String[] methodParamClass = sql.methodParamClass();
-                    String description = sql.description();
-                    String value = sql.value();
-                    String[] methodParamValues = sql.methodParamValues();
-                    MySqlMapping mySqlMapping = new MySqlMapping(value, methodName, className,
-                            Arrays.asList(methodParamClass), Arrays.asList(methodParamValues), description);
-                    if (!mappingMap.containsKey(id)) {
-                        mappingMap.put(id, mySqlMapping);
+            if (myLocalMethod != null) {
+                registerMylocalMethodMapperMethod(mappingMap, method, myLocalMethod);
+            }
+            Annotation reinforce = method.getAnnotation(component.get("MyLocalMethodReinforce"));
+            if (reinforce != null) {
+                if (reinforce instanceof MyLocalMethodReinforce) {
+                    String className = ((MyLocalMethodReinforce) reinforce).className();
+                    MyLocalMethodMapping mapping = new MyLocalMethodMapping();
+                    String methodName = ((MyLocalMethodReinforce) reinforce).methodName();
+                    if (StringUntils.isNotEmpty(methodName)) {
+                        mapping.setMethodName(methodName);
                     }
+                    mapping.setClassName(className);
+                    mappingMap.put(currentBean.getName() + "&" + method.getName(), mapping);
                 }
             }
+
+
         }
         parseAlias();
         registerBeanClass();
         registerMapper(mappingMap);
+    }
+
+    private void registerMylocalMethodMapperMethod(Map<String, MyLocalMethodMapping> mappingMap, Method method, Annotation myLocalMethod) {
+        String id = this.currentBean.getName() + "#" + method.getName();
+        if (myLocalMethod instanceof MyLocalMethod) {
+            MyLocalMethod sql = (MyLocalMethod) myLocalMethod;
+            String cn = sql.className();
+            String mn = sql.methodName();
+            String[] mpc = sql.methodParamClass();
+            Class<?>[] cs = new Class[mpc.length];
+            for (int i = 0; i < cs.length; i++) {
+                try {
+                    cs[i] = Class.forName(mpc[i]);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+            String d = sql.description();
+            String v = sql.value();
+            String[] m = sql.methodParamValues();
+            MyLocalMethodMapping myLocalMethodMapping = new MyLocalMethodMapping(v, mn, cn, cs, m, d);
+            assert mappingMap != null;
+            if (!mappingMap.containsKey(id)) {
+                mappingMap.put(id, myLocalMethodMapping);
+            }
+        }
     }
 
     /**
@@ -209,7 +240,7 @@ public class MyConfigure {
     /**
      * 注册 Mapper bean
      */
-    public void registerMapper(Map<String, MySqlMapping> mappingMap) {
+    public void registerMapper(Map<String, MyLocalMethodMapping> mappingMap) {
         mapperBeans.put(currentBean.getName(), mappingMap);
     }
 

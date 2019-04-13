@@ -1,4 +1,4 @@
-package com.java.servlet.proxy;
+package com.java.base.proxy;
 
 /**
  * @author xuweizhi

@@ -12,6 +12,8 @@ public class MyApplicationBoot {
 
     public static void main(String[] args) {
         MyBeanFactory factory = MyBeanFactory.run(MyApplicationBoot.class, args);
-        Dog dog= (Dog)factory.getBean(Dog.class);
+        Mapper mapper = factory.getBean(Mapper.class);
+        mapper.getBlog(new Blog(), "11", "22");
+        mapper.fineBlog("121", "232");
     }
 }

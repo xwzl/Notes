@@ -8,7 +8,6 @@ import java.util.Map;
 
 /**
  * 注解辅助
- *
  * @author xuweizhi
  * @date 2019/04/11 20:29
  */
@@ -20,7 +19,8 @@ public class MyAnnotationAssistant {
 
     {
         componentRegister.put("MyComponent", MyComponent.class);
-        componentRegister.put("MySql", MySql.class);
+        componentRegister.put("MyLocalMethod", MyLocalMethod.class);
+        componentRegister.put("MyLocalMethodReinforce", MyLocalMethodReinforce.class);
         componentRegister.put("MyValue", MyValue.class);
         componentRegister.put("MyAutowired", MyAutowired.class);
 
