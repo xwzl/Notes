@@ -3,6 +3,8 @@ package com.java.base.annotation;
 import com.java.base.annotation.auto.MyApplication;
 import com.java.base.annotation.factory.MyBeanFactory;
 
+import java.util.Date;
+
 /**
  * @author xuweizhi
  * @date 2019/04/12 12:08
@@ -15,5 +17,6 @@ public class MyApplicationBoot {
         Mapper mapper = factory.getBean(Mapper.class);
         mapper.getBlog(new Blog(), "11", "22");
         mapper.fineBlog("121", "232");
+        mapper.badBlog(new Date());
     }
 }

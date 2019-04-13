@@ -4,6 +4,8 @@ import com.java.base.annotation.auto.MyComponent;
 import com.java.base.annotation.auto.MyLocalMethod;
 import com.java.base.annotation.auto.MyLocalMethodReinforce;
 
+import java.util.Date;
+
 /**
  * @author xuweizhi
  * @date 2019/04/11 19:21
@@ -21,4 +23,7 @@ public interface Mapper {
 
     @MyLocalMethodReinforce(className = "com.java.base.annotation.Blog")
     void fineBlog(String title, String records);
+
+    @MyLocalMethodReinforce(className = "com.java.base.annotation.Blog")
+    void badBlog(Date date);
 }

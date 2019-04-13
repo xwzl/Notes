@@ -4,6 +4,8 @@ import com.java.base.annotation.auto.MyAutowired;
 import com.java.base.annotation.auto.MyComponent;
 import com.java.base.annotation.util.DateUtils;
 
+import java.util.Date;
+
 /**
  * 自定义注解测试类
  *
@@ -30,6 +32,10 @@ public class Blog {
 
     public void fineBlog(String title, String records) {
         System.out.println("博客的标题是：" + title + " 评论数是:" + records);
+    }
+
+    public void badBlog(Date date) {
+        System.out.println(date);
     }
 
     @Override

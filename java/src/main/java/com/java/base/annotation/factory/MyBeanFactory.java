@@ -263,8 +263,6 @@ public class MyBeanFactory {
                             } else {
                                 field.set(instance, doAssignmentBean(field.getType(), keyId + "#" + field.getName()));
                             }
-
-
                             continue;
                         }
                         // 不存在组件之间的相互依赖，则从最原始的 bean 中获取值
@@ -273,7 +271,7 @@ public class MyBeanFactory {
                         }
                     }
                 }
-                System.out.println(keyId.contains("#") + "            " + keyId);
+                //System.out.println(keyId.contains("#") + "            " + keyId);
                 if (!keyId.contains("#")) {
                     singletonObject.put(keyId, instance);
                 } else {
