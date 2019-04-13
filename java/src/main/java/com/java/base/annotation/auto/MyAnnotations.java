@@ -3,19 +3,20 @@ package com.java.base.annotation.auto;
 import java.lang.annotation.*;
 
 /**
- * 定义包扫描注解
+ * 用于目标注解多次使用
  *
  * @author xuweizhi
- * @date 2019/04/11 19:33
+ * @date 2019/04/14 0:50
  */
-@Inherited
 @Documented
+@Inherited
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface MyComponent {
+public @interface MyAnnotations {
 
     /**
-     * 注册别名，默认为当前类全类名路径
+     * 注解方法必须为 value 值，否则会报错
      */
-    String alias() default "";
+    MyAnnotation[] value();
+
 }
