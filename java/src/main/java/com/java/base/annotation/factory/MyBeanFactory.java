@@ -1,9 +1,6 @@
 package com.java.base.annotation.factory;
 
-import com.java.base.annotation.auto.MyApplication;
-import com.java.base.annotation.auto.MyAutowired;
-import com.java.base.annotation.auto.MyComponent;
-import com.java.base.annotation.auto.MyValue;
+import com.java.base.annotation.auto.*;
 import com.java.base.annotation.exception.MyApplicationException;
 import com.java.base.annotation.ioc.MyLocalMethodMapping;
 import com.java.base.annotation.proxy.MyMapperProxy;
@@ -130,11 +127,8 @@ public class MyBeanFactory {
     public MyBeanFactory init(Class<?> clazz, Object... args) {
         MyApplication application = clazz.getAnnotation(MyApplication.class);
         if (application != null) {
-            String packageName = application.packageName();
-            // 如果未设置包扫描路径，默认解析当前路径及子目录
-            if (StringUntils.isEmpty(packageName)) {
-                packageName = clazz.getPackage().getName();
-            }
+            // 获取包扫描、额外的包扫描空间、以及排除的包扫描空间
+            String packageName = getPackageName(clazz);
             // 1. todo 初始化配置
             configure = new MyConfigure(packageName, application.loadResources());
             loaded = configure.loaded;
@@ -148,13 +142,41 @@ public class MyBeanFactory {
             return this;
         } else {
             try {
-                throw new MyApplicationException(clazz.getName() + "类不是自定义启动类，无法解析");
+                throw new MyApplicationException(clazz.getName() + "类不是MyApplication启动类，无法解析");
             } catch (MyApplicationException e) {
                 e.printStackTrace();
             }
         }
         return null;
 
+    }
+
+    /**
+     * 获取包扫描空间
+     */
+    private String getPackageName(Class<?> clazz) {
+        String packageName = null;
+        MyComponentScan scan = clazz.getAnnotation(MyComponentScan.class);
+        if (StringUntils.isEmpty(scan.packageName())) {
+            packageName = scan.packageName();
+        }
+        //如果未设置包扫描路径，默认解析当前路径及子目录
+        if (StringUntils.isEmpty(packageName)) {
+            packageName = clazz.getPackage().getName();
+        }
+        if(scan.includeFilters().length>0){
+            for (int i = 0; i < scan.includeFilters().length; i++) {
+                Class<?>[] typePath = scan.includeFilters()[i].classTypePath();
+            }
+        }
+        if(scan.excludeFilters().length>0){
+            for (int i = 0; i < scan.excludeFilters().length; i++) {
+                MyFilter myFilter = scan.excludeFilters()[i];
+                Class<?>[] classes = myFilter.classTypePath();
+                System.out.println(classes[i]);
+            }
+        }
+        return packageName;
     }
 
     /**
@@ -171,7 +193,6 @@ public class MyBeanFactory {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-
         }
     }
 

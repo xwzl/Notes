@@ -11,12 +11,8 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@MyComponentScan
 public @interface MyApplication {
-
-    /**
-     * 自定义包扫描
-     */
-    String packageName() default "";
 
     /**
      * 设置配置文件加载路径，默认为application.properties

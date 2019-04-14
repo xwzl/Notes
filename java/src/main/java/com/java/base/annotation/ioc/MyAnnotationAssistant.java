@@ -22,7 +22,12 @@ public class MyAnnotationAssistant {
         componentRegister.put("MyLocalMethod", MyLocalMethod.class);
         componentRegister.put("MyLocalMethodReinforce", MyLocalMethodReinforce.class);
         componentRegister.put("MyValue", MyValue.class);
+        componentRegister.put("MyService", MyService.class);
+        componentRegister.put("MyQualifier", MyQualifier.class);
+        componentRegister.put("MyResource", MyResource.class);
         componentRegister.put("MyAutowired", MyAutowired.class);
+        componentRegister.put("MyController", MyController.class);
+        componentRegister.put("MyMapper", MyMapper.class);
 
         appRegister.put("MyApplication", MyApplication.class);
     }
