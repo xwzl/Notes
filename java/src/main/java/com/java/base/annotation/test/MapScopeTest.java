@@ -1,6 +1,6 @@
 package com.java.base.annotation.test;
 
-import com.java.base.annotation.Blog;
+import com.java.base.annotation.model.Blog;
 import org.junit.Test;
 
 import java.util.HashMap;

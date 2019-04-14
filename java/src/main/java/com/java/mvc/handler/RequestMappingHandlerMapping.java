@@ -46,7 +46,7 @@ import java.util.function.Predicate;
 /**
  * Creates {@link RequestMappingInfo} instances from type and method-level
  * {@link RequestMapping @RequestMapping} annotations in
- * {@link Controller @Controller} classes.
+ * {@link Controller @MyController} classes.
  *
  * @author Arjen Poutsma
  * @author Rossen Stoyanchev

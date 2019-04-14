@@ -1,7 +1,7 @@
 package com.java.base.annotation.ioc;
 
 /**
- * Controller RequestHandler
+ * MyController RequestHandler
  *
  * @author xuweizhi
  * @date 2019/04/14 15:26

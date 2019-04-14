@@ -1976,7 +1976,7 @@ INSERT INTO `wms_module` VALUES (21, '2017-10-25 09:05:11', '1', '修改密码',
 INSERT INTO `wms_module` VALUES (22, '2017-10-25 09:05:11', '1', '员工管理', '', NULL, '2017-10-31 14:52:26', '/user/toList', 1, 1, NULL, NULL, NULL, 6, '页面跳转');
 INSERT INTO `wms_module` VALUES (23, '2017-10-25 09:05:11', '1', '角色管理', '', NULL, NULL, '/system/role/toList', 1, NULL, NULL, NULL, NULL, 6, '页面跳转');
 INSERT INTO `wms_module` VALUES (24, '2017-10-25 09:05:11', '1', 'DC仓库管理', '', NULL, '2017-10-25 09:05:11', '/system/department/toList', 1, 1, NULL, NULL, NULL, 6, '页面跳转');
-INSERT INTO `wms_module` VALUES (25, '2017-10-25 09:05:11', '1', '模块管理', '', NULL, NULL, '/system/module/toList', 1, NULL, NULL, NULL, NULL, 6, '页面跳转');
+INSERT INTO `wms_module` VALUES (25, '2017-10-25 09:05:11', '1', '模块管理', '', NULL, NULL, '/system/model/toList', 1, NULL, NULL, NULL, NULL, 6, '页面跳转');
 INSERT INTO `wms_module` VALUES (27, '2017-10-25 09:05:11', '1', '参数管理', '', NULL, '2017-11-01 16:24:52', '/system/params/toList', 1, 1, NULL, NULL, NULL, 6, '页面跳转');
 INSERT INTO `wms_module` VALUES (28, '2017-11-01 14:06:37', '0', '基本资料', NULL, '7', NULL, NULL, 1, NULL, NULL, NULL, '/images/icon/other.png', NULL, NULL);
 INSERT INTO `wms_module` VALUES (36, '2017-12-20 09:22:27', '1', '客户管理', '客户信息', NULL, '2018-08-20 09:03:29', '/customer/toList', 1, 1, NULL, NULL, NULL, 28, '页面跳转');

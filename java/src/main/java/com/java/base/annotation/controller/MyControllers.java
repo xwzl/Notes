@@ -1,7 +1,9 @@
-package com.java.base.annotation;
+package com.java.base.annotation.controller;
 
+import com.java.base.annotation.auto.MyAutowired;
 import com.java.base.annotation.auto.MyController;
 import com.java.base.annotation.auto.MyRequestMapping;
+import com.java.base.annotation.service.MyServices;
 
 /**
  * @author xuweizhi
@@ -9,7 +11,10 @@ import com.java.base.annotation.auto.MyRequestMapping;
  */
 @MyController
 @MyRequestMapping("we")
-public class Controller {
+public class MyControllers {
+
+    @MyAutowired
+    public MyServices myServices;
 
     @MyRequestMapping("we/we")
     public void say() {

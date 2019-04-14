@@ -39,9 +39,9 @@ import java.util.Set;
  * <h2>Mechanism of Operation</h2>
  * This class will be loaded and instantiated and have its {@link #onStartup}
  * method invoked by any Servlet 3.0-compliant container during container startup assuming
- * that the {@code spring-web} module JAR is present on the classpath. This occurs through
+ * that the {@code spring-web} model JAR is present on the classpath. This occurs through
  * the JAR Services API {@link ServiceLoader#load(Class)} method detecting the
- * {@code spring-web} module's {@code META-INF/services/javax.servlet.ServletContainerInitializer}
+ * {@code spring-web} model's {@code META-INF/services/javax.servlet.ServletContainerInitializer}
  * service provider configuration file. See the
  * <a href="http://download.oracle.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider">
  * JAR Services API documentation</a> as well as section <em>8.2.4</em> of the Servlet 3.0
@@ -87,7 +87,7 @@ import java.util.Set;
  *
  * <p>Note that use of this container initializer and of {@code WebApplicationInitializer}
  * is not in any way "tied" to Spring MVC other than the fact that the types are shipped
- * in the {@code spring-web} module JAR. Rather, they can be considered general-purpose
+ * in the {@code spring-web} model JAR. Rather, they can be considered general-purpose
  * in their ability to facilitate convenient code-based configuration of the
  * {@code ServletContext}. In other words, any servlet, listener, or filter may be
  * registered within a {@code WebApplicationInitializer}, not just Spring MVC-specific
@@ -154,7 +154,7 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 				if (!waiClass.isInterface() && !Modifier.isAbstract(waiClass.getModifiers()) &&
 						WebApplicationInitializer.class.isAssignableFrom(waiClass)) {
 					try {
-						initializers.add((WebApplicationInitializer) waiClass.newInstance());
+						initializers.add((WebApplicationInitializer) waiClass.getDeclaredConstructor().newInstance());
 					}
 					catch (Throwable ex) {
 						throw new ServletException("Failed to instantiate WebApplicationInitializer class", ex);

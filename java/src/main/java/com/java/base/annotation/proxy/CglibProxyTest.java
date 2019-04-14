@@ -1,7 +1,7 @@
 package com.java.base.annotation.proxy;
 
-import com.java.base.annotation.Blog;
-import com.java.base.annotation.Mapper;
+import com.java.base.annotation.model.Blog;
+import com.java.base.annotation.mapper.Mapper;
 import org.springframework.cglib.proxy.Enhancer;
 
 import java.util.HashMap;

@@ -65,17 +65,17 @@ public class MyConfigure {
 
     Set<Class<?>> mappers = new HashSet<>();
 
-    Set<Class<?>> services = new HashSet<>();
+    Set<Class<?>> serviceLoaded = new HashSet<>();
 
-    Set<Class<?>> controllers = new HashSet<>();
+    Set<Class<?>> controllerLoaded = new HashSet<>();
 
 
     /**
      * 一个MySql注解对应一个 MyLocalMethodMapping 实例
      */
-    final Map<String, Map<String, MyLocalMethodMapping>> mapperBeans = new ConcurrentHashMap<>(256);
+    final Map<String, Map<String, MyLocalMethodMapping>> mapperMethods = new ConcurrentHashMap<>(256);
 
-    final Map<String, Map<String, MyRequestHandler>> controllerBeans = new ConcurrentHashMap<>(256);
+    final Map<String, Map<String, MyRequestHandler>> controllerMethods = new ConcurrentHashMap<>(256);
 
     /**
      * 已经注册好了 bean 的 Class 对象
@@ -99,11 +99,42 @@ public class MyConfigure {
 
     SimpleAliasRegistry aliasRegistry = new SimpleAliasRegistry();
 
-    public MyConfigure(String packagePath, String loadResource) {
+    public MyConfigure execute(String packagePath, String loadResource) {
         // 通用逻辑
         generalLogic(packagePath, loadResource);
         //初始化容器
         init();
+        return this;
+    }
+
+    public void decorationBeanFactory(MyBeanFactory beanFactory) {
+        beanFactory.configure = this;
+        addInterface();
+        beanFactory.loaded = loaded;
+        beanFactory.resources = resources;
+        beanFactory.serviceLoaded = getLoaded(serviceLoaded);
+        beanFactory.controllerLoaded =getLoaded(controllerLoaded);
+    }
+
+    private void addInterface(){
+        enhanceLoaded(serviceLoaded);
+        enhanceLoaded(controllerLoaded);
+    }
+
+    private void enhanceLoaded(Set<Class<?>> loadeds){
+        for (Class<?> load : loadeds) {
+            if(load.getInterfaces().length>0){
+                loaded.put(load.getInterfaces()[0].getName(),load.getInterfaces()[0]);
+            }
+        }
+    }
+
+    private Map<String, Class<?>> getLoaded(Set<Class<?>> loaded) {
+        Map<String, Class<?>> load = new HashMap<>();
+        for (Class<?> clazz : loaded) {
+            load.put(clazz.getName(), clazz);
+        }
+        return load;
     }
 
     private void generalLogic(String packagePath, String loadResource) {
@@ -113,6 +144,9 @@ public class MyConfigure {
         this.loadResource = loadResource;
     }
 
+    public static MyConfigure builder() {
+        return new MyConfigure();
+    }
 
     /**
      * 初始化配置
@@ -134,8 +168,8 @@ public class MyConfigure {
 
     private void addConcreteComponent() {
         this.mappers = scan.mappers;
-        this.controllers = scan.controllers;
-        this.services = scan.services;
+        this.controllerLoaded = scan.controllers;
+        this.serviceLoaded = scan.services;
     }
 
     /**
@@ -171,10 +205,10 @@ public class MyConfigure {
             parseMapper();
             return;
         }
-        if (this.bean.getAnnotation(MyService.class) != null) {
-            parseService();
-            return;
-        }
+        //if (this.bean.getAnnotation(MyService.class) != null) {
+        //    parseService();
+        //    return;
+        //}
         if (this.bean.getAnnotation(MyController.class) != null) {
             parseController();
             return;
@@ -210,7 +244,7 @@ public class MyConfigure {
                 }
             }
         }
-        controllerBeans.put(bean.getName(), handlerMap);
+        controllerMethods.put(bean.getName(), handlerMap);
         parseAlias();
         registerBeanClass();
     }
@@ -236,7 +270,7 @@ public class MyConfigure {
         Map<String, MyLocalMethodMapping> mappingMap = null;
         String beanName = bean.getName();
 
-        if (!mapperBeans.containsKey(beanName)) {
+        if (!mapperMethods.containsKey(beanName)) {
             mappingMap = new HashMap<>();
         }
 
@@ -309,7 +343,7 @@ public class MyConfigure {
      * 注册 Mapper bean
      */
     public void registerMapper(Map<String, MyLocalMethodMapping> mappingMap) {
-        mapperBeans.put(bean.getName(), mappingMap);
+        mapperMethods.put(bean.getName(), mappingMap);
     }
 
     /**

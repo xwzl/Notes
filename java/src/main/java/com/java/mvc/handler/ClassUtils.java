@@ -291,7 +291,7 @@ public abstract class ClassUtils {
 	 * (that is, the class could not be found or the class file could not be loaded)
 	 * @throws IllegalStateException if the corresponding class is resolvable but
 	 * there was a readability mismatch in the inheritance hierarchy of the class
-	 * (typically a missing dependency declaration in a Jigsaw module definition
+	 * (typically a missing dependency declaration in a Jigsaw model definition
 	 * for a superclass or interface implemented by the class to be loaded here)
 	 * @see #forName(String, ClassLoader)
 	 */
@@ -324,7 +324,7 @@ public abstract class ClassUtils {
 	 * superclasses and interfaces)
 	 * @throws IllegalStateException if the corresponding class is resolvable but
 	 * there was a readability mismatch in the inheritance hierarchy of the class
-	 * (typically a missing dependency declaration in a Jigsaw module definition
+	 * (typically a missing dependency declaration in a Jigsaw model definition
 	 * for a superclass or interface implemented by the class to be checked here)
 	 */
 	public static boolean isPresent(String className, @Nullable ClassLoader classLoader) {

@@ -10,7 +10,9 @@ public class ComponentConstance {
 
     public final static String CONTROLLER_KEY = "#";
 
-    public final static String MAPPER_KEY = CONTROLLER_KEY;
+    public final static String MAPPER_KEY = "#";
 
-    public final static String SERVICE_KEY = CONTROLLER_KEY;
+    public final static String SERVICE_KEY = "#";
+
+    public final static String BEAN_KEY = "#";
 }

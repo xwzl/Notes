@@ -1,8 +1,8 @@
-package com.java.base.annotation;
+package com.java.base.annotation.model;
 
 import com.java.base.annotation.auto.MyAutowired;
 import com.java.base.annotation.auto.MyComponent;
-import com.java.base.annotation.util.DateUtils;
+import com.java.base.annotation.controller.MyControllers;
 
 import java.util.Date;
 
@@ -20,7 +20,7 @@ public class Blog {
     private String records;
 
     @MyAutowired
-    private DateUtils dateUtils;
+    MyControllers myControllers;
 
     public Blog() {
     }

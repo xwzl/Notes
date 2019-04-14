@@ -1,4 +1,4 @@
-package com.java.base.annotation;
+package com.java.base.annotation.model;
 
 import com.java.base.annotation.auto.MyAutowired;
 import com.java.base.annotation.auto.MyComponent;

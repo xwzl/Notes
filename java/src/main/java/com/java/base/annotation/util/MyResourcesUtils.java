@@ -2,12 +2,12 @@ package com.java.base.annotation.util;
 
 import com.java.base.annotation.auto.MyValue;
 
-import javax.swing.plaf.synth.SynthSplitPaneUI;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,17 +41,13 @@ public class MyResourcesUtils {
      */
     public void parse(String path) throws IOException {
         InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(path);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
 
         for (String line; (line = reader.readLine()) != null; ) {
             int i = line.indexOf(".");
             int i1 = line.indexOf("=");
-            List<String> list = map.get(line.substring(0, i).toUpperCase());
-            if (list == null) {
-                list = new ArrayList<>();
-                map.put(line.substring(0, i).toUpperCase(), list);
-            }
-            list.add(line.substring(i + 1, i1).trim() + "#" + line.substring(i1 + 1, line.length()).trim());
+            List<String> list = map.computeIfAbsent(line.substring(0, i).toUpperCase(), k -> new ArrayList<>());
+            list.add(line.substring(i + 1, i1).trim() + "#" + line.substring(i1 + 1).trim());
         }
         in.close();
         reader.close();

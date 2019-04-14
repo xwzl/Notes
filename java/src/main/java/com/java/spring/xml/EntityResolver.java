@@ -40,7 +40,7 @@ import java.io.IOException;
  * Basic interface for resolving entities.
  *
  * <blockquote>
- * <em>This module, both source code and documentation, is in the
+ * <em>This model, both source code and documentation, is in the
  * Public Domain, and comes with <strong>NO WARRANTY</strong>.</em>
  * See <a href='http://www.saxproject.org'>http://www.saxproject.org</a>
  * for further information.

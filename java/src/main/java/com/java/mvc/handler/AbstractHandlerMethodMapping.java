@@ -63,7 +63,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
      * since autowire-candidate may have been turned to {@code false} for other
      * reasons, while still expecting the bean to be eligible for handler methods.
      * <p>Originally defined in {@link org.springframework.aop.scope.ScopedProxyUtils}
-     * but duplicated here to avoid a hard dependency on the spring-aop module.
+     * but duplicated here to avoid a hard dependency on the spring-aop model.
      */
     private static final String SCOPED_TARGET_NAME_PREFIX = "scopedTarget.";
 
@@ -342,7 +342,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
      */
     protected HandlerMethod createHandlerMethod(Object handler, Method method) {
         HandlerMethod handlerMethod;
-        // <1> 如果 handler 类型为 String， 说明对应一个 Bean 对象，例如 UserController 使用 @Controller 注解后，
+        // <1> 如果 handler 类型为 String， 说明对应一个 Bean 对象，例如 UserController 使用 @MyController 注解后，
         // 默认 handler 为它的 beanName ，即 `userController`
         if (handler instanceof String) {
             String beanName = (String) handler;

@@ -20,7 +20,7 @@ import java.io.IOException;
  * 声明的过程，比如我们将 DTD 文件放到项目中某处，在实现时直接将此文档读取并返回给 SAX 即可。这样
  * 就避免了通过网络来寻找相应的声明。
  * <blockquote>
- * <em>This module, both source code and documentation, is in the
+ * <em>This model, both source code and documentation, is in the
  * Public Domain, and comes with <strong>NO WARRANTY</strong>.</em>
  * See <a href='http://www.saxproject.org'>http://www.saxproject.org</a>
  * for further information.

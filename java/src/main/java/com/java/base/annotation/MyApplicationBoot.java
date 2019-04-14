@@ -1,10 +1,10 @@
 package com.java.base.annotation;
 
-import com.java.base.annotation.auto.MyApplication;
-import com.java.base.annotation.auto.MyComponent;
-import com.java.base.annotation.auto.MyComponentScan;
-import com.java.base.annotation.auto.MyFilter;
+import com.java.base.annotation.auto.*;
 import com.java.base.annotation.factory.MyBeanFactory;
+import com.java.base.annotation.mapper.Mapper;
+import com.java.base.annotation.model.Blog;
+import com.java.base.annotation.service.impl.MyServiceImpl;
 import com.java.base.array.HashMapOrder;
 import com.java.base.enums.MyEnum;
 import com.java.mybatis.model.User;
@@ -27,13 +27,15 @@ import java.util.Date;
 public class MyApplicationBoot {
 
     public static void main(String[] args) {
-        MyBeanFactory factory = MyBeanFactory.run(MyApplicationBoot.class, args);
+        MyBeanFactory factory = MyBeanFactory.run(MyApplicationBoot.class, (Object[]) args);
         Mapper mapper = factory.getBean(Mapper.class);
         mapper.getBlog(new Blog(), "11", "22");
         mapper.fineBlog("121", "232");
         mapper.badBlog(new Date());
-        Controller bean = factory.getBean(Controller.class);
-        bean.say();
+
+        MyServiceImpl bean = factory.getBean(MyServiceImpl.class);
+        bean.mapper.badBlog(new Date());
+
     }
 
 }

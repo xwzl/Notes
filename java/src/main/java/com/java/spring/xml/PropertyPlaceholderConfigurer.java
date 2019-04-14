@@ -41,7 +41,7 @@ import java.util.Properties;
  *
  * <p>{@link PropertyPlaceholderConfigurer} is still appropriate for use when:
  * <ul>
- * <li>the {@code spring-context} module is not available (i.e., one is using Spring's
+ * <li>the {@code spring-context} model is not available (i.e., one is using Spring's
  * {@code BeanFactory} API as opposed to {@code ApplicationContext}).
  * <li>existing configuration makes use of the {@link #setSystemPropertiesMode(int) "systemPropertiesMode"}
  * and/or {@link #setSystemPropertiesModeName(String) "systemPropertiesModeName"} properties.

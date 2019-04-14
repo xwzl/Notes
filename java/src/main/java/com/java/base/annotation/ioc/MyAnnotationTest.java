@@ -1,6 +1,6 @@
 package com.java.base.annotation.ioc;
 
-import com.java.base.annotation.Blog;
+import com.java.base.annotation.model.Blog;
 import com.java.base.annotation.auto.MyAutowired;
 import com.java.base.annotation.auto.MyComponent;
 

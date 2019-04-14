@@ -1124,7 +1124,7 @@ public class DispatcherServlet extends FrameworkServlet {
                 }
 
                 // Actually invoke the handler.
-                // TODO <6> 真正的调用 handler 方法，并返回视图,这里，一般就会调用我们定义的 Controller 的方法。
+                // TODO <6> 真正的调用 handler 方法，并返回视图,这里，一般就会调用我们定义的 MyController 的方法。
                 // 详细进入方法内部
                 mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 

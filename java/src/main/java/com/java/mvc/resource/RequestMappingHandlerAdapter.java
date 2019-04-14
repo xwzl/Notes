@@ -368,7 +368,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
     /**
      * Set the default {@link AsyncTaskExecutor} to use when a controller method
-     * return a {@link Callable}. Controller methods can override this default on
+     * return a {@link Callable}. MyController methods can override this default on
      * a per-request basis by returning an {@link WebAsyncTask}.
      * <p>By default a {@link SimpleAsyncTaskExecutor} instance is used.
      * It's recommended to change that default in production as the simple executor
@@ -848,7 +848,7 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
      * if view resolution is required.
      * <p>
      * 因为，Spring MVC 提供了大量的特性，所以涉及的组件会不少。我们主要先梳理好主流程，所以涉及的组件，还是先不详细解析。
-     * 我们的目的是，看到怎么调用 HandlerMethod 方法的，即调用 Controller 的 @RequestMapping 注解的方法。
+     * 我们的目的是，看到怎么调用 HandlerMethod 方法的，即调用 MyController 的 @RequestMapping 注解的方法。
      *
      * @see #createInvocableHandlerMethod(HandlerMethod)
      * @since 4.2

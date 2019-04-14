@@ -45,7 +45,7 @@ import org.springframework.web.context.request.NativeWebRequest;
  * {@link ViewNameMethodReturnValueHandler} ，实现 HandlerMethodReturnValueHandler 接口，
  * 处理返回结果是视图名的 ReturnValueHandler 实现类。
  * <p>
- * ViewNameMethodReturnValueHandler 适用于前后端未分离，Controller 返回视图名的场景，例如 JSP、Freemarker 等等。
+ * ViewNameMethodReturnValueHandler 适用于前后端未分离，MyController 返回视图名的场景，例如 JSP、Freemarker 等等。
  * <h3>6.1 构造方法</h3>
  * {@link ViewNameMethodReturnValueHandler#redirectPatterns}属性，一般情况下，不进行设置。至于用途，我们来看看
  * {@link ViewNameMethodReturnValueHandler#isRedirectViewName(String viewName)} 方法，判断是否为重定向的视图名。

@@ -463,7 +463,7 @@ public class HandlerMethod {
 	 * Assert that the target bean class is an instance of the class where the given
 	 * method is declared. In some cases the actual controller instance at request-
 	 * processing time may be a JDK dynamic proxy (lazy initialization, prototype
-	 * beans, and others). {@code @Controller}'s that require proxying should prefer
+	 * beans, and others). {@code @MyController}'s that require proxying should prefer
 	 * class-based proxy mechanisms.
 	 */
 	protected void assertTargetBean(Method method, Object targetBean, Object[] args) {
@@ -485,7 +485,7 @@ public class HandlerMethod {
 						"[" + i + "] [null]"))
 				.collect(Collectors.joining(",\n", " ", " "));
 		return text + "\n" +
-				"Controller [" + getBeanType().getName() + "]\n" +
+				"MyController [" + getBeanType().getName() + "]\n" +
 				"Method [" + getBridgedMethod().toGenericString() + "] " +
 				"with argument values:\n" + formattedArgs;
 	}

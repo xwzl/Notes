@@ -18,6 +18,8 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.java.base.annotation.exception.ComponentConstance.BEAN_KEY;
+
 /**
  * @author xuweizhi
  * @date 2019/04/11 22:38
@@ -50,6 +52,10 @@ public class MyBeanFactory {
      */
     private SimpleAliasRegistry aliasRegistry = new SimpleAliasRegistry();
 
+    Map<String, Class<?>> serviceLoaded = new HashMap<>();
+
+    Map<String, Class<?>> controllerLoaded = new HashMap<>();
+
     /**
      * 单例 bean
      */
@@ -67,6 +73,8 @@ public class MyBeanFactory {
      * 用来存放不称职的 bean men
      */
     private final Map<String, Object> convertObject = new ConcurrentHashMap<>();
+
+    private final Set<String> ICU = new HashSet<>();
 
     private final Set<String> singletonsCurrentlyInCreation =
             Collections.newSetFromMap(new ConcurrentHashMap<>(16));
@@ -119,27 +127,38 @@ public class MyBeanFactory {
     }
 
     public static MyBeanFactory run(Class<?> clazz, Object... args) {
-        return builder().init(clazz, args);
+        return builder().init(clazz);
     }
 
-    public MyBeanFactory init(Class<?> clazz, Object... args) {
-        return initBeanFactory(clazz);
+    private void initConfigure(MyApplication application, String packageName) {
+        MyConfigure.builder().execute(packageName, application.loadResources()).decorationBeanFactory(this);
     }
 
     /**
-     * 初始化 Bean Factory
+     * 初始化 bean 们
      */
-    private MyBeanFactory initBeanFactory(Class<?> clazz) {
+    public MyBeanFactory init(Class<?> clazz) {
         MyApplication application = clazz.getAnnotation(MyApplication.class);
         if (application != null) {
-            // 1. todo  获取包扫描、额外的包扫描空间、以及排除的包扫描空间,初始化配置
+            // 1. 获取包扫描、额外的包扫描空间、以及排除的包扫描空间,初始化配置
             initConfigure(application, getPackageName(clazz));
-            // 2. todo 初始化 bean 容器
+            // 2. 初始化 bean 容器
             initBean();
-            // 3. todo 为初始化 bean 赋值
-            assignmentBean();
-            // 4. 注册 mapper 代理对象
+            // 3. 初始化接口们
             registerMapperProxy();
+            // 4. 为初始化 bean 赋值
+            assignmentBean();
+            // 5. 未ICU递归们进行
+            for (String icu : ICU) {
+                Object instance = singletonObject.get(getKeyPrefix(icu));
+                try {
+                    Class<?> my = Class.forName(getKeyPrefix(icu));
+                    String[] split = icu.substring(icu.indexOf(BEAN_KEY) + 1).split(BEAN_KEY);
+                    setField(split, 0, my, instance);
+                } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
             return this;
         } else {
             try {
@@ -151,10 +170,24 @@ public class MyBeanFactory {
         return null;
     }
 
-    private void initConfigure(MyApplication application, String packageName) {
-        configure = new MyConfigure(packageName, application.loadResources());
-        loaded = configure.loaded;
+    private <T> T setField(String[] split, int number, Class<T> clazz, Object o1) throws NoSuchFieldException, IllegalAccessException {
+        if (number < split.length) {
+
+            Field field = clazz.getDeclaredField(split[number]);
+            field.setAccessible(true);
+            Object o = field.get(o1);
+            if (number == split.length - 1) {
+                o = (T) singletonObject.get(field.getType().getName());
+                field.set(o1, o);
+                return (T) o1;
+            }
+            field.set(o1, setField(split, ++number, o.getClass(), o));
+            return (T) o1;
+        } else {
+            return null;
+        }
     }
+
 
     /**
      * 获取包扫描空间
@@ -205,13 +238,12 @@ public class MyBeanFactory {
      * 注册 mapper 的动态代理 bean 们
      */
     private void registerMapperProxy() {
-        Map<String, Map<String, MyLocalMethodMapping>> mapperBeans = configure.mapperBeans;
+        Map<String, Map<String, MyLocalMethodMapping>> mapperBeans = configure.mapperMethods;
         for (Map.Entry<String, Map<String, MyLocalMethodMapping>> entry : mapperBeans.entrySet()) {
-            Map<String, MyLocalMethodMapping> value = entry.getValue();
             try {
                 Class<?> mapperProxy = Class.forName(entry.getKey());
                 Object proxyMapperBean = getProxyMapperBean(mapperProxy, entry.getValue());
-                this.singletonObject.put(mapperProxy.getName(), proxyMapperBean);
+                singletonObject.put(mapperProxy.getName(), proxyMapperBean);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -228,6 +260,9 @@ public class MyBeanFactory {
         return (T) enhancer.create();
     }
 
+    /**
+     * 初始化bean 容器
+     */
     public void initBean() {
         for (Map.Entry<String, Class<?>> entry : loaded.entrySet()) {
             registerBean(entry.getValue());
@@ -251,8 +286,6 @@ public class MyBeanFactory {
                     }
                 }
                 tempObject.put(clazz.getName(), newInstance);
-            } else {
-                // todo 接口采用动态进行编织
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -275,12 +308,22 @@ public class MyBeanFactory {
      */
     private <T> T doAssignmentBean(Class<T> clazz, String keyId) {
         synchronized (singletonObject) {
+            Object instance = null;
             if (clazz.isInterface()) {
+                if (clazz.getAnnotation(MyMapper.class) != null) {
+                    instance = singletonObject.get(clazz.getName());
+                    return (T) instance;
+                }
+                // 第二次递归
+                if (keyId.contains(BEAN_KEY)) {
+                    ICU.add(keyId);
+                    return null;
+                }
+
                 return null;
             }
-            Object instance = null;
             try {
-                instance = tempObject.get(clazz.getName());
+                instance = getObject(clazz);
                 if (instance == null) {
                     Constructor<?> constructor = clazz.getDeclaredConstructor();
                     constructor.setAccessible(true);
@@ -292,33 +335,39 @@ public class MyBeanFactory {
                     MyAutowired myAutowired = field.getAnnotation(MyAutowired.class);
                     field.setAccessible(true);
                     if (myAutowired != null) {
-                        MyComponent myComponent = field.getType().getAnnotation(MyComponent.class);
+                        Class<?> result = loaded.get(field.getType().getName());
                         // 解决组件之间 bean 的注入，未解决 bean 的循环注入
-                        if (myComponent != null) {
+                        if (result != null) {
                             Object newInstance = null;
-                            if (!keyId.contains("#")) {
-                                newInstance = convertObject.get("#" + field.getName());
+                            if (!keyId.contains(BEAN_KEY)) {
+                                newInstance = convertObject.get(BEAN_KEY + field.getName());
                             } else {
-                                newInstance = convertObject.get(keyId.substring(keyId.indexOf("#")));
+                                newInstance = convertObject.get(getKeySuffix(keyId));
                             }
                             if (newInstance != null) {
                                 field.set(instance, newInstance);
                             } else {
-                                field.set(instance, doAssignmentBean(field.getType(), keyId + "#" + field.getName()));
+                                field.set(instance, doAssignmentBean(field.getType(), keyId + BEAN_KEY + field.getName()));
                             }
-                            continue;
                         }
                         // 不存在组件之间的相互依赖，则从最原始的 bean 中获取值
-                        if (!field.getType().isPrimitive()) {
-                            field.set(instance, tempObject.get(field.getType().getName()));
+                        //if (!field.getType().isPrimitive()) {
+                        //field.set(instance, tempObject.get(field.getType().getName()));
+                        //}
+                    }
+                    //else {
+                    //    //field.set(instance, tempObject.get(field.getType().getName()));
+                    //}
+                }
+                if (!keyId.contains(BEAN_KEY)) {
+                    if (serviceLoaded.containsKey(keyId) || controllerLoaded.containsKey(keyId)) {
+                        if (clazz.getInterfaces().length > 0) {
+                            singletonObject.put(clazz.getInterfaces()[0].getName(), instance);
                         }
                     }
-                }
-                //System.out.println(keyId.contains("#") + "            " + keyId);
-                if (!keyId.contains("#")) {
                     singletonObject.put(keyId, instance);
                 } else {
-                    convertObject.put(keyId.substring(keyId.indexOf("#")), instance);
+                    convertObject.put(getKeySuffix(keyId), instance);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -326,6 +375,20 @@ public class MyBeanFactory {
             return (T) instance;
         }
 
+    }
+
+    private <T> Object getObject(Class<T> clazz) {
+        Object instance;
+        instance = tempObject.get(clazz.getName());
+        return instance;
+    }
+
+    private String getKeySuffix(String keyId) {
+        return keyId.substring(keyId.indexOf(BEAN_KEY));
+    }
+
+    private String getKeyPrefix(String keyId) {
+        return keyId.substring(0, keyId.indexOf(BEAN_KEY));
     }
 
     public <T> T getBean(Class<T> clazz) {

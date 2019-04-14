@@ -485,7 +485,7 @@ public class ExceptionHandlerExceptionResolver extends AbstractHandlerMethodExce
         Class<?> handlerType = null;
 
         // todo 虽然代码比较多，但是总体分成 <1>、<2> 两大种情况。
-        // <1> 首先，如果 handlerMethod 非空，则先获得 Controller 对应的 @ExceptionHandler 处理器对应的方法
+        // <1> 首先，如果 handlerMethod 非空，则先获得 MyController 对应的 @ExceptionHandler 处理器对应的方法
         if (handlerMethod != null) {
             // Local exception handler methods on the controller class itself.
             // To be invoked through the proxy, even in case of an interface-based proxy.
