@@ -1,10 +1,10 @@
 package com.java.base.annotation.factory;
 
-import com.java.base.annotation.auto.MyComponent;
-import com.java.base.annotation.auto.MyLocalMethod;
-import com.java.base.annotation.auto.MyLocalMethodReinforce;
+import com.java.base.annotation.auto.*;
+import com.java.base.annotation.exception.MyRequestMappingException;
 import com.java.base.annotation.ioc.MyAnnotationAssistant;
 import com.java.base.annotation.ioc.MyLocalMethodMapping;
+import com.java.base.annotation.ioc.MyRequestHandler;
 import com.java.base.annotation.util.LogUtils;
 import com.java.base.annotation.util.MyResourcesUtils;
 import com.java.base.annotation.util.StringUntils;
@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.java.base.annotation.exception.ComponentConstance.CONTROLLER_KEY;
+import static com.java.base.annotation.ioc.MyRequestHandler.PREFIX;
 import static com.java.base.annotation.util.LogUtils.printLog;
 
 /**
@@ -59,12 +61,21 @@ public class MyConfigure {
     /**
      * 用来存放扫描指定符合注解的类
      */
-    Set<Class<?>> scanClasses = new HashSet<>();
+    Set<Class<?>> components = new HashSet<>();
+
+    Set<Class<?>> mappers = new HashSet<>();
+
+    Set<Class<?>> services = new HashSet<>();
+
+    Set<Class<?>> controllers = new HashSet<>();
+
 
     /**
      * 一个MySql注解对应一个 MyLocalMethodMapping 实例
      */
     final Map<String, Map<String, MyLocalMethodMapping>> mapperBeans = new ConcurrentHashMap<>(256);
+
+    final Map<String, Map<String, MyRequestHandler>> controllerBeans = new ConcurrentHashMap<>(256);
 
     /**
      * 已经注册好了 bean 的 Class 对象
@@ -74,7 +85,7 @@ public class MyConfigure {
     /**
      * 当前正在解析的 bean 类型
      */
-    Class<?> currentBean;
+    Class<?> bean;
 
     /**
      * 指定包扫描路径
@@ -108,15 +119,23 @@ public class MyConfigure {
      */
     public void init() {
         try {
-            scanClasses = scan.packageScan(packagePath, component.get("MyComponent"));
-            if (scanClasses != null && scanClasses.size() > 0) {
+            components = scan.packageScan(packagePath, component.get("MyComponent"));
+            if (components != null && components.size() > 0) {
+                // 解析 mapper,service,controller
+                addConcreteComponent();
                 registerComponent();
-                LogUtils.printLog(log, "组件注册完毕");
+                LogUtils.printLog(log, "  ：组件注册完毕");
             }
             parseResources();
         } catch (IOException e) {
-            System.out.println("包扫描失败");
+            System.out.println(" : 包扫描失败");
         }
+    }
+
+    private void addConcreteComponent() {
+        this.mappers = scan.mappers;
+        this.controllers = scan.controllers;
+        this.services = scan.services;
     }
 
     /**
@@ -135,10 +154,10 @@ public class MyConfigure {
      * 初始化 bean 们
      */
     private void registerComponent() {
-        for (Class<?> bean : scanClasses) {
+        for (Class<?> bean : components) {
             synchronized (loaded) {
-                currentBean = bean;
-                parseComponent(bean);
+                this.bean = bean;
+                parseComponent();
             }
         }
     }
@@ -146,28 +165,76 @@ public class MyConfigure {
     /**
      * 解析 bean 们
      */
-    private void parseComponent(Class<?> bean) {
+    private void parseComponent() {
         // 接口则进行解析 mapper
-        if (currentBean.isInterface()) {
-            parseMethod();
-            // 如果不是接口则进行bean解析
+        if (this.bean.getAnnotation(MyMapper.class) != null) {
+            parseMapper();
+            return;
+        }
+        if (this.bean.getAnnotation(MyService.class) != null) {
+            parseService();
+            return;
+        }
+        if (this.bean.getAnnotation(MyController.class) != null) {
+            parseController();
+            return;
         } else {
             // todo
             parseBean();
-
         }
+    }
+
+    private void parseController() {
+        MyRequestMapping requestMapping = (MyRequestMapping) bean.getAnnotation(component.get("MyRequestMapping"));
+        String baseUrl = "";
+        if (requestMapping != null) {
+            baseUrl = getUrlPath(requestMapping.value());
+        }
+        Method[] methods = bean.getDeclaredMethods();
+        Map<String, MyRequestHandler> handlerMap = new HashMap<>();
+        for (Method method : methods) {
+            MyRequestMapping request = (MyRequestMapping) method.getAnnotation(component.get("MyRequestMapping"));
+            if (request != null) {
+                String keyId = bean.getName() + CONTROLLER_KEY + method.getName();
+                String url = getUrlPath(request.value());
+                MyRequestHandler handler = new MyRequestHandler();
+                handler.setUrl(StringUntils.isNotEmpty(baseUrl) ? baseUrl + url : url);
+                if (!handlerMap.containsKey(keyId)) {
+                    handlerMap.put(keyId, handler);
+                } else {
+                    try {
+                        throw new MyRequestMappingException("URL映射路径不能重复");
+                    } catch (MyRequestMappingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        controllerBeans.put(bean.getName(), handlerMap);
+        parseAlias();
+        registerBeanClass();
+    }
+
+    private String getUrlPath(String value) {
+        if (value.endsWith(PREFIX)) {
+            return value;
+        }
+        return PREFIX + value;
+    }
+
+    private void parseService() {
     }
 
 
     /**
      * 解析 Mapper 组件的方法们
      */
-    private void parseMethod() {
+    private void parseMapper() {
 
-        Method[] methods = currentBean.getDeclaredMethods();
+        Method[] methods = bean.getDeclaredMethods();
 
         Map<String, MyLocalMethodMapping> mappingMap = null;
-        String beanName = currentBean.getName();
+        String beanName = bean.getName();
 
         if (!mapperBeans.containsKey(beanName)) {
             mappingMap = new HashMap<>();
@@ -190,11 +257,9 @@ public class MyConfigure {
                         mapping.setMethodName(methodName);
                     }
                     mapping.setClassName(className);
-                    mappingMap.put(currentBean.getName() + "&" + method.getName(), mapping);
+                    mappingMap.put(bean.getName() + "&" + method.getName(), mapping);
                 }
             }
-
-
         }
         parseAlias();
         registerBeanClass();
@@ -202,7 +267,7 @@ public class MyConfigure {
     }
 
     private void registerMylocalMethodMapperMethod(Map<String, MyLocalMethodMapping> mappingMap, Method method, Annotation myLocalMethod) {
-        String id = this.currentBean.getName() + "#" + method.getName();
+        String id = this.bean.getName() + "#" + method.getName();
         if (myLocalMethod instanceof MyLocalMethod) {
             MyLocalMethod sql = (MyLocalMethod) myLocalMethod;
             String cn = sql.className();
@@ -231,9 +296,12 @@ public class MyConfigure {
      * 解析别名
      */
     private void parseAlias() {
-        MyComponent annotation = currentBean.getAnnotation(MyComponent.class);
-        if (StringUntils.isNotEmpty(annotation.alias())) {
-            aliasRegistry.registerAlias(currentBean.getName(), annotation.alias());
+        MyComponent myComponent = bean.getAnnotation(MyComponent.class);
+        if (myComponent == null) {
+            return;
+        }
+        if (StringUntils.isNotEmpty(myComponent.alias())) {
+            aliasRegistry.registerAlias(bean.getName(), myComponent.alias());
         }
     }
 
@@ -241,21 +309,21 @@ public class MyConfigure {
      * 注册 Mapper bean
      */
     public void registerMapper(Map<String, MyLocalMethodMapping> mappingMap) {
-        mapperBeans.put(currentBean.getName(), mappingMap);
+        mapperBeans.put(bean.getName(), mappingMap);
     }
 
     /**
      * 注册 bean 对应的 Class 对象们
      */
     public void registerBeanClass() {
-        if (loaded.containsKey(currentBean.getName())) {
+        if (loaded.containsKey(bean.getName())) {
             try {
-                throw new Exception("解析类出错：" + currentBean.getName());
+                throw new Exception("解析类出错：" + bean.getName());
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        loaded.put(currentBean.getName(), currentBean);
+        loaded.put(bean.getName(), bean);
     }
 
     /**
@@ -275,6 +343,6 @@ public class MyConfigure {
      * 移除
      */
     private void removeBean() {
-        scanClasses.remove(this.currentBean);
+        components.remove(this.bean);
     }
 }

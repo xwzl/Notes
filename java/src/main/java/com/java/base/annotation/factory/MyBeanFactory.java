@@ -7,6 +7,7 @@ import com.java.base.annotation.proxy.MyMapperProxy;
 import com.java.base.annotation.util.ClassUtils;
 import com.java.base.annotation.util.MyResourcesUtils;
 import com.java.base.annotation.util.StringUntils;
+import com.java.base.url.PathScan;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.cglib.proxy.Enhancer;
@@ -121,18 +122,18 @@ public class MyBeanFactory {
         return builder().init(clazz, args);
     }
 
-    /**
-     * 初始化容器
-     */
     public MyBeanFactory init(Class<?> clazz, Object... args) {
+        return initBeanFactory(clazz);
+    }
+
+    /**
+     * 初始化 Bean Factory
+     */
+    private MyBeanFactory initBeanFactory(Class<?> clazz) {
         MyApplication application = clazz.getAnnotation(MyApplication.class);
         if (application != null) {
-            // 获取包扫描、额外的包扫描空间、以及排除的包扫描空间
-            String packageName = getPackageName(clazz);
-            // 1. todo 初始化配置
-            configure = new MyConfigure(packageName, application.loadResources());
-            loaded = configure.loaded;
-            resources = configure.resources;
+            // 1. todo  获取包扫描、额外的包扫描空间、以及排除的包扫描空间,初始化配置
+            initConfigure(application, getPackageName(clazz));
             // 2. todo 初始化 bean 容器
             initBean();
             // 3. todo 为初始化 bean 赋值
@@ -148,35 +149,56 @@ public class MyBeanFactory {
             }
         }
         return null;
+    }
 
+    private void initConfigure(MyApplication application, String packageName) {
+        configure = new MyConfigure(packageName, application.loadResources());
+        loaded = configure.loaded;
     }
 
     /**
      * 获取包扫描空间
      */
     private String getPackageName(Class<?> clazz) {
-        String packageName = null;
+        StringBuilder packageName = null;
         MyComponentScan scan = clazz.getAnnotation(MyComponentScan.class);
-        if (StringUntils.isEmpty(scan.packageName())) {
-            packageName = scan.packageName();
+        if (scan != null) {
+            Set<String> in = new HashSet<>();
+            Set<String> ex = new HashSet<>();
+            ex.add(MyComponent.class.getPackage().getName());
+            if (StringUntils.isNotEmpty(scan.packageName())) {
+                packageName = new StringBuilder(scan.packageName());
+            } else {
+                packageName = new StringBuilder(clazz.getPackageName());
+            }
+
+            getPackageSet(scan.includeFilters(), in);
+            getPackageSet(scan.excludeFilters(), ex);
+            if (ex.size() > 0) {
+                for (String e : ex) {
+                    packageName.append(PathScan.EXCLUDE_PACKAGE_PATTERN).append(e);
+                }
+            }
+            if (in.size() > 0) {
+                for (String i : in) {
+                    packageName.append(PathScan.INCLUDE_PACKAGE_PATTERN).append(i);
+                }
+            }
+        } else {
+            //如果未设置包扫描路径，默认解析当前路径及子目录
+            packageName = new StringBuilder(clazz.getPackage().getName());
+            packageName.append(PathScan.EXCLUDE_PACKAGE_PATTERN).append(MyComponent.class.getPackage().getName());
         }
-        //如果未设置包扫描路径，默认解析当前路径及子目录
-        if (StringUntils.isEmpty(packageName)) {
-            packageName = clazz.getPackage().getName();
-        }
-        if(scan.includeFilters().length>0){
-            for (int i = 0; i < scan.includeFilters().length; i++) {
-                Class<?>[] typePath = scan.includeFilters()[i].classTypePath();
+        return packageName.toString();
+    }
+
+    private void getPackageSet(MyFilter[] filters, Set<String> in) {
+        if (filters.length > 0) {
+            for (int i = 0; i < filters.length; i++) {
+                Class<?> typePath = filters[i].classTypePath();
+                in.add(typePath.getPackage().getName());
             }
         }
-        if(scan.excludeFilters().length>0){
-            for (int i = 0; i < scan.excludeFilters().length; i++) {
-                MyFilter myFilter = scan.excludeFilters()[i];
-                Class<?>[] classes = myFilter.classTypePath();
-                System.out.println(classes[i]);
-            }
-        }
-        return packageName;
     }
 
     /**

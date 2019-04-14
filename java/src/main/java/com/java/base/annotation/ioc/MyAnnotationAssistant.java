@@ -28,6 +28,7 @@ public class MyAnnotationAssistant {
         componentRegister.put("MyAutowired", MyAutowired.class);
         componentRegister.put("MyController", MyController.class);
         componentRegister.put("MyMapper", MyMapper.class);
+        componentRegister.put("MyRequestMapping", MyRequestMapping.class);
 
         appRegister.put("MyApplication", MyApplication.class);
     }

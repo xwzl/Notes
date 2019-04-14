@@ -37,6 +37,16 @@ public class MyAnnotationTest {
         System.out.println(annotation);
     }
 
+    @Test
+    public void test(){
+        Class<MyServiceTest> service = MyServiceTest.class;
+        Annotation[] annotations = service.getAnnotations();
+        for (Annotation annotation : annotations) {
+            boolean annotationPresent = annotation.annotationType().isAnnotationPresent(MyComponent.class);
+            System.out.println(annotationPresent);
+        }
+    }
+
 }
 
 @MyAnnotation(component = {@MyService, @MyService})

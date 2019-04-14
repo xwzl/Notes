@@ -12,7 +12,6 @@ import java.lang.annotation.*;
 @MyComponent
 public @interface MyMapper {
 
-    @MyAliasFor(annotation = MyComponent.class)
-    String value() default "";
+    String alias() default "";
 
 }

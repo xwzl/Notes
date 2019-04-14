@@ -16,5 +16,5 @@ public @interface MyFilter {
     /**
      * 自定义需要排除的包,注解这个包必须被排除
      */
-    Class<?>[] classTypePath() default {};
+    Class<?> classTypePath();
 }

@@ -1,8 +1,8 @@
 package com.java.base.annotation;
 
-import com.java.base.annotation.auto.MyComponent;
 import com.java.base.annotation.auto.MyLocalMethod;
 import com.java.base.annotation.auto.MyLocalMethodReinforce;
+import com.java.base.annotation.auto.MyMapper;
 
 import java.util.Date;
 
@@ -10,7 +10,7 @@ import java.util.Date;
  * @author xuweizhi
  * @date 2019/04/11 19:21
  */
-@MyComponent
+@MyMapper
 public interface Mapper {
 
     /**
