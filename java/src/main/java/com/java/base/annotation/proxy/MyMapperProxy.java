@@ -40,30 +40,37 @@ public class MyMapperProxy implements MethodInterceptor {
         Object newInstance = null;
 
         // 解析 MyLocalMethod 注解
-        MyLocalMethodMapping mapping = (MyLocalMethodMapping) mapper.get(methodKey);
-        if (mapping != null) {
-            clazz = Class.forName(mapping.getClassName());
-            newInstance = clazz.getDeclaredConstructor().newInstance();
-            proxyMethod = clazz.getDeclaredMethod(mapping.getMethodName(), mapping.getMethodParamClass());
-            proxyMethod.setAccessible(true);
-            invoke = proxyMethod.invoke(newInstance, mapping.getMethodParamValues());
+        Object obj = mapper.get(methodKey);
+        if(obj instanceof MyLocalMethodMapping){
+            MyLocalMethodMapping mapping = (MyLocalMethodMapping) obj;
+            if (mapping != null) {
+                clazz = Class.forName(mapping.getClassName());
+                newInstance = clazz.getDeclaredConstructor().newInstance();
+                proxyMethod = clazz.getDeclaredMethod(mapping.getMethodName(), mapping.getMethodParamClass());
+                proxyMethod.setAccessible(true);
+                invoke = proxyMethod.invoke(newInstance, (Object[]) mapping.getMethodParamValues());
+            }
             return invoke;
         }
 
+
         String reinforceKey = this.clazz.getName() + "&" + method.getName();
         // 解析 MyLocalMethodReinforce 注解
-        mapping = (MyLocalMethodMapping) mapper.get(reinforceKey);
-        if (mapping != null) {
-            mapping = (MyLocalMethodMapping) mapper.get(reinforceKey);
-            clazz = Class.forName(mapping.getClassName());
-            if (StringUntils.isNotEmpty(mapping.getMethodName())) {
-                proxyMethod = clazz.getDeclaredMethod(mapping.getMethodName(), getClasses(objects));
-            } else {
-                proxyMethod = clazz.getDeclaredMethod(method.getName(), getClasses(objects));
+        obj = (MyLocalMethodMapping) mapper.get(reinforceKey);
+        if(obj instanceof MyLocalMethodMapping){
+            MyLocalMethodMapping mapping = (MyLocalMethodMapping) obj;
+            if (mapping != null) {
+                mapping = (MyLocalMethodMapping) mapper.get(reinforceKey);
+                clazz = Class.forName(mapping.getClassName());
+                if (StringUntils.isNotEmpty(mapping.getMethodName())) {
+                    proxyMethod = clazz.getDeclaredMethod(mapping.getMethodName(), getClasses(objects));
+                } else {
+                    proxyMethod = clazz.getDeclaredMethod(method.getName(), getClasses(objects));
+                }
+                proxyMethod.setAccessible(true);
+                newInstance = clazz.getDeclaredConstructor().newInstance();
+                invoke = proxyMethod.invoke(newInstance, objects);
             }
-            proxyMethod.setAccessible(true);
-            newInstance = clazz.getDeclaredConstructor().newInstance();
-            invoke = proxyMethod.invoke(newInstance, objects);
         }
         return invoke;
     }
