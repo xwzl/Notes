@@ -6,7 +6,6 @@ import java.lang.reflect.Type;
 /**
  * @author xuweizhi
  * @date 2019/03/16 15:05
- * @description
  */
 public abstract class Animal<T> implements Behavior, Interest {
 

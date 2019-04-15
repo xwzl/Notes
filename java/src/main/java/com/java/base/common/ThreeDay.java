@@ -23,8 +23,8 @@ public class ThreeDay {
     public static void main(String[] args) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         ReflectMethodUnderlying method = new ReflectMethodUnderlying();
-        Method my = method.getClass().getDeclaredMethod("my", null);
-        my.invoke(method, null);
+        Method my = method.getClass().getDeclaredMethod("my", (Class<?>[]) null);
+        my.invoke(method, (Object[]) null);
 
     }
 

@@ -5,6 +5,7 @@ import com.java.base.annotation.exception.MyRequestMappingException;
 import com.java.base.annotation.ioc.MyAnnotationAssistant;
 import com.java.base.annotation.ioc.MyLocalMethodMapping;
 import com.java.base.annotation.ioc.MyRequestHandler;
+import com.java.base.annotation.ioc.MySelectMapping;
 import com.java.base.annotation.util.LogUtils;
 import com.java.base.annotation.util.MyResourcesUtils;
 import com.java.base.annotation.util.StringUntils;
@@ -15,14 +16,12 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static com.java.base.annotation.exception.ComponentConstance.BEAN_KEY;
-import static com.java.base.annotation.exception.ComponentConstance.CONTROLLER_KEY;
+import static com.java.base.annotation.exception.ComponentConstance.*;
 import static com.java.base.annotation.ioc.MyRequestHandler.PREFIX;
 import static com.java.base.annotation.util.LogUtils.printLog;
 
@@ -329,6 +328,7 @@ public class MyConfigure implements Serializable {
             //用来存放 解析实体的建
             if (myLocalMethod != null) {
                 registerMylocalMethodMapperMethod(mappingMap, method, myLocalMethod);
+                continue;
             }
             Annotation reinforce = method.getAnnotation(component.get("MyLocalMethodReinforce"));
             if (reinforce != null) {
@@ -342,7 +342,31 @@ public class MyConfigure implements Serializable {
                     mapping.setClassName(className);
                     mappingMap.put(bean.getName() + "&" + method.getName(), mapping);
                 }
+                continue;
             }
+            MySelect mySelect = method.getAnnotation(MySelect.class);
+            if (mySelect != null) {
+                try {
+                    MySelectMapping select = new MySelectMapping(mySelect.value());
+                    mappingMap.put(bean.getName() + "#" + method.getName(), select);
+
+                    Pattern pattern = Pattern.compile(SQL_PATTERN);
+                    Matcher matcher = pattern.matcher(mySelect.value());
+                    List<String> paramList = select.getParamList();
+                    List<String> paramNameList = select.getParamNameList();
+                    Class<?> model = Class.forName(mySelect.nameSpace());
+
+                    while (matcher.find()) {
+                        String fiedlName = matcher.group().substring(2, matcher.group().length() - 1);
+                        paramList.add(model.getDeclaredField(fiedlName).getType().getName());
+                        paramNameList.add(fiedlName);
+                    }
+                } catch (ClassNotFoundException | NoSuchFieldException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
         }
         parseAlias();
         registerBeanClass();

@@ -329,7 +329,7 @@ public class MyBeanFactory {
         // 设置enhancer对象的父类
         enhancer.setSuperclass(mapperProxy);
         // 设置enhancer的回调对象
-        enhancer.setCallback(new MyMapperProxy(mapper, mapperProxy));
+        enhancer.setCallback(new MyMapperProxy(mapper, mapperProxy, dataSourcePool));
         // 创建代理对象
         return (T) enhancer.create();
     }

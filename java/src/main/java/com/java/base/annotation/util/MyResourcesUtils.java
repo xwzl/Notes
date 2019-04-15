@@ -114,13 +114,16 @@ public class MyResourcesUtils {
         return value.substring(1, value.length() - 1);
     }
 
-    //public static void main(String[] args) {
-    //    String value = "# {1212},# {adfa},#{dfadf}";
-    //
-    //    Pattern pattern = Pattern.compile(regex);
-    //    Matcher match2 = pattern.matcher(value);
-    //    while (match2.find()) {
-    //        System.out.println(match2.group());
-    //    }
-    //}
+    public static void main(String[] args) {
+        String value = "# {1212},#{adfa},#{dfadf}";
+        String regex = "\\#\\{(.+?)\\}";
+        String s = value.replaceAll(regex, "?");
+        System.out.println(s);
+        //Pattern pattern = Pattern.compile(regex);
+        //Matcher match2 = pattern.matcher(value);
+        //while (match2.find()) {
+        //    System.out.println(match2.group());
+        //}
+
+    }
 }

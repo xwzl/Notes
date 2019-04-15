@@ -1,13 +1,14 @@
 package com.java.base.annotation.mapper;
 
-import com.java.base.annotation.auto.MySelect;
-import com.java.base.annotation.model.Blog;
 import com.java.base.annotation.auto.MyLocalMethod;
 import com.java.base.annotation.auto.MyLocalMethodReinforce;
 import com.java.base.annotation.auto.MyMapper;
+import com.java.base.annotation.auto.MySelect;
+import com.java.base.annotation.model.Blog;
 import com.java.mybatis.model.User;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @author xuweizhi
@@ -30,6 +31,9 @@ public interface Mapper {
     @MyLocalMethodReinforce(className = "com.java.base.annotation.model.Blog")
     void badBlog(Date date);
 
-    @MySelect("select * from user where u_id = #{id}")
-    User getUser(String id);
+    @MySelect(value = "select * from user where u_id = #{uId} and address = #{address}", nameSpace = "com.java.mybatis.model.User")
+    User getUser(Map<String, Object> mapper);
+
+    @MySelect(value = "select * from user where u_id = #{uId} and address = #{address}", nameSpace = "com.java.mybatis.model.User")
+    User getUserA(User user);
 }

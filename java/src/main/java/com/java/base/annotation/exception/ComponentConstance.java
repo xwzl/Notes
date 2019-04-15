@@ -16,5 +16,9 @@ public class ComponentConstance {
 
     public final static String BEAN_KEY = "#";
 
+    public final static String SQL_PARAM_KEY = "#";
+
     public final static String ALIAS_KEY = "&";
+
+    public final static String SQL_PATTERN = "\\#\\{(.+?)\\}";
 }

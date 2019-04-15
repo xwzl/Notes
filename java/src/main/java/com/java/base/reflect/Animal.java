@@ -28,7 +28,7 @@ public abstract class Animal<T> {
     }
 
     public T getT() throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        return clazz.newInstance();
+        return clazz.getDeclaredConstructor().newInstance();
     }
 
 }

@@ -8,7 +8,7 @@ import java.util.List;
 public class GsonTest {
     public static void main(String[] args) {
         // Json数组最外层要加"[]"
-        String jsonData = "[{'name':'John', 'grade':[{'course':'English','score':100},{'course':'Math','score':78}]},{'name':'Tom', 'grade':[{'course':'English','score':86},{'course':'Math','score':90}]}]";
+        String jsonData = "[{'name':'', 'grade':[{'course':'English','score':100},{'course':'Math','score':78}]},{'name':'Tom', 'grade':[{'course':'English','score':86},{'course':'Math','score':90}]}]";
 
         List<Student> students = GsonUtil.parseJsonArrayWithGson(jsonData,
                 Student.class);

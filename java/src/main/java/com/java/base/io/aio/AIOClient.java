@@ -7,7 +7,6 @@ import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * AsynchronousSocketChannel
@@ -96,11 +95,11 @@ public class AIOClient implements Runnable {
         }
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        group.awaitTermination(10000, TimeUnit.SECONDS);
-    }
+    //@Override
+    //protected void finalize() throws Throwable {
+    //    super.finalize();
+    //    group.awaitTermination(10000, TimeUnit.SECONDS);
+    //}
 
     public static void main(String[] args) {
         try {

@@ -16,4 +16,9 @@ public @interface MySelect {
      * #{id} 入参属性名，其实可以做成别名，但是时间有限，暂停
      */
     String value();
+
+    /**
+     * 增删改查实体的全类名
+     */
+    String nameSpace();
 }
