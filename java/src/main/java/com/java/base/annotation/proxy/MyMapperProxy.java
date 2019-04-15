@@ -21,23 +21,26 @@ import java.util.Map;
  */
 public class MyMapperProxy implements MethodInterceptor {
 
-    private Map<String, MyLocalMethodMapping> mapper;
+    private Map<String, Object> mapper;
 
     private Class<?> clazz;
 
-    public MyMapperProxy(Map<String, MyLocalMethodMapping> mapper, Class<?> clazz) {
+    public MyMapperProxy(Map<String, Object> mapper, Class<?> clazz) {
         this.mapper = mapper;
         this.clazz = clazz;
     }
 
     @Override
     public Object intercept(Object sub, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
+
         String methodKey = this.clazz.getName() + "#" + method.getName();
         Object invoke = null;
         Class<?> clazz = null;
         Method proxyMethod = null;
         Object newInstance = null;
-        MyLocalMethodMapping mapping = mapper.get(methodKey);
+
+        // 解析 MyLocalMethod 注解
+        MyLocalMethodMapping mapping = (MyLocalMethodMapping) mapper.get(methodKey);
         if (mapping != null) {
             clazz = Class.forName(mapping.getClassName());
             newInstance = clazz.getDeclaredConstructor().newInstance();
@@ -46,10 +49,12 @@ public class MyMapperProxy implements MethodInterceptor {
             invoke = proxyMethod.invoke(newInstance, mapping.getMethodParamValues());
             return invoke;
         }
+
         String reinforceKey = this.clazz.getName() + "&" + method.getName();
-        mapping = mapper.get(reinforceKey);
+        // 解析 MyLocalMethodReinforce 注解
+        mapping = (MyLocalMethodMapping) mapper.get(reinforceKey);
         if (mapping != null) {
-            mapping = mapper.get(reinforceKey);
+            mapping = (MyLocalMethodMapping) mapper.get(reinforceKey);
             clazz = Class.forName(mapping.getClassName());
             if (StringUntils.isNotEmpty(mapping.getMethodName())) {
                 proxyMethod = clazz.getDeclaredMethod(mapping.getMethodName(), getClasses(objects));

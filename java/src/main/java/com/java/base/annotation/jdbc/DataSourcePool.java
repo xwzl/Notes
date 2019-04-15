@@ -1,7 +1,6 @@
 package com.java.base.annotation.jdbc;
 
 import com.java.base.annotation.util.LogUtils;
-import com.java.data.jdbc.ConnectionUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -20,21 +19,35 @@ public class DataSourcePool {
 
     private List<Connection> poolConnection = new ArrayList<>();
 
-    private DateSource dateSource;
+    public DataSourcePool(DataSource dataSource) {
+        initConnections(dataSource);
+    }
 
-    private Connection getConnections(String host, String username, String password) {
-        Connection con = null;
-
+    private void initConnections(DataSource dataSource) {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://" + host + "?useUnicode=true&characterEncoding=" +
-                    "UTF-8&autoReconnect=true&useSSL=false" +
-                    "&autoReconnect=true&useSSL=false", username, password);
+            Class.forName(dataSource.getClassName());
+            for (int i = 0; i < 10; i++) {
+                poolConnection.add(DriverManager.getConnection(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword()));
+            }
             LogUtils.printLog(log, "数据库初始化成功");
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
-        return con;
+    }
+
+    public Connection getConnection() {
+        Connection con = null;
+        if (poolConnection.size() >= 1) {
+            con = poolConnection.get(0);
+            poolConnection.remove(0);
+            return con;
+        } else {
+            return con;
+        }
+    }
+
+    public void close(Connection connection) {
+        poolConnection.add(connection);
     }
 
     public static void close(PreparedStatement pre, Connection con) {
@@ -50,9 +63,9 @@ public class DataSourcePool {
         }
     }
 
-    public static void main(String[] args) throws SQLException {
-        Connection con = ConnectionUtils.getConnections("192.168.26.20:3306/wtf", "root", "158262751");
-        ConnectionUtils.close(null, con);
-    }
+    //public static void main(String[] args) throws SQLException {
+    //    Connection con = ConnectionUtils.getConnections("192.168.26.20:3306/wtf", "root", "158262751");
+    //    ConnectionUtils.close(null, con);
+    //}
 
 }

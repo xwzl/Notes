@@ -6,4 +6,6 @@ package com.java.base.annotation.service;
  */
 public interface MyServices {
 
+    void run();
+
 }

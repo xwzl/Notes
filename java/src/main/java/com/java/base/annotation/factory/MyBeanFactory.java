@@ -4,7 +4,8 @@ import com.java.base.annotation.auto.*;
 import com.java.base.annotation.exception.MultipleInterfaces;
 import com.java.base.annotation.exception.MyApplicationException;
 import com.java.base.annotation.exception.MyComponentException;
-import com.java.base.annotation.ioc.MyLocalMethodMapping;
+import com.java.base.annotation.jdbc.DataSource;
+import com.java.base.annotation.jdbc.DataSourcePool;
 import com.java.base.annotation.proxy.MyMapperProxy;
 import com.java.base.annotation.util.LogUtils;
 import com.java.base.annotation.util.MyResourcesUtils;
@@ -100,6 +101,7 @@ public class MyBeanFactory {
      */
     private final Set<String> ICU = new HashSet<>();
 
+    private DataSourcePool dataSourcePool;
 
     /**
      * 正在创建 bean 属性
@@ -132,6 +134,8 @@ public class MyBeanFactory {
             initBean();
             // 3. 初始化接口们
             LogUtils.printLog(log, "Register the interfaces with the container !");
+            // 6. 数据库连接
+            dataSourcePool = new DataSourcePool((DataSource) tempObject.get(DataSource.class.getName()));
             registerMapperProxy();
             // 4. 为初始化 bean 赋值
             LogUtils.printLog(log, "Assign values to the beans in the container and generate singleton objects !");
@@ -173,8 +177,8 @@ public class MyBeanFactory {
      * 注册 mapper 的动态代理 bean 们
      */
     private void registerMapperProxy() {
-        Map<String, Map<String, MyLocalMethodMapping>> mapperBeans = configure.mapperMethods;
-        for (Map.Entry<String, Map<String, MyLocalMethodMapping>> entry : mapperBeans.entrySet()) {
+        Map<String, Map<String, Object>> mapperBeans = configure.mapperMethods;
+        for (Map.Entry<String, Map<String, Object>> entry : mapperBeans.entrySet()) {
             try {
                 Class<?> mapperProxy = Class.forName(entry.getKey());
                 Object proxyMapperBean = getProxyMapperBean(mapperProxy, entry.getValue());
@@ -320,7 +324,7 @@ public class MyBeanFactory {
     /**
      * 获取代理对象
      */
-    public <T> T getProxyMapperBean(Class<T> mapperProxy, Map<String, MyLocalMethodMapping> mapper) {
+    public <T> T getProxyMapperBean(Class<T> mapperProxy, Map<String, Object> mapper) {
         Enhancer enhancer = new Enhancer();
         // 设置enhancer对象的父类
         enhancer.setSuperclass(mapperProxy);

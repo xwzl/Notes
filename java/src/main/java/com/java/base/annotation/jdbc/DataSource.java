@@ -8,7 +8,7 @@ import com.java.base.annotation.auto.MyValue;
  * @date 2019/04/15 12:50
  */
 @MyComponent
-public class DateSource {
+public class DataSource {
 
     @MyValue("${url}")
     private String url;

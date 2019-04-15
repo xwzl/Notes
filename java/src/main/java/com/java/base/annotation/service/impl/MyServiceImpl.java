@@ -15,4 +15,8 @@ public class MyServiceImpl implements MyServices {
     @MyAutowired
     public Mapper mapper;
 
+    @Override
+    public void run() {
+        mapper.fineBlog("111", "2222");
+    }
 }

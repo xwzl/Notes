@@ -84,7 +84,7 @@ public class MyConfigure implements Serializable {
     /**
      * 一个MySql注解对应一个 MyLocalMethodMapping 实例
      */
-    final Map<String, Map<String, MyLocalMethodMapping>> mapperMethods = new ConcurrentHashMap<>(256);
+    final Map<String, Map<String, Object>> mapperMethods = new ConcurrentHashMap<>(256);
 
     /**
      * 一个MyRequestMapping注解对应一个MyRequesstHandler 实例
@@ -316,7 +316,7 @@ public class MyConfigure implements Serializable {
 
         Method[] methods = bean.getDeclaredMethods();
 
-        Map<String, MyLocalMethodMapping> mappingMap = null;
+        Map<String, Object> mappingMap = null;
         String beanName = bean.getName();
 
         if (!mapperMethods.containsKey(beanName)) {
@@ -352,7 +352,7 @@ public class MyConfigure implements Serializable {
     /**
      * 注册......
      */
-    private void registerMylocalMethodMapperMethod(Map<String, MyLocalMethodMapping> mappingMap, Method method, Annotation myLocalMethod) {
+    private void registerMylocalMethodMapperMethod(Map<String, Object> mappingMap, Method method, Annotation myLocalMethod) {
         String id = this.bean.getName() + "#" + method.getName();
         if (myLocalMethod instanceof MyLocalMethod) {
             MyLocalMethod localMethod = (MyLocalMethod) myLocalMethod;
@@ -406,7 +406,7 @@ public class MyConfigure implements Serializable {
     /**
      * 注册 Mapper bean
      */
-    public void registerMapper(Map<String, MyLocalMethodMapping> mappingMap) {
+    public void registerMapper(Map<String, Object> mappingMap) {
         mapperMethods.put(bean.getName(), mappingMap);
     }
 
