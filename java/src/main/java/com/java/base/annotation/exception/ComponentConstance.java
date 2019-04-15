@@ -15,4 +15,6 @@ public class ComponentConstance {
     public final static String SERVICE_KEY = "#";
 
     public final static String BEAN_KEY = "#";
+
+    public final static String ALIAS_KEY = "&";
 }

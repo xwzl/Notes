@@ -1,6 +1,7 @@
 package com.java.base.annotation.factory;
 
 import com.java.base.annotation.core.AliasRegistry;
+import com.java.base.annotation.util.LogUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.Assert;
@@ -58,7 +59,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
                 checkForAliasCircle(name, alias);
                 this.aliasMap.put(alias, name);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Alias definition '" + alias + "' registered for name '" + name + "'");
+                    LogUtils.printLog(logger, "Alias definition '" + alias + "' registered for name '" + name + "'");
                 }
             }
         }

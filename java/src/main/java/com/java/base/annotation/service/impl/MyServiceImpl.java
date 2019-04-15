@@ -9,7 +9,7 @@ import com.java.base.annotation.service.MyServices;
  * @author xuweizhi
  * @date 2019/04/14 18:58
  */
-@MyService
+@MyService(alias = "myServiceImpl1")
 public class MyServiceImpl implements MyServices {
 
     @MyAutowired

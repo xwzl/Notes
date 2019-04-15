@@ -13,10 +13,10 @@ public class LogUtils {
      * 打印日志信息
      */
     public static void printLog(Log logger, String msg) {
-        logger.info(DateUtils.getTime() + "\t" + msg);
+        logger.info(msg);
     }
 
     public static void printLog(Logger logger, String msg) {
-        logger.info(DateUtils.getTime() + "\t" + msg);
+        logger.info(msg);
     }
 }

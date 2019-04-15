@@ -1,10 +1,12 @@
 package com.java.base.annotation.factory;
 
 import com.java.base.annotation.auto.*;
+import com.java.base.annotation.exception.MultipleInterfaces;
 import com.java.base.annotation.exception.MyApplicationException;
+import com.java.base.annotation.exception.MyComponentException;
 import com.java.base.annotation.ioc.MyLocalMethodMapping;
 import com.java.base.annotation.proxy.MyMapperProxy;
-import com.java.base.annotation.util.ClassUtils;
+import com.java.base.annotation.util.LogUtils;
 import com.java.base.annotation.util.MyResourcesUtils;
 import com.java.base.annotation.util.StringUntils;
 import com.java.base.url.PathScan;
@@ -15,7 +17,11 @@ import org.springframework.core.NamedThreadLocal;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.java.base.annotation.exception.ComponentConstance.BEAN_KEY;
@@ -26,6 +32,17 @@ import static com.java.base.annotation.exception.ComponentConstance.BEAN_KEY;
  */
 @Slf4j
 public class MyBeanFactory {
+
+    //private final Map<String, Object> singletonFactory = new HashMap<>(16);
+    //
+    //private final Map<String, Object> earlySingletonObject = new HashMap<>(16);
+    //
+    //private final Set<String> registeredSingleton = new LinkedHashSet<>(256);
+    //private final Set<String> singletonsCurrentlyInCreation =
+    //        Collections.newSetFromMap(new ConcurrentHashMap<>(16));
+    //
+    //private final Set<String> inCreationCheckExclusions =
+    //        Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
     /**
      * 加载配置
@@ -43,17 +60,23 @@ public class MyBeanFactory {
     Map<String, Class<?>> loaded;
 
     /**
-     * 类加载器
+     * 类加载器，好像并没有到
      */
-    private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
+    //ClassLoader beanClassLoader;
 
     /**
      * 别名维护对象
      */
-    private SimpleAliasRegistry aliasRegistry = new SimpleAliasRegistry();
+    SimpleAliasRegistry aliasRegistry;
 
+    /**
+     * service加载的的对象们
+     */
     Map<String, Class<?>> serviceLoaded = new HashMap<>();
 
+    /**
+     * controller 加载的对象们
+     */
     Map<String, Class<?>> controllerLoaded = new HashMap<>();
 
     /**
@@ -61,12 +84,10 @@ public class MyBeanFactory {
      */
     private final Map<String, Object> singletonObject = new ConcurrentHashMap<>(256);
 
-    private final Map<String, Object> singletonFactory = new HashMap<>(16);
 
-    private final Map<String, Object> earlySingletonObject = new HashMap<>(16);
-
-    private final Set<String> registeredSingleton = new LinkedHashSet<>(256);
-
+    /**
+     * 解决循环依赖问题，过早的暴露 bean
+     */
     private final Map<String, Object> tempObject = new ConcurrentHashMap<>();
 
     /**
@@ -74,13 +95,11 @@ public class MyBeanFactory {
      */
     private final Map<String, Object> convertObject = new ConcurrentHashMap<>();
 
+    /**
+     * 能力不行，就 996 ICU 咯
+     */
     private final Set<String> ICU = new HashSet<>();
 
-    private final Set<String> singletonsCurrentlyInCreation =
-            Collections.newSetFromMap(new ConcurrentHashMap<>(16));
-
-    private final Set<String> inCreationCheckExclusions =
-            Collections.newSetFromMap(new ConcurrentHashMap<>(16));
 
     /**
      * 正在创建 bean 属性
@@ -91,6 +110,88 @@ public class MyBeanFactory {
 
     protected static MyBeanFactory builder() {
         return new MyBeanFactory();
+    }
+
+    /**
+     * 哈哈 .......
+     */
+    public static MyBeanFactory run(Class<?> clazz, Object... args) {
+        return builder().init(clazz);
+    }
+
+    /**
+     * 初始化 bean 们
+     */
+    public MyBeanFactory init(Class<?> clazz) {
+        MyApplication application = clazz.getAnnotation(MyApplication.class);
+        if (application != null) {
+            // 1. 获取包扫描、额外的包扫描空间、以及排除的包扫描空间,初始化配置
+            initConfigure(application, getPackageName(clazz));
+            // 2. 初始化 bean 容器
+            LogUtils.printLog(log, "Initialize the bean container !");
+            initBean();
+            // 3. 初始化接口们
+            LogUtils.printLog(log, "Register the interfaces with the container !");
+            registerMapperProxy();
+            // 4. 为初始化 bean 赋值
+            LogUtils.printLog(log, "Assign values to the beans in the container and generate singleton objects !");
+            assignmentBean();
+            // 5. 未ICU递归们进行
+            LogUtils.printLog(log, "Inject the interface for the beans in the container !");
+            for (String icu : ICU) {
+                Object instance = singletonObject.get(getKeyPrefix(icu));
+                try {
+                    Class<?> my = Class.forName(getKeyPrefix(icu));
+                    String[] split = icu.substring(icu.indexOf(BEAN_KEY) + 1).split(BEAN_KEY);
+                    setField(split, 0, my, instance, "");
+                } catch (IllegalAccessException | ClassNotFoundException | NoSuchFieldException e) {
+                    e.printStackTrace();
+                }
+            }
+            return this;
+        }
+        throw new MyApplicationException(clazz.getName() + "Class is not MyApplication startup class, can't be parsed!");
+    }
+
+    /**
+     * 初始化配置
+     */
+    private void initConfigure(MyApplication application, String packageName) {
+        MyConfigure.builder().execute(packageName, application.loadResources()).decorationBeanFactory(this);
+    }
+
+    /**
+     * 初始化bean 容器
+     */
+    public void initBean() {
+        for (Map.Entry<String, Class<?>> entry : loaded.entrySet()) {
+            registerBean(entry.getValue());
+        }
+    }
+
+    /**
+     * 注册 mapper 的动态代理 bean 们
+     */
+    private void registerMapperProxy() {
+        Map<String, Map<String, MyLocalMethodMapping>> mapperBeans = configure.mapperMethods;
+        for (Map.Entry<String, Map<String, MyLocalMethodMapping>> entry : mapperBeans.entrySet()) {
+            try {
+                Class<?> mapperProxy = Class.forName(entry.getKey());
+                Object proxyMapperBean = getProxyMapperBean(mapperProxy, entry.getValue());
+                singletonObject.put(mapperProxy.getName(), proxyMapperBean);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 为 bean 赋值
+     */
+    private void assignmentBean() {
+        for (Map.Entry<String, Class<?>> entry : loaded.entrySet()) {
+            doAssignmentBean(entry.getValue(), entry.getKey());
+        }
     }
 
     public <T> T getBean(String name) throws BeansException {
@@ -126,63 +227,41 @@ public class MyBeanFactory {
         return aliasRegistry.canonicalName(name);
     }
 
-    public static MyBeanFactory run(Class<?> clazz, Object... args) {
-        return builder().init(clazz);
-    }
-
-    private void initConfigure(MyApplication application, String packageName) {
-        MyConfigure.builder().execute(packageName, application.loadResources()).decorationBeanFactory(this);
-    }
-
     /**
-     * 初始化 bean 们
+     * 递归调用，未实施例化的接口对象们赋值
      */
-    public MyBeanFactory init(Class<?> clazz) {
-        MyApplication application = clazz.getAnnotation(MyApplication.class);
-        if (application != null) {
-            // 1. 获取包扫描、额外的包扫描空间、以及排除的包扫描空间,初始化配置
-            initConfigure(application, getPackageName(clazz));
-            // 2. 初始化 bean 容器
-            initBean();
-            // 3. 初始化接口们
-            registerMapperProxy();
-            // 4. 为初始化 bean 赋值
-            assignmentBean();
-            // 5. 未ICU递归们进行
-            for (String icu : ICU) {
-                Object instance = singletonObject.get(getKeyPrefix(icu));
-                try {
-                    Class<?> my = Class.forName(getKeyPrefix(icu));
-                    String[] split = icu.substring(icu.indexOf(BEAN_KEY) + 1).split(BEAN_KEY);
-                    setField(split, 0, my, instance);
-                } catch (ClassNotFoundException | NoSuchFieldException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-            return this;
-        } else {
-            try {
-                throw new MyApplicationException(clazz.getName() + "类不是MyApplication启动类，无法解析");
-            } catch (MyApplicationException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    private <T> T setField(String[] split, int number, Class<T> clazz, Object o1) throws NoSuchFieldException, IllegalAccessException {
+    private <T> T setField(String[] split, int number, Class<T> clazz, Object old, String fieldAlias) throws NoSuchFieldException, IllegalAccessException {
         if (number < split.length) {
 
             Field field = clazz.getDeclaredField(split[number]);
             field.setAccessible(true);
-            Object o = field.get(o1);
+            Object o = field.get(old);
+            MyQualifier myQualifier = field.getAnnotation(MyQualifier.class);
+            if (myQualifier != null) {
+                fieldAlias = myQualifier.value();
+            }
             if (number == split.length - 1) {
                 o = (T) singletonObject.get(field.getType().getName());
-                field.set(o1, o);
-                return (T) o1;
+                String beanName = "";
+                if (o instanceof MultipleInterfaces) {
+                    beanName = transformedBeanName(fieldAlias);
+                    if (StringUntils.isEmpty(beanName)) {
+                        throw new MyComponentException("If the " + field.getType().getName() + "interface has multiple implementation classes, when the property is injected " +
+                                "into the interface, use @MyAutowired and @MyQualifier, or directly inject its implementation class.");
+                    }
+                    o = (T) singletonObject.get(beanName);
+                    field.set(old, o);
+                } else {
+                    beanName = transformedBeanName(fieldAlias);
+                    if (StringUntils.isNotEmpty(fieldAlias)) {
+                        o = (T) singletonObject.get(beanName);
+                    }
+                    field.set(old, o);
+                }
+                return (T) old;
             }
-            field.set(o1, setField(split, ++number, o.getClass(), o));
-            return (T) o1;
+            field.set(old, setField(split, ++number, o.getClass(), o, fieldAlias));
+            return (T) old;
         } else {
             return null;
         }
@@ -225,6 +304,9 @@ public class MyBeanFactory {
         return packageName.toString();
     }
 
+    /**
+     * 获取扫描包路径们
+     */
     private void getPackageSet(MyFilter[] filters, Set<String> in) {
         if (filters.length > 0) {
             for (int i = 0; i < filters.length; i++) {
@@ -234,22 +316,10 @@ public class MyBeanFactory {
         }
     }
 
-    /**
-     * 注册 mapper 的动态代理 bean 们
-     */
-    private void registerMapperProxy() {
-        Map<String, Map<String, MyLocalMethodMapping>> mapperBeans = configure.mapperMethods;
-        for (Map.Entry<String, Map<String, MyLocalMethodMapping>> entry : mapperBeans.entrySet()) {
-            try {
-                Class<?> mapperProxy = Class.forName(entry.getKey());
-                Object proxyMapperBean = getProxyMapperBean(mapperProxy, entry.getValue());
-                singletonObject.put(mapperProxy.getName(), proxyMapperBean);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
+    /**
+     * 获取代理对象
+     */
     public <T> T getProxyMapperBean(Class<T> mapperProxy, Map<String, MyLocalMethodMapping> mapper) {
         Enhancer enhancer = new Enhancer();
         // 设置enhancer对象的父类
@@ -260,14 +330,6 @@ public class MyBeanFactory {
         return (T) enhancer.create();
     }
 
-    /**
-     * 初始化bean 容器
-     */
-    public void initBean() {
-        for (Map.Entry<String, Class<?>> entry : loaded.entrySet()) {
-            registerBean(entry.getValue());
-        }
-    }
 
     /**
      * 向容器中注册 bean
@@ -287,19 +349,11 @@ public class MyBeanFactory {
                 }
                 tempObject.put(clazz.getName(), newInstance);
             }
-        } catch (Exception e) {
+        } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * 为 bean 赋值
-     */
-    private void assignmentBean() {
-        for (Map.Entry<String, Class<?>> entry : loaded.entrySet()) {
-            doAssignmentBean(entry.getValue(), entry.getKey());
-        }
-    }
 
     /**
      * 为 bean 们赋值
@@ -362,19 +416,43 @@ public class MyBeanFactory {
                 if (!keyId.contains(BEAN_KEY)) {
                     if (serviceLoaded.containsKey(keyId) || controllerLoaded.containsKey(keyId)) {
                         if (clazz.getInterfaces().length > 0) {
-                            singletonObject.put(clazz.getInterfaces()[0].getName(), instance);
+                            Object o = singletonObject.get(clazz.getInterfaces()[0].getName());
+                            if (o != null) {
+                                String alias = "";
+                                MyService myService = clazz.getAnnotation(MyService.class);
+                                checkService(clazz, myService != null, myService.alias());
+                                MyController controller = clazz.getAnnotation(MyController.class);
+                                checkService(clazz, controller != null, controller.alias());
+                                MyComponent component = clazz.getAnnotation(MyComponent.class);
+                                checkService(clazz, component != null, component.alias());
+                            } else {
+                                singletonObject.put(clazz.getInterfaces()[0].getName(), instance);
+                            }
                         }
                     }
                     singletonObject.put(keyId, instance);
                 } else {
                     convertObject.put(getKeySuffix(keyId), instance);
                 }
-            } catch (Exception e) {
+            } catch (InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
             return (T) instance;
         }
 
+    }
+
+    private <T> void checkService(Class<T> clazz, boolean b, String alias2) {
+        String alias;
+        if (b) {
+            alias = alias2;
+            if (StringUntils.isNotEmpty(alias)) {
+                singletonObject.put(clazz.getInterfaces()[0].getName(), new MultipleInterfaces());
+            } else {
+                throw new MyComponentException("If the " + clazz.getInterfaces()[0].getName() + " implementation class " +
+                        "has no alias, an interface cannot have two implementation classes!");
+            }
+        }
     }
 
     private <T> Object getObject(Class<T> clazz) {
@@ -398,93 +476,93 @@ public class MyBeanFactory {
     /**
      * 暂时放弃，还没有想通怎样解决循环bean
      */
-    private Object getToDo(String name) {
-        Object bean = null;
-        final String beanName = transformedBeanName(name);
-        Object sharedInstance = getSingleton(beanName);
-        // 如果不等于null，说明已经被创建，则进行复制操作，一定是从二级缓存中获取的值
-        if (sharedInstance != null) {
-            if (isSingletonCurrentlyInCreation(beanName)) {
-                log.debug("Returning eagerly cached instance of singleton bean '" + beanName +
-                        "' that is not fully initialized yet - a consequence of a circular reference");
-            } else {
-                log.debug("Returning cached instance of singleton bean '" + beanName + "'");
-            }
-            // 赋值
-            bean = getObjectForBeanInstance(sharedInstance, beanName);
-            // 如果为 null ，则递归检查循环依赖
-        } else {
-            try {
-                // 判断当前的属性的 bean 是否正在被创建
-                if (isPrototypeCurrentlyInCreation(beanName)) {
-                    throw new Exception("Circular depends-on relationship between" + beanName);
-                }
-
-                singletonFactory.put(name, Class.forName(name).getDeclaredConstructor().newInstance());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return bean;
-    }
+    //private Object getToDo(String name) {
+    //    Object bean = null;
+    //    final String beanName = transformedBeanName(name);
+    //    Object sharedInstance = getSingleton(beanName);
+    //    // 如果不等于null，说明已经被创建，则进行复制操作，一定是从二级缓存中获取的值
+    //    if (sharedInstance != null) {
+    //        if (isSingletonCurrentlyInCreation(beanName)) {
+    //            log.debug("Returning eagerly cached instance of singleton bean '" + beanName +
+    //                    "' that is not fully initialized yet - a consequence of a circular reference");
+    //        } else {
+    //            log.debug("Returning cached instance of singleton bean '" + beanName + "'");
+    //        }
+    //        // 赋值
+    //        bean = getObjectForBeanInstance(sharedInstance, beanName);
+    //        // 如果为 null ，则递归检查循环依赖
+    //    } else {
+    //        try {
+    //            // 判断当前的属性的 bean 是否正在被创建
+    //            if (isPrototypeCurrentlyInCreation(beanName)) {
+    //                throw new Exception("Circular depends-on relationship between" + beanName);
+    //            }
+    //
+    //            singletonFactory.put(name, Class.forName(name).getDeclaredConstructor().newInstance());
+    //        } catch (Exception e) {
+    //            e.printStackTrace();
+    //        }
+    //    }
+    //    return bean;
+    //}
 
     /**
      * 获取单例的 bean 对象
      */
-    public Object getSingleton(String beanName) {
-        return getSingleton(beanName, true);
-    }
+    //public Object getSingleton(String beanName) {
+    //    return getSingleton(beanName, true);
+    //}
 
     /**
      * 获取单列 bean
      * 使用三级缓存的策略，解决循环依赖
      */
-    protected Object getSingleton(String beanName, boolean allowEarlyReference) {
-        Object singletonObject = this.singletonObject.get(beanName);
-        if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
-            synchronized (this.singletonObject) {
-                // 从二级缓存中获取对象
-                singletonObject = this.earlySingletonObject.get(beanName);
-                if (singletonObject == null && allowEarlyReference) {
-                    Object object = this.singletonFactory.get(beanName);
-                    if (object != null) {
-                        singletonObject = object;
-                        // 从一级缓存中获取对象，并升级到二级缓存
-                        this.earlySingletonObject.put(beanName, singletonObject);
-                        // 移除以及缓存中的对象
-                        this.singletonFactory.remove(beanName);
-                    }
-                }
-            }
-        }
-        return singletonObject;
-    }
+    //protected Object getSingleton(String beanName, boolean allowEarlyReference) {
+    //    Object singletonObject = this.singletonObject.get(beanName);
+    //    if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
+    //        synchronized (this.singletonObject) {
+    //            // 从二级缓存中获取对象
+    //            singletonObject = this.earlySingletonObject.get(beanName);
+    //            if (singletonObject == null && allowEarlyReference) {
+    //                Object object = this.singletonFactory.get(beanName);
+    //                if (object != null) {
+    //                    singletonObject = object;
+    //                    // 从一级缓存中获取对象，并升级到二级缓存
+    //                    this.earlySingletonObject.put(beanName, singletonObject);
+    //                    // 移除以及缓存中的对象
+    //                    this.singletonFactory.remove(beanName);
+    //                }
+    //            }
+    //        }
+    //    }
+    //    return singletonObject;
+    //}
 
-    public boolean isSingletonCurrentlyInCreation(String beanName) {
-        return this.singletonsCurrentlyInCreation.contains(beanName);
-    }
-
-    protected boolean isPrototypeCurrentlyInCreation(String beanName) {
-        Object curVal = this.prototypesCurrentlyInCreation.get();
-        return (curVal != null &&
-                (curVal.equals(beanName) || (curVal instanceof Set && ((Set<?>) curVal).contains(beanName))));
-    }
-
-
-    protected Object getObjectForBeanInstance(Object beanInstance, String beanName) {
-        try {
-            Class<?> clazz = Class.forName(beanName);
-            beanInstance = clazz.getDeclaredConstructor().newInstance();
-            if (!singletonFactory.containsKey(beanName)) {
-                this.singletonFactory.put(beanName, beanInstance);
-            } else {
-                throw new Exception(beanName + "单例正在创建ing");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+    //public boolean isSingletonCurrentlyInCreation(String beanName) {
+    //    return this.singletonsCurrentlyInCreation.contains(beanName);
+    //}
+    //
+    //protected boolean isPrototypeCurrentlyInCreation(String beanName) {
+    //    Object curVal = this.prototypesCurrentlyInCreation.get();
+    //    return (curVal != null &&
+    //            (curVal.equals(beanName) || (curVal instanceof Set && ((Set<?>) curVal).contains(beanName))));
+    //}
+    //
+    //
+    //protected Object getObjectForBeanInstance(Object beanInstance, String beanName) {
+    //    try {
+    //        Class<?> clazz = Class.forName(beanName);
+    //        beanInstance = clazz.getDeclaredConstructor().newInstance();
+    //        if (!singletonFactory.containsKey(beanName)) {
+    //            this.singletonFactory.put(beanName, beanInstance);
+    //        } else {
+    //            throw new Exception(beanName + "单例正在创建ing");
+    //        }
+    //    } catch (Exception e) {
+    //        e.printStackTrace();
+    //    }
+    //    return null;
+    //}
 
 
 }

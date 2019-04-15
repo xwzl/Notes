@@ -1,6 +1,7 @@
 package com.java.base.annotation.util;
 
 import com.java.base.annotation.auto.MyValue;
+import com.java.base.annotation.exception.MyValueException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * 解析Resources 文件
@@ -25,6 +27,13 @@ public class MyResourcesUtils {
     Map<String, List<String>> map = new HashMap<>();
 
     final static List<String> filedType = new ArrayList<>();
+
+    private static Pattern pattern;
+
+    static {
+        String regex = "\\$\\{(.+?)\\}";
+        pattern = Pattern.compile(regex);
+    }
 
     static {
         filedType.add("Date");
@@ -56,16 +65,17 @@ public class MyResourcesUtils {
 
     public String resolver(Class<?> clazz, Field field, Object instance) {
         List<String> list = map.get(clazz.getSimpleName().toUpperCase());
+        MyValue myValue = field.getAnnotation(MyValue.class);
+        String param = myValue.value();
+        if (checkFieldName(param)) {
+            param = param.substring(param.indexOf("{") + 1, param.indexOf("}"));
+        }else {
+            throw new MyValueException(clazz.getName()+"."+field.getName()+" syntax error，Please use ${"+field.getName()+"}");
+        }
         if (list != null) {
             for (String value : list) {
                 try {
                     int i = value.indexOf("#");
-                    MyValue myValue = field.getAnnotation(MyValue.class);
-                    String param = myValue.value();
-                    if (param.contains("${}")) {
-
-                    }
-                    param = param.substring(param.indexOf("{") + 1, param.indexOf("}"));
                     String propertyName = value.substring(0, i);
                     if (!propertyName.equalsIgnoreCase(param)) {
                         continue;
@@ -86,7 +96,7 @@ public class MyResourcesUtils {
                         // todo
                         continue;
                     }
-                    field.set(instance, value.substring(i + 1, value.length()));
+                    field.set(instance, value.substring(i + 1));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -95,8 +105,22 @@ public class MyResourcesUtils {
         return null;
     }
 
-    public static void main(String[] args) {
 
+    public boolean checkFieldName(String value) {
+        return pattern.matcher(value).find();
     }
 
+    public String getFieldName(String value) {
+        return value.substring(1, value.length() - 1);
+    }
+
+    //public static void main(String[] args) {
+    //    String value = "# {1212},# {adfa},#{dfadf}";
+    //
+    //    Pattern pattern = Pattern.compile(regex);
+    //    Matcher match2 = pattern.matcher(value);
+    //    while (match2.find()) {
+    //        System.out.println(match2.group());
+    //    }
+    //}
 }

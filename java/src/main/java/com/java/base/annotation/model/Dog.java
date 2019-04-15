@@ -1,7 +1,7 @@
 package com.java.base.annotation.model;
 
 import com.java.base.annotation.auto.MyAutowired;
-import com.java.base.annotation.auto.MyComponent;
+import com.java.base.annotation.auto.MyService;
 import com.java.base.annotation.auto.MyValue;
 
 import java.util.Date;
@@ -12,7 +12,7 @@ import java.util.Date;
  * @author xuweizhi
  * @date 2019/04/11 23:01
  */
-@MyComponent(alias = "dogli")
+@MyService(alias = "dogli")
 public class Dog {
 
     @MyValue("${username}")

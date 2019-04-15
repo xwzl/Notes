@@ -84,7 +84,7 @@ public class PathScan {
             remainPath = getExcludePath(getRemainPath(path, regex), inPath);
         }
         if (StringUntils.isEmpty(remainPath)) {
-            LogUtils.printLog(logger, ":  开始扫描包路径");
+            LogUtils.printLog(logger, "Start scanning package path !");
         }
         if (StringUntils.isEmpty(basePath)) {
             basePath = path;
@@ -93,7 +93,7 @@ public class PathScan {
         Set<Class<?>> result = new HashSet<>();
         for (String packagePath : inPath) {
             result.addAll(getBeanClass(annotationClazz, packagePath));
-            LogUtils.printLog(logger, ":  " + packagePath + " ：包扫描完毕");
+            LogUtils.printLog(logger, packagePath + " Package scanning completed !");
         }
         return result;
     }
@@ -212,7 +212,7 @@ public class PathScan {
         List<String> resources = new ArrayList<String>();
         for (String e : exPath) {
             if (url.getPath().contains(e)) {
-                LogUtils.printLog(logger, ":  " + e + " ：包未扫描");
+                LogUtils.printLog(logger, e + " The file under the package path is not scanned and will be ignored!");
 
                 return resources;
             }

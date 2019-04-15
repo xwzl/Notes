@@ -12,6 +12,7 @@ import com.java.base.url.PathScan;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.java.base.annotation.exception.ComponentConstance.BEAN_KEY;
 import static com.java.base.annotation.exception.ComponentConstance.CONTROLLER_KEY;
 import static com.java.base.annotation.ioc.MyRequestHandler.PREFIX;
 import static com.java.base.annotation.util.LogUtils.printLog;
@@ -31,17 +33,17 @@ import static com.java.base.annotation.util.LogUtils.printLog;
  * @date 2019/04/11 19:24
  */
 @Slf4j
-public class MyConfigure {
+public class MyConfigure implements Serializable {
 
     /**
      * 包扫描
      */
-    PathScan scan = new PathScan();
+    PathScan scan;
 
     /**
      * 注解协助
      */
-    MyAnnotationAssistant assistant = new MyAnnotationAssistant();
+    MyAnnotationAssistant assistant;
 
     /**
      * 组件 注解集合们
@@ -56,17 +58,26 @@ public class MyConfigure {
     /**
      * 加载配置文件
      */
-    MyResourcesUtils resources = new MyResourcesUtils();
+    MyResourcesUtils resources;
 
     /**
      * 用来存放扫描指定符合注解的类
      */
     Set<Class<?>> components = new HashSet<>();
 
+    /**
+     * 见名知意
+     */
     Set<Class<?>> mappers = new HashSet<>();
 
+    /**
+     * 见名知意
+     */
     Set<Class<?>> serviceLoaded = new HashSet<>();
 
+    /**
+     * 见名知意
+     */
     Set<Class<?>> controllerLoaded = new HashSet<>();
 
 
@@ -75,6 +86,9 @@ public class MyConfigure {
      */
     final Map<String, Map<String, MyLocalMethodMapping>> mapperMethods = new ConcurrentHashMap<>(256);
 
+    /**
+     * 一个MyRequestMapping注解对应一个MyRequesstHandler 实例
+     */
     final Map<String, Map<String, MyRequestHandler>> controllerMethods = new ConcurrentHashMap<>(256);
 
     /**
@@ -95,9 +109,38 @@ public class MyConfigure {
     /**
      * 配置文件路径
      */
-    protected String loadResource;
+    String loadResource;
 
-    SimpleAliasRegistry aliasRegistry = new SimpleAliasRegistry();
+    /**
+     * 别名注册中心
+     */
+    SimpleAliasRegistry aliasRegistry;
+
+
+    {
+        assistant = new MyAnnotationAssistant();
+        scan = new PathScan();
+        resources = new MyResourcesUtils();
+        aliasRegistry = new SimpleAliasRegistry();
+        this.component = assistant.componentRegister;
+        this.app = assistant.appRegister;
+    }
+
+    private MyConfigure() {
+
+    }
+
+    /**
+     * 静态内置类可以达到线程安全问题，但如果遇到序列化对象时，使用默认的方式运行得到的结果还是多例的
+     */
+    private final static class SingletonConfigure {
+        private static final MyConfigure MY_CONFIGURE = new MyConfigure();
+    }
+
+
+    public static MyConfigure builder() {
+        return SingletonConfigure.MY_CONFIGURE;
+    }
 
     public MyConfigure execute(String packagePath, String loadResource) {
         // 通用逻辑
@@ -107,24 +150,30 @@ public class MyConfigure {
         return this;
     }
 
+    private void generalLogic(String packagePath, String loadResource) {
+        this.packagePath = packagePath;
+        this.loadResource = loadResource;
+    }
+
     public void decorationBeanFactory(MyBeanFactory beanFactory) {
         beanFactory.configure = this;
         addInterface();
         beanFactory.loaded = loaded;
         beanFactory.resources = resources;
         beanFactory.serviceLoaded = getLoaded(serviceLoaded);
-        beanFactory.controllerLoaded =getLoaded(controllerLoaded);
+        beanFactory.controllerLoaded = getLoaded(controllerLoaded);
+        beanFactory.aliasRegistry = aliasRegistry;
     }
 
-    private void addInterface(){
+    private void addInterface() {
         enhanceLoaded(serviceLoaded);
         enhanceLoaded(controllerLoaded);
     }
 
-    private void enhanceLoaded(Set<Class<?>> loadeds){
+    private void enhanceLoaded(Set<Class<?>> loadeds) {
         for (Class<?> load : loadeds) {
-            if(load.getInterfaces().length>0){
-                loaded.put(load.getInterfaces()[0].getName(),load.getInterfaces()[0]);
+            if (load.getInterfaces().length > 0) {
+                loaded.put(load.getInterfaces()[0].getName(), load.getInterfaces()[0]);
             }
         }
     }
@@ -137,32 +186,29 @@ public class MyConfigure {
         return load;
     }
 
-    private void generalLogic(String packagePath, String loadResource) {
-        this.component = assistant.componentRegister;
-        this.app = assistant.appRegister;
-        this.packagePath = packagePath;
-        this.loadResource = loadResource;
-    }
-
-    public static MyConfigure builder() {
-        return new MyConfigure();
-    }
 
     /**
      * 初始化配置
      */
     public void init() {
+        String[] split = packagePath.split(BEAN_KEY);
         try {
             components = scan.packageScan(packagePath, component.get("MyComponent"));
+            //for (String packages : split) {
+            //    LogUtils.printLog(log, packages + "packet scan success !");
+            //}
             if (components != null && components.size() > 0) {
                 // 解析 mapper,service,controller
+                LogUtils.printLog(log, "Start parsing MyMapper 、MyService、MyController!");
                 addConcreteComponent();
+                LogUtils.printLog(log, "Start register MyComponent bean Class!");
                 registerComponent();
-                LogUtils.printLog(log, "  ：组件注册完毕");
             }
             parseResources();
         } catch (IOException e) {
-            System.out.println(" : 包扫描失败");
+            for (String packages : split) {
+                LogUtils.printLog(log, packages + "packet scan failed !");
+            }
         }
     }
 
@@ -178,7 +224,7 @@ public class MyConfigure {
     private void parseResources() {
         try {
             resources.parse(loadResource);
-            printLog(log, "加载完配置文件");
+            printLog(log, "Load the configuration file !");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -218,6 +264,9 @@ public class MyConfigure {
         }
     }
 
+    /**
+     * 解析 controller
+     */
     private void parseController() {
         MyRequestMapping requestMapping = (MyRequestMapping) bean.getAnnotation(component.get("MyRequestMapping"));
         String baseUrl = "";
@@ -237,7 +286,7 @@ public class MyConfigure {
                     handlerMap.put(keyId, handler);
                 } else {
                     try {
-                        throw new MyRequestMappingException("URL映射路径不能重复");
+                        throw new MyRequestMappingException("The URL mapping path cannot be repeated");
                     } catch (MyRequestMappingException e) {
                         e.printStackTrace();
                     }
@@ -300,13 +349,16 @@ public class MyConfigure {
         registerMapper(mappingMap);
     }
 
+    /**
+     * 注册......
+     */
     private void registerMylocalMethodMapperMethod(Map<String, MyLocalMethodMapping> mappingMap, Method method, Annotation myLocalMethod) {
         String id = this.bean.getName() + "#" + method.getName();
         if (myLocalMethod instanceof MyLocalMethod) {
-            MyLocalMethod sql = (MyLocalMethod) myLocalMethod;
-            String cn = sql.className();
-            String mn = sql.methodName();
-            String[] mpc = sql.methodParamClass();
+            MyLocalMethod localMethod = (MyLocalMethod) myLocalMethod;
+            String cn = localMethod.className();
+            String mn = localMethod.methodName();
+            String[] mpc = localMethod.methodParamClass();
             Class<?>[] cs = new Class[mpc.length];
             for (int i = 0; i < cs.length; i++) {
                 try {
@@ -315,9 +367,9 @@ public class MyConfigure {
                     e.printStackTrace();
                 }
             }
-            String d = sql.description();
-            String v = sql.value();
-            String[] m = sql.methodParamValues();
+            String d = localMethod.description();
+            String v = localMethod.value();
+            String[] m = localMethod.methodParamValues();
             MyLocalMethodMapping myLocalMethodMapping = new MyLocalMethodMapping(v, mn, cn, cs, m, d);
             assert mappingMap != null;
             if (!mappingMap.containsKey(id)) {
@@ -331,11 +383,23 @@ public class MyConfigure {
      */
     private void parseAlias() {
         MyComponent myComponent = bean.getAnnotation(MyComponent.class);
+        String alias = "";
         if (myComponent == null) {
-            return;
+            MyMapper mapper = bean.getAnnotation(MyMapper.class);
+            if (mapper != null) {
+                alias = mapper.alias();
+            }
+            MyService myService = bean.getAnnotation(MyService.class);
+            if (myService != null) {
+                alias = myService.alias();
+            }
+            MyController myController = bean.getAnnotation(MyController.class);
+            if (myController != null) {
+                alias = myController.alias();
+            }
         }
-        if (StringUntils.isNotEmpty(myComponent.alias())) {
-            aliasRegistry.registerAlias(bean.getName(), myComponent.alias());
+        if (StringUntils.isNotEmpty(alias)) {
+            aliasRegistry.registerAlias(bean.getName(), alias);
         }
     }
 

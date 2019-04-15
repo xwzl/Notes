@@ -1,5 +1,8 @@
 package com.java.base.regex;
 
+import com.java.base.annotation.auto.MyController;
+import org.junit.Test;
+
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,6 +14,33 @@ import java.util.regex.Pattern;
  * @date 2019/04/12 22:11
  */
 public class MyRegex {
+
+    /**
+     * 最后附一下用到的零宽断言
+     * <p>
+     * 宽断言
+     * (?=exp)	匹配exp前面的位置
+     * (?<=exp)	匹配exp后面的位置
+     * (?!exp)	匹配后面跟的不是exp的位置
+     * (?<!exp)	匹配前面不是exp的位置
+     */
+    public static void main(String[] args) {
+        //MyRegex myRegex = new MyRegex();
+        //myRegex.test2();
+        String value = "#{1212},#{adfa},#{dfadf}";
+        //String regex = "#\{\\W+\}";
+        Pattern pattern = Pattern.compile("(?<=\\{)(.+?)(?=\\})");
+        Matcher match2 = pattern.matcher(value);
+        while (match2.find()) {
+            System.out.println(match2.group());
+        }
+        Pattern p = Pattern.compile("\\#\\{(.+?)\\}");
+        Matcher match1 = pattern.matcher(value);
+        while (match1.find()) {
+            System.out.println(match1.group());
+        }
+
+    }
 
     void define() {
         //字符
@@ -48,6 +78,11 @@ public class MyRegex {
         //　　XY 　　	X后跟 Y
         //　　X|Y 　　X 或 Y
         //　　(X) 　　X，作为捕获组
+    }
+
+    @Test
+    void test21() {
+        String str = "efe12dfa213fdsfa23434gvs34123";
     }
 
     void test1() {
@@ -91,7 +126,7 @@ public class MyRegex {
      */
     void test2() {
         // 匹配出3个字符的字符串
-        String str = "abc 124 ewqeq qeqe   qeqe   qeqe  aaaa  fs fsdfs d    sf sf sf  sf sfada dss dee ad a f s f sa a'lfsd;'l";
+        String str = "abc   ewqeq qeqe   qeqe   qeqe  aaaa  fs fsdfs d    sf sf sf  sf sfada dss dee ad a f s f sa a'lfsd;'l";
         Pattern pt = Pattern.compile("\\b\\w{3}\\b");
         Matcher match = pt.matcher(str);
         while (match.find()) {
