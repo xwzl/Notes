@@ -11,6 +11,8 @@ public class MySelectMapping {
 
     private String sql;
 
+    private String nameSpace;
+
     private List<String> paramList = new ArrayList<>();
 
     private List<String> paramNameList = new ArrayList<>();
@@ -19,8 +21,17 @@ public class MySelectMapping {
     public MySelectMapping() {
     }
 
-    public MySelectMapping(String sql) {
+    public MySelectMapping(String sql, String nameSpace) {
         this.sql = sql;
+        this.nameSpace = nameSpace;
+    }
+
+    public String getNameSpace() {
+        return nameSpace;
+    }
+
+    public void setNameSpace(String nameSpace) {
+        this.nameSpace = nameSpace;
     }
 
     public String getSql() {

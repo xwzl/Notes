@@ -1,7 +1,7 @@
 package com.java.base.annotation.proxy;
 
+import com.java.base.annotation.auto.MyColumn;
 import com.java.base.annotation.exception.ComponentConstance;
-import com.java.base.annotation.exception.JavaType;
 import com.java.base.annotation.ioc.MyLocalMethodMapping;
 import com.java.base.annotation.ioc.MySelectMapping;
 import com.java.base.annotation.jdbc.DataSourcePool;
@@ -12,10 +12,11 @@ import org.springframework.cglib.proxy.MethodProxy;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.sql.*;
-import java.util.HashMap;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static com.java.base.annotation.exception.JavaType.*;
 
@@ -47,9 +48,6 @@ public class MyMapperProxy implements MethodInterceptor {
     @Override
     public Object intercept(Object sub, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
         Object invoke = null;
-        Class<?> clazz = null;
-        Method proxyMethod = null;
-        Object newInstance = null;
         String methodKey = this.clazz.getName() + "#" + method.getName();
         Object obj = mapper.get(methodKey);
         // 1.String MySelect 注解
@@ -62,16 +60,14 @@ public class MyMapperProxy implements MethodInterceptor {
             try {
                 String sql = select.getSql().replaceAll(ComponentConstance.SQL_PATTERN, "?");
                 PreparedStatement preparedStatement = con.prepareStatement(sql);
+                boolean flag = true;
                 if (objects.length == 1) {
-                    boolean flag = true;
                     if (objects[0] instanceof Map && flag) {
                         Map map = (Map) objects[0];
                         for (int i = 0; i < nameList.size(); i++) {
                             Object o = map.get(nameList.get(i));
                             if (o != null) {
                                 params[i] = o;
-                            } else {
-                                params[i] = new Object();
                             }
                         }
                         flag = false;
@@ -82,13 +78,11 @@ public class MyMapperProxy implements MethodInterceptor {
                             Object o = list.get(i);
                             if (o != null) {
                                 params[i] = o;
-                            } else {
-                                params[i] = new Object();
                             }
                         }
                         flag = false;
                     }
-                    if (!objects[0].getClass().isPrimitive() && flag) {
+                    if (checkParamType(objects[0].getClass().getName(), true) && flag) {
                         Object object = objects[0];
                         Class<?> objectClass = object.getClass();
                         for (int i = 0; i < nameList.size(); i++) {
@@ -96,26 +90,41 @@ public class MyMapperProxy implements MethodInterceptor {
                             field.setAccessible(true);
                             if (field.get(object) != null) {
                                 params[i] = field.get(object);
-                            } else {
                             }
                         }
                         flag = false;
                     }
-                    if (params.length == 0) {
-                        params = objects;
-                    }
                 }
-
+                if (flag) {
+                    params = objects;
+                }
                 for (int i = 0; i < paramList.size(); i++) {
                     int tag = i + 1;
                     setParam(params, paramList, preparedStatement, i, tag);
                 }
                 ResultSet resultSet = preparedStatement.executeQuery();
+                List<Object> list = list = new ArrayList<>();
                 while (resultSet.next()) {
                     int count = resultSet.getMetaData().getColumnCount();
-                    for (int i = 1; i <= count; i++) {
-                        System.out.println(resultSet.getObject(i));
+                    Class<?> returnType = method.getReturnType();
+                    Class<?> in = Class.forName(select.getNameSpace());
+                    Object newInstance = in.getDeclaredConstructor().newInstance();
+                    Field[] fields = in.getDeclaredFields();
+                    for (Field field : fields) {
+                        if (field.getAnnotation(MyColumn.class) != null) {
+                            field.setAccessible(true);
+                            getFieldValue(resultSet, field.getAnnotation(MyColumn.class).value(), field, newInstance);
+                        }
                     }
+                    list.add(newInstance);
+                    //for (int i = 1; i <= count; i++) {
+                    //    System.out.println(resultSet.getObject(i));
+                    //}
+                }
+                if (list.size() == 1) {
+                    invoke = list.get(0);
+                } else {
+                    invoke = list;
                 }
             } finally {
                 pool.close(con);
@@ -133,6 +142,81 @@ public class MyMapperProxy implements MethodInterceptor {
         invoke = parseReinforce(method, objects, invoke);
 
         return invoke;
+    }
+
+    private void getFieldValue(ResultSet resultSet, String sqlDateType, Field type, Object newInstance) throws SQLException, IllegalAccessException {
+        type.setAccessible(true);
+        switch (type.getType().getName()) {
+            case INTEGER:
+                int resultSetInt = resultSet.getInt(sqlDateType);
+                type.set(newInstance, Integer.valueOf(resultSetInt));
+                break;
+            case STRING:
+                String resultSetString = resultSet.getString(sqlDateType);
+                type.set(newInstance, resultSetString);
+                break;
+            case DATE:
+                Date date = resultSet.getDate(sqlDateType);
+                type.set(newInstance, LocalDateTime.ofEpochSecond(date.getTime(), 0, ZoneOffset.ofHours(8)));
+                break;
+            case SHORT:
+                short resultSetShort = resultSet.getShort(sqlDateType);
+                type.set(newInstance, Short.valueOf(resultSetShort));
+                break;
+            case LONG:
+                long resultSetLong = resultSet.getLong(sqlDateType);
+                type.set(newInstance, Long.valueOf(resultSetLong));
+                break;
+            case FLOAT:
+                float resultSetFloat = resultSet.getFloat(sqlDateType);
+                type.set(newInstance, Float.valueOf(resultSetFloat));
+                break;
+            case DOUBLE:
+                double resultSetDouble = resultSet.getDouble(sqlDateType);
+                type.set(newInstance, Double.valueOf(resultSetDouble));
+                break;
+            case BYTE:
+                byte resultSetByte = resultSet.getByte(sqlDateType);
+                type.set(newInstance, Byte.valueOf(resultSetByte));
+                break;
+            case BOOLEAN:
+                boolean resultSetBoolean = resultSet.getBoolean(sqlDateType);
+                type.set(newInstance, Boolean.valueOf(resultSetBoolean));
+                break;
+        }
+    }
+
+    private boolean checkParamType(String name, Boolean access) {
+        switch (name) {
+            case INTEGER:
+                access = false;
+                break;
+            case STRING:
+                access = false;
+                break;
+            case DATE:
+                access = false;
+                break;
+            case SHORT:
+                access = false;
+                break;
+            case LONG:
+                access = false;
+                break;
+            case FLOAT:
+                access = false;
+                break;
+            case DOUBLE:
+                access = false;
+                break;
+            case BYTE:
+                access = false;
+                break;
+            case BOOLEAN:
+                access = false;
+                break;
+        }
+        return access;
     }
 
     private void setParam(Object[] objects, List<String> paramList, PreparedStatement preparedStatement, int i, int tag) throws SQLException {

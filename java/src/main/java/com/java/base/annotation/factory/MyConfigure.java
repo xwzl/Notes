@@ -347,7 +347,7 @@ public class MyConfigure implements Serializable {
             MySelect mySelect = method.getAnnotation(MySelect.class);
             if (mySelect != null) {
                 try {
-                    MySelectMapping select = new MySelectMapping(mySelect.value());
+                    MySelectMapping select = new MySelectMapping(mySelect.value(),mySelect.nameSpace());
                     mappingMap.put(bean.getName() + "#" + method.getName(), select);
 
                     Pattern pattern = Pattern.compile(SQL_PATTERN);
@@ -365,8 +365,9 @@ public class MyConfigure implements Serializable {
                     e.printStackTrace();
                 }
             }
-
-
+            MyInsert myInsert = method.getAnnotation(MyInsert.class);
+            if (mySelect != null) {
+            }
         }
         parseAlias();
         registerBeanClass();

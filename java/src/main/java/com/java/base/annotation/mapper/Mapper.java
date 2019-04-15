@@ -8,6 +8,7 @@ import com.java.base.annotation.model.Blog;
 import com.java.mybatis.model.User;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,4 +37,10 @@ public interface Mapper {
 
     @MySelect(value = "select * from user where u_id = #{uId} and address = #{address}", nameSpace = "com.java.mybatis.model.User")
     User getUserA(User user);
+
+    @MySelect(value = "select * from user where u_id = #{uId} and address = #{address}", nameSpace = "com.java.mybatis.model.User")
+    User getUserB(Integer integer, String address);
+
+    @MySelect(value = "select * from user", nameSpace = "com.java.mybatis.model.User")
+    List<User> getUserC();
 }

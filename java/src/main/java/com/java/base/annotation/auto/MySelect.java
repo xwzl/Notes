@@ -13,7 +13,8 @@ public @interface MySelect {
 
     /**
      * sql select * from user where id = #{id}
-     * #{id} 入参属性名，其实可以做成别名，但是时间有限，暂停
+     * #{id} 入参属性名，其实可以做成别名，时间有限，待定 #{} 必须是 Java 对象的属性名
+     * 目前没有动态 sql，sql 定义的参数必须全部传入
      */
     String value();
 

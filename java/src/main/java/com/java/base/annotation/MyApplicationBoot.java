@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,11 +41,17 @@ public class MyApplicationBoot {
         Map<String, Object> map = new HashMap<>();
         map.put("uId", 1);
         map.put("address", "addres}");
-        bean.getUser(map);
+        User user1 = bean.getUser(map);
         User user = new User();
         user.setUId(1);
         user.setAddress("addres}");
-        bean.getUserA(user);
+        User userA = bean.getUserA(user);
+        User userB = bean.getUserB(1, "addres}");
+        System.out.println(user1);
+        System.out.println(userA);
+        System.out.println(userB);
+        List<User> userC = bean.getUserC();
+        userC.forEach(System.out::println);
     }
 
     @Test
@@ -52,7 +59,6 @@ public class MyApplicationBoot {
         String a = Map.class.getName();
         Class<HashMap> hashMapClass = HashMap.class;
         get(a, hashMapClass);
-
     }
 
     private void get(String a, Class<?> hashMapClass) {
