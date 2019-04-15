@@ -11,4 +11,10 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 public @interface MyInsert {
 
+
+    String value();
+
+
+    String nameSpace();
+
 }

@@ -2,10 +2,7 @@ package com.java.base.annotation.factory;
 
 import com.java.base.annotation.auto.*;
 import com.java.base.annotation.exception.MyRequestMappingException;
-import com.java.base.annotation.ioc.MyAnnotationAssistant;
-import com.java.base.annotation.ioc.MyLocalMethodMapping;
-import com.java.base.annotation.ioc.MyRequestHandler;
-import com.java.base.annotation.ioc.MySelectMapping;
+import com.java.base.annotation.handler.*;
 import com.java.base.annotation.util.LogUtils;
 import com.java.base.annotation.util.MyResourcesUtils;
 import com.java.base.annotation.util.StringUntils;
@@ -22,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.java.base.annotation.exception.ComponentConstance.*;
-import static com.java.base.annotation.ioc.MyRequestHandler.PREFIX;
+import static com.java.base.annotation.handler.MyRequestHandler.PREFIX;
 import static com.java.base.annotation.util.LogUtils.printLog;
 
 /**
@@ -357,17 +354,15 @@ public class MyConfigure implements Serializable {
                     Class<?> model = Class.forName(mySelect.nameSpace());
 
                     while (matcher.find()) {
-                        String fiedlName = matcher.group().substring(2, matcher.group().length() - 1);
-                        paramList.add(model.getDeclaredField(fiedlName).getType().getName());
-                        paramNameList.add(fiedlName);
+                        String fieldlName = matcher.group().substring(2, matcher.group().length() - 1);
+                        paramList.add(model.getDeclaredField(fieldlName).getType().getName());
+                        paramNameList.add(fieldlName);
                     }
                 } catch (ClassNotFoundException | NoSuchFieldException e) {
                     e.printStackTrace();
                 }
             }
-            MyInsert myInsert = method.getAnnotation(MyInsert.class);
-            if (mySelect != null) {
-            }
+
         }
         parseAlias();
         registerBeanClass();

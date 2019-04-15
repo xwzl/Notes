@@ -1,4 +1,4 @@
-package com.java.base.annotation.ioc;
+package com.java.base.annotation.handler;
 
 /**
  * MyController RequestHandler

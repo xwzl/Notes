@@ -1,4 +1,4 @@
-package com.java.base.annotation.ioc;
+package com.java.base.annotation.handler;
 
 import com.java.base.annotation.auto.*;
 

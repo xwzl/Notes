@@ -250,11 +250,26 @@ public class MyBeanFactory {
                 if (o instanceof MultipleInterfaces) {
                     beanName = transformedBeanName(fieldAlias);
                     if (StringUntils.isEmpty(beanName)) {
-                        throw new MyComponentException("If the " + field.getType().getName() + "interface has multiple implementation classes, when the property is injected " +
-                                "into the interface, use @MyAutowired and @MyQualifier, or directly inject its implementation class.");
+                        if (field.getAnnotation(MyResource.class) != null) {
+                            String alias = field.getAnnotation(MyResource.class).value();
+                            o = singletonObject.get(alias);
+                            if(o!=null){
+                                o = (T) singletonObject.get(alias);
+                                field.set(old, o);
+                            }else {
+                                beanName = transformedBeanName(alias);
+                                o = (T) singletonObject.get(beanName);
+                                field.set(old, o);
+                            }
+                        } else {
+                            throw new MyComponentException("If the " + field.getType().getName() + " interface has multiple implementation classes, when the property is injected " +
+                                    "into the interface, use @MyAutowired and @MyQualifier, or @MyResource or directly inject its implementation class.");
+                        }
+                    } else {
+                        o = (T) singletonObject.get(beanName);
+                        field.set(old, o);
                     }
-                    o = (T) singletonObject.get(beanName);
-                    field.set(old, o);
+
                 } else {
                     beanName = transformedBeanName(fieldAlias);
                     if (StringUntils.isNotEmpty(fieldAlias)) {
@@ -413,6 +428,9 @@ public class MyBeanFactory {
                         //field.set(instance, tempObject.get(field.getType().getName()));
                         //}
                     }
+                    if (field.getAnnotation(MyResource.class) != null) {
+                        field.set(instance, doAssignmentBean(field.getType(), keyId + BEAN_KEY + field.getName()));
+                    }
                     //else {
                     //    //field.set(instance, tempObject.get(field.getType().getName()));
                     //}
@@ -424,11 +442,17 @@ public class MyBeanFactory {
                             if (o != null) {
                                 String alias = "";
                                 MyService myService = clazz.getAnnotation(MyService.class);
-                                checkService(clazz, myService != null, myService.alias());
+                                if (myService != null) {
+                                    checkService(clazz, true, myService.alias());
+                                }
                                 MyController controller = clazz.getAnnotation(MyController.class);
-                                checkService(clazz, controller != null, controller.alias());
+                                if (controller != null) {
+                                    checkService(clazz, true, controller.alias());
+                                }
                                 MyComponent component = clazz.getAnnotation(MyComponent.class);
-                                checkService(clazz, component != null, component.alias());
+                                if (component != null) {
+                                    checkService(clazz, true, component.alias());
+                                }
                             } else {
                                 singletonObject.put(clazz.getInterfaces()[0].getName(), instance);
                             }

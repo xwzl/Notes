@@ -2,8 +2,8 @@ package com.java.base.annotation.proxy;
 
 import com.java.base.annotation.auto.MyColumn;
 import com.java.base.annotation.exception.ComponentConstance;
-import com.java.base.annotation.ioc.MyLocalMethodMapping;
-import com.java.base.annotation.ioc.MySelectMapping;
+import com.java.base.annotation.handler.MyLocalMethodMapping;
+import com.java.base.annotation.handler.MySelectMapping;
 import com.java.base.annotation.jdbc.DataSourcePool;
 import com.java.base.annotation.util.StringUntils;
 import org.springframework.cglib.proxy.MethodInterceptor;
