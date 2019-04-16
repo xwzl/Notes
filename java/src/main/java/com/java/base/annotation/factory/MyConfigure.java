@@ -321,46 +321,36 @@ public class MyConfigure implements Serializable {
 
         for (Method method : methods) {
             // 解析方法们
-            Annotation myLocalMethod = method.getAnnotation(component.get("MyLocalMethod"));
+            MyLocalMethod myLocalMethod = method.getAnnotation(MyLocalMethod.class);
             //用来存放 解析实体的建
             if (myLocalMethod != null) {
                 registerMylocalMethodMapperMethod(mappingMap, method, myLocalMethod);
                 continue;
             }
-            Annotation reinforce = method.getAnnotation(component.get("MyLocalMethodReinforce"));
+            MyLocalMethodReinforce reinforce = method.getAnnotation(MyLocalMethodReinforce.class);
             if (reinforce != null) {
-                if (reinforce instanceof MyLocalMethodReinforce) {
-                    String className = ((MyLocalMethodReinforce) reinforce).className();
-                    MyLocalMethodMapping mapping = new MyLocalMethodMapping();
-                    String methodName = ((MyLocalMethodReinforce) reinforce).methodName();
-                    if (StringUntils.isNotEmpty(methodName)) {
-                        mapping.setMethodName(methodName);
-                    }
-                    mapping.setClassName(className);
-                    mappingMap.put(bean.getName() + "&" + method.getName(), mapping);
-                }
+                parseMyLocalMethod(mappingMap, method, reinforce);
                 continue;
             }
             MySelect mySelect = method.getAnnotation(MySelect.class);
             if (mySelect != null) {
-                try {
-                    MySelectMapping select = new MySelectMapping(mySelect.value(),mySelect.nameSpace());
-                    mappingMap.put(bean.getName() + "#" + method.getName(), select);
-
-                    Pattern pattern = Pattern.compile(SQL_PATTERN);
-                    Matcher matcher = pattern.matcher(mySelect.value());
-                    List<String> paramList = select.getParamList();
-                    List<String> paramNameList = select.getParamNameList();
-                    Class<?> model = Class.forName(mySelect.nameSpace());
-
-                    while (matcher.find()) {
-                        String fieldlName = matcher.group().substring(2, matcher.group().length() - 1);
-                        paramList.add(model.getDeclaredField(fieldlName).getType().getName());
-                        paramNameList.add(fieldlName);
-                    }
-                } catch (ClassNotFoundException | NoSuchFieldException e) {
-                    e.printStackTrace();
-                }
+                parseMySelect(mappingMap, method, mySelect);
+                continue;
+            }
+            MyInsert insert = method.getAnnotation(MyInsert.class);
+            if (insert != null) {
+                //parseMySelect(mappingMap, method, insert);
+                continue;
+            }
+            MyUpdate update = method.getAnnotation(MyUpdate.class);
+            if (update != null) {
+                //parseMySelect(mappingMap, method, update);
+                continue;
+            }
+            MyDelete delete = method.getAnnotation(MyDelete.class);
+            if (delete != null) {
+                //parseMySelect(mappingMap, method, update);
+                continue;
             }
 
         }
@@ -369,32 +359,61 @@ public class MyConfigure implements Serializable {
         registerMapper(mappingMap);
     }
 
+    private void parseMyLocalMethod(Map<String, Object> mappingMap, Method method, MyLocalMethodReinforce reinforce) {
+        String className = ((MyLocalMethodReinforce) reinforce).className();
+        MyLocalMethodMapping mapping = new MyLocalMethodMapping();
+        String methodName = ((MyLocalMethodReinforce) reinforce).methodName();
+        if (StringUntils.isNotEmpty(methodName)) {
+            mapping.setMethodName(methodName);
+        }
+        mapping.setClassName(className);
+        mappingMap.put(bean.getName() + "&" + method.getName(), mapping);
+    }
+
+    private void parseMySelect(Map<String, Object> mappingMap, Method method, MySelect mySelect) {
+        try {
+            MySelectMapping select = new MySelectMapping(mySelect.value(), mySelect.nameSpace());
+
+            Pattern pattern = Pattern.compile(SQL_PATTERN);
+            Matcher matcher = pattern.matcher(mySelect.value());
+            List<String> paramList = select.getParamList();
+            List<String> paramNameList = select.getParamNameList();
+            Class<?> model = Class.forName(mySelect.nameSpace());
+            while (matcher.find()) {
+                String fieldlName = matcher.group().substring(2, matcher.group().length() - 1);
+                paramList.add(model.getDeclaredField(fieldlName).getType().getName());
+                paramNameList.add(fieldlName);
+            }
+
+            mappingMap.put(bean.getName() + "#" + method.getName(), select);
+        } catch (ClassNotFoundException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 注册......
      */
-    private void registerMylocalMethodMapperMethod(Map<String, Object> mappingMap, Method method, Annotation myLocalMethod) {
+    private void registerMylocalMethodMapperMethod(Map<String, Object> mappingMap, Method method, MyLocalMethod localMethod) {
         String id = this.bean.getName() + "#" + method.getName();
-        if (myLocalMethod instanceof MyLocalMethod) {
-            MyLocalMethod localMethod = (MyLocalMethod) myLocalMethod;
-            String cn = localMethod.className();
-            String mn = localMethod.methodName();
-            String[] mpc = localMethod.methodParamClass();
-            Class<?>[] cs = new Class[mpc.length];
-            for (int i = 0; i < cs.length; i++) {
-                try {
-                    cs[i] = Class.forName(mpc[i]);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                }
+        String cn = localMethod.className();
+        String mn = localMethod.methodName();
+        String[] mpc = localMethod.methodParamClass();
+        Class<?>[] cs = new Class[mpc.length];
+        for (int i = 0; i < cs.length; i++) {
+            try {
+                cs[i] = Class.forName(mpc[i]);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
-            String d = localMethod.description();
-            String v = localMethod.value();
-            String[] m = localMethod.methodParamValues();
-            MyLocalMethodMapping myLocalMethodMapping = new MyLocalMethodMapping(v, mn, cn, cs, m, d);
-            assert mappingMap != null;
-            if (!mappingMap.containsKey(id)) {
-                mappingMap.put(id, myLocalMethodMapping);
-            }
+        }
+        String d = localMethod.description();
+        String v = localMethod.value();
+        String[] m = localMethod.methodParamValues();
+        MyLocalMethodMapping myLocalMethodMapping = new MyLocalMethodMapping(v, mn, cn, cs, m, d);
+        assert mappingMap != null;
+        if (!mappingMap.containsKey(id)) {
+            mappingMap.put(id, myLocalMethodMapping);
         }
     }
 

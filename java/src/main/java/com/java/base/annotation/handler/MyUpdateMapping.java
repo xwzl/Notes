@@ -5,4 +5,9 @@ package com.java.base.annotation.handler;
  * @date 2019/04/15 17:57
  */
 public class MyUpdateMapping {
+
+
+
+
+
 }

@@ -25,4 +25,6 @@ public interface JavaType {
     String SHORT = "java.lang.Short";
 
     String BOOLEAN = "java.lang.Boolean";
+
+    String LOCAL_DATE_TIME = "java.time.LocalDateTime";
 }

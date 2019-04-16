@@ -3,10 +3,14 @@ package com.java.base.annotation;
 import com.java.base.annotation.auto.MyApplication;
 import com.java.base.annotation.controller.MyControllers;
 import com.java.base.annotation.factory.MyBeanFactory;
+import com.java.base.annotation.mapper.Mapper;
+import com.java.base.annotation.model.Blog;
+import com.java.mybatis.model.User;
 import org.junit.Test;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,27 +31,27 @@ public class MyApplicationBoot {
     public static void main(String[] args) {
         MyBeanFactory factory = MyBeanFactory.run(MyApplicationBoot.class, (Object[]) args);
         MyControllers controller = factory.getBean(MyControllers.class);
-        //Mapper bean = factory.getBean(Mapper.class);
-        //bean.badBlog(new Date());
-        //bean.getBlog(new Blog(), "22", "333");
-        //bean.fineBlog("动态传值", "评论数121");
-        //controller.say();
-        //MyControllers bean1 = factory.getBean(MyControllers.class);
-        //bean1.myServices.run();
-        //Map<String, Object> map = new HashMap<>();
-        //map.put("uId", 1);
-        //map.put("address", "addres}");
-        //User user1 = bean.getUser(map);
-        //User user = new User();
-        //user.setUId(1);
-        //user.setAddress("addres}");
-        //User userA = bean.getUserA(user);
-        //User userB = bean.getUserB(1, "addres}");
-        //System.out.println(user1);
-        //System.out.println(userA);
-        //System.out.println(userB);
-        //List<User> userC = bean.getUserC();
-        //userC.forEach(System.out::println);
+        Mapper bean = factory.getBean(Mapper.class);
+        bean.badBlog(new Date());
+        bean.getBlog(new Blog(), "22", "333");
+        bean.fineBlog("动态传值", "评论数121");
+        controller.say();
+        MyControllers bean1 = factory.getBean(MyControllers.class);
+        bean1.myServices.run();
+        Map<String, Object> map = new HashMap<>();
+        map.put("uId", 1);
+        map.put("address", "addres}");
+        User user1 = bean.getUser(map);
+        User user = new User();
+        user.setUId(1);
+        user.setAddress("addres}");
+        User userA = bean.getUserA(user);
+        User userB = bean.getUserB(1, "addres}");
+        System.out.println(user1);
+        System.out.println(userA);
+        System.out.println(userB);
+        List<User> userC = bean.getUserC();
+        userC.forEach(System.out::println);
     }
 
     @Test

@@ -52,95 +52,97 @@ public class MyMapperProxy implements MethodInterceptor {
         Object obj = mapper.get(methodKey);
         // 1.String MySelect 注解
         if (obj instanceof MySelectMapping) {
-            MySelectMapping select = (MySelectMapping) obj;
-            Connection con = pool.getConnection();
-            List<String> paramList = select.getParamList();
-            List<String> nameList = select.getParamNameList();
-            Object[] params = new Object[paramList.size()];
-            try {
-                String sql = select.getSql().replaceAll(ComponentConstance.SQL_PATTERN, "?");
-                PreparedStatement preparedStatement = con.prepareStatement(sql);
-                boolean flag = true;
-                if (objects.length == 1) {
-                    if (objects[0] instanceof Map && flag) {
-                        Map map = (Map) objects[0];
-                        for (int i = 0; i < nameList.size(); i++) {
-                            Object o = map.get(nameList.get(i));
-                            if (o != null) {
-                                params[i] = o;
-                            }
-                        }
-                        flag = false;
-                    }
-                    if (objects[0] instanceof List && flag) {
-                        List list = (List) objects[0];
-                        for (int i = 0; i < nameList.size(); i++) {
-                            Object o = list.get(i);
-                            if (o != null) {
-                                params[i] = o;
-                            }
-                        }
-                        flag = false;
-                    }
-                    if (checkParamType(objects[0].getClass().getName(), true) && flag) {
-                        Object object = objects[0];
-                        Class<?> objectClass = object.getClass();
-                        for (int i = 0; i < nameList.size(); i++) {
-                            Field field = objectClass.getDeclaredField(nameList.get(i));
-                            field.setAccessible(true);
-                            if (field.get(object) != null) {
-                                params[i] = field.get(object);
-                            }
-                        }
-                        flag = false;
-                    }
-                }
-                if (flag) {
-                    params = objects;
-                }
-                for (int i = 0; i < paramList.size(); i++) {
-                    int tag = i + 1;
-                    setParam(params, paramList, preparedStatement, i, tag);
-                }
-                ResultSet resultSet = preparedStatement.executeQuery();
-                List<Object> list = list = new ArrayList<>();
-                while (resultSet.next()) {
-                    int count = resultSet.getMetaData().getColumnCount();
-                    Class<?> returnType = method.getReturnType();
-                    Class<?> in = Class.forName(select.getNameSpace());
-                    Object newInstance = in.getDeclaredConstructor().newInstance();
-                    Field[] fields = in.getDeclaredFields();
-                    for (Field field : fields) {
-                        if (field.getAnnotation(MyColumn.class) != null) {
-                            field.setAccessible(true);
-                            getFieldValue(resultSet, field.getAnnotation(MyColumn.class).value(), field, newInstance);
-                        }
-                    }
-                    list.add(newInstance);
-                    //for (int i = 1; i <= count; i++) {
-                    //    System.out.println(resultSet.getObject(i));
-                    //}
-                }
-                if (list.size() == 1) {
-                    invoke = list.get(0);
-                } else {
-                    invoke = list;
-                }
-            } finally {
-                pool.close(con);
-            }
-
+            invoke = invokeSelect(method, objects, (MySelectMapping) obj);
         }
-
         // 5.解析 MyLocalMethod 注解
         if (obj instanceof MyLocalMethodMapping) {
             invoke = parseLocal(invoke, (MyLocalMethodMapping) obj);
             return invoke;
         }
-
         // 6.解析 MyLocalMethodReinforce 注解
         invoke = parseReinforce(method, objects, invoke);
+        return invoke;
+    }
 
+    private Object invokeSelect(Method method, Object[] objects, MySelectMapping obj) throws SQLException, NoSuchFieldException, IllegalAccessException, ClassNotFoundException, InstantiationException, java.lang.reflect.InvocationTargetException, NoSuchMethodException {
+        Object invoke;
+        MySelectMapping select = obj;
+        Connection con = pool.getConnection();
+        List<String> paramList = select.getParamList();
+        List<String> nameList = select.getParamNameList();
+        Object[] params = new Object[paramList.size()];
+        try {
+            String sql = select.getSql().replaceAll(ComponentConstance.SQL_PATTERN, "?");
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            boolean flag = true;
+            if (objects.length == 1) {
+                if (objects[0] instanceof Map && flag) {
+                    Map map = (Map) objects[0];
+                    for (int i = 0; i < nameList.size(); i++) {
+                        Object o = map.get(nameList.get(i));
+                        if (o != null) {
+                            params[i] = o;
+                        }
+                    }
+                    flag = false;
+                }
+                if (objects[0] instanceof List && flag) {
+                    List list = (List) objects[0];
+                    for (int i = 0; i < nameList.size(); i++) {
+                        Object o = list.get(i);
+                        if (o != null) {
+                            params[i] = o;
+                        }
+                    }
+                    flag = false;
+                }
+                if (checkParamType(objects[0].getClass().getName(), true) && flag) {
+                    Object object = objects[0];
+                    Class<?> objectClass = object.getClass();
+                    for (int i = 0; i < nameList.size(); i++) {
+                        Field field = objectClass.getDeclaredField(nameList.get(i));
+                        field.setAccessible(true);
+                        if (field.get(object) != null) {
+                            params[i] = field.get(object);
+                        }
+                    }
+                    flag = false;
+                }
+            }
+            if (flag) {
+                params = objects;
+            }
+            for (int i = 0; i < paramList.size(); i++) {
+                int tag = i + 1;
+                setParam(params, paramList, preparedStatement, i, tag);
+            }
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object> list = list = new ArrayList<>();
+            while (resultSet.next()) {
+                int count = resultSet.getMetaData().getColumnCount();
+                Class<?> returnType = method.getReturnType();
+                Class<?> in = Class.forName(select.getNameSpace());
+                Object newInstance = in.getDeclaredConstructor().newInstance();
+                Field[] fields = in.getDeclaredFields();
+                for (Field field : fields) {
+                    if (field.getAnnotation(MyColumn.class) != null) {
+                        field.setAccessible(true);
+                        getFieldValue(resultSet, field.getAnnotation(MyColumn.class).value(), field, newInstance);
+                    }
+                }
+                list.add(newInstance);
+                //for (int i = 1; i <= count; i++) {
+                //    System.out.println(resultSet.getObject(i));
+                //}
+            }
+            if (list.size() == 1) {
+                invoke = list.get(0);
+            } else {
+                invoke = list;
+            }
+        } finally {
+            pool.close(con);
+        }
         return invoke;
     }
 
@@ -157,7 +159,11 @@ public class MyMapperProxy implements MethodInterceptor {
                 break;
             case DATE:
                 Date date = resultSet.getDate(sqlDateType);
-                type.set(newInstance, LocalDateTime.ofEpochSecond(date.getTime(), 0, ZoneOffset.ofHours(8)));
+                type.set(newInstance, new java.util.Date(date.getTime()));
+                break;
+            case LOCAL_DATE_TIME:
+                Date localDate = resultSet.getDate(sqlDateType);
+                type.set(newInstance, LocalDateTime.ofEpochSecond(localDate.getTime(), 0, ZoneOffset.ofHours(8)));
                 break;
             case SHORT:
                 short resultSetShort = resultSet.getShort(sqlDateType);
@@ -206,6 +212,9 @@ public class MyMapperProxy implements MethodInterceptor {
             case FLOAT:
                 access = false;
                 break;
+            case LOCAL_DATE_TIME:
+                access = false;
+                break;
             case DOUBLE:
                 access = false;
                 break;
@@ -229,6 +238,9 @@ public class MyMapperProxy implements MethodInterceptor {
                 break;
             case DATE:
                 preparedStatement.setDate(tag, new Date(((java.util.Date) objects[i]).getTime()));
+                break;
+            case LOCAL_DATE_TIME:
+                preparedStatement.setDate(tag, new Date(((LocalDateTime) objects[i]).toEpochSecond(ZoneOffset.ofHours(8))));
                 break;
             case SHORT:
                 preparedStatement.setShort(tag, (Short) objects[i]);
