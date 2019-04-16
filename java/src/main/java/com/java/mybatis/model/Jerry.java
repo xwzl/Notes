@@ -1,6 +1,6 @@
 package com.java.mybatis.model;
 
-import com.java.base.annotation.auto.MyService;
+import com.java.frame.auto.MyService;
 
 /**
  * @author xuweizhi

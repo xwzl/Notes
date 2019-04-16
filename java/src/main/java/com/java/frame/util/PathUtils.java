@@ -1,11 +1,9 @@
-package com.java.base.url;
+package com.java.frame.util;
 
 import com.java.frame.auto.MyComponent;
 import com.java.frame.auto.MyController;
 import com.java.frame.auto.MyMapper;
 import com.java.frame.auto.MyService;
-import com.java.frame.util.LogUtils;
-import com.java.frame.util.StringUntils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,7 +23,7 @@ import java.util.stream.Collectors;
  * @date 2019/04/09 20:50
  */
 @Slf4j
-public class PathScan {
+public class PathUtils {
 
     protected final Log logger = LogFactory.getLog(getClass());
 

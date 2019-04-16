@@ -63,12 +63,12 @@ configure(allprojects) { project ->
         options.encoding = "UTF-8"
     }
 
-    compileTestJava {
-        sourceCompatibility = '11'  // can be switched to 8 for testing
-        targetCompatibility = '11'
-        options.encoding = "UTF-8"
-        options.compilerArgs += "-parameters"
-    }
+//    compileTestJava {
+//        sourceCompatibility = '11'  // can be switched to 8 for testing
+//        targetCompatibility = '11'
+//        options.encoding = "UTF-8"
+//        options.compilerArgs += "-parameters"
+//    }
 
     repositories {
         mavenLocal()
@@ -79,7 +79,6 @@ configure(allprojects) { project ->
     dependencies {
 
         compile(
-
                 "org.reflections:reflections:${reflectionsVersion}",
                 "org.springframework.boot:spring-boot-starter-test:${springBootVersion}",
                 "org.springframework.boot:spring-boot-starter-web:${springBootVersion}",
