@@ -1,8 +1,5 @@
 package com.java.frame.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author xuweizhi
  * @date 2019/04/15 17:57
@@ -13,15 +10,10 @@ public class MyInsertMapping {
 
     private String nameSpace;
 
-    private List<String> paramList = new ArrayList<>();
 
-    private List<String> paramNameList = new ArrayList<>();
-
-    public MyInsertMapping(String sql, String nameSpace, List<String> paramList, List<String> paramNameList) {
+    public MyInsertMapping(String sql, String nameSpace) {
         this.sql = sql;
         this.nameSpace = nameSpace;
-        this.paramList = paramList;
-        this.paramNameList = paramNameList;
     }
 
     public String getSql() {
@@ -40,19 +32,4 @@ public class MyInsertMapping {
         this.nameSpace = nameSpace;
     }
 
-    public List<String> getParamList() {
-        return paramList;
-    }
-
-    public void setParamList(List<String> paramList) {
-        this.paramList = paramList;
-    }
-
-    public List<String> getParamNameList() {
-        return paramNameList;
-    }
-
-    public void setParamNameList(List<String> paramNameList) {
-        this.paramNameList = paramNameList;
-    }
 }

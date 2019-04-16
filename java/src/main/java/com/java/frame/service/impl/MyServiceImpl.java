@@ -3,7 +3,10 @@ package com.java.frame.service.impl;
 import com.java.frame.auto.MyAutowired;
 import com.java.frame.auto.MyService;
 import com.java.frame.mapper.Mapper;
+import com.java.frame.model.User;
 import com.java.frame.service.MyServices;
+
+import java.util.List;
 
 /**
  * @author xuweizhi
@@ -16,7 +19,7 @@ public class MyServiceImpl implements MyServices {
     public Mapper mapper;
 
     @Override
-    public void run() {
-        mapper.fineBlog("111", "2222");
+    public List<User> run() {
+        return mapper.getUserC();
     }
 }

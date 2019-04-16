@@ -26,9 +26,9 @@ public class MyRegex {
     public static void main(String[] args) {
         //MyRegex myRegex = new MyRegex();
         //myRegex.test2();
-        String value = "#{1212},#{adfa},#{dfadf}";
+        String value = "insert into user (u_id,address,role) values (null,#{address},#{role})";
         //String regex = "#\{\\W+\}";
-        Pattern pattern = Pattern.compile("(?<=\\{)(.+?)(?=\\})");
+        Pattern pattern = Pattern.compile("(?<=\\()(.+?)(?=\\))");
         Matcher match2 = pattern.matcher(value);
         while (match2.find()) {
             System.out.println(match2.group());

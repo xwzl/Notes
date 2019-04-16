@@ -2,14 +2,8 @@ package com.java.frame.factory;
 
 import com.java.frame.auto.*;
 import com.java.frame.exception.MyRequestMappingException;
-import com.java.frame.handler.MyAnnotationAssistant;
-import com.java.frame.handler.MyLocalMethodMapping;
-import com.java.frame.handler.MyRequestHandler;
-import com.java.frame.handler.MySelectMapping;
-import com.java.frame.util.LogUtils;
-import com.java.frame.util.MyResourcesUtils;
-import com.java.frame.util.StringUntils;
-import com.java.base.url.PathScan;
+import com.java.frame.handler.*;
+import com.java.frame.util.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -19,9 +13,9 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static com.java.frame.exception.ComponentConstance.*;
+import static com.java.frame.exception.ComponentConstance.BEAN_KEY;
+import static com.java.frame.exception.ComponentConstance.CONTROLLER_KEY;
 import static com.java.frame.handler.MyRequestHandler.PREFIX;
 import static com.java.frame.util.LogUtils.printLog;
 
@@ -32,12 +26,12 @@ import static com.java.frame.util.LogUtils.printLog;
  * @date 2019/04/11 19:24
  */
 @Slf4j
-public class MySimpleConfigure implements Serializable {
+public class MyConfigure implements Serializable {
 
     /**
      * 包扫描
      */
-    PathScan scan;
+    PathUtils scan;
 
     /**
      * 注解协助
@@ -57,7 +51,7 @@ public class MySimpleConfigure implements Serializable {
     /**
      * 加载配置文件
      */
-    MyResourcesUtils resources;
+    ResourcesUtils resources;
 
     /**
      * 用来存放扫描指定符合注解的类
@@ -88,7 +82,7 @@ public class MySimpleConfigure implements Serializable {
     /**
      * 一个MyRequestMapping注解对应一个MyRequesstHandler 实例
      */
-    final Map<String, Map<String, MyRequestHandler>> controllerMethods = new ConcurrentHashMap<>(256);
+    final Map<String, Map< MyRequestHandler,String>> controllerMethods = new ConcurrentHashMap<>(256);
 
     /**
      * 已经注册好了 bean 的 Class 对象
@@ -118,14 +112,14 @@ public class MySimpleConfigure implements Serializable {
 
     {
         assistant = new MyAnnotationAssistant();
-        scan = new PathScan();
-        resources = new MyResourcesUtils();
+        scan = new PathUtils();
+        resources = new ResourcesUtils();
         aliasRegistry = new SimpleAliasRegistry();
         this.component = assistant.componentRegister;
         this.app = assistant.appRegister;
     }
 
-    private MySimpleConfigure() {
+    private MyConfigure() {
 
     }
 
@@ -133,15 +127,15 @@ public class MySimpleConfigure implements Serializable {
      * 静态内置类可以达到线程安全问题，但如果遇到序列化对象时，使用默认的方式运行得到的结果还是多例的
      */
     private final static class SingletonConfigure {
-        private static final MySimpleConfigure MY_CONFIGURE = new MySimpleConfigure();
+        private static final MyConfigure MY_CONFIGURE = new MyConfigure();
     }
 
 
-    public static MySimpleConfigure builder() {
+    public static MyConfigure builder() {
         return SingletonConfigure.MY_CONFIGURE;
     }
 
-    public MySimpleConfigure execute(String packagePath, String loadResource) {
+    public MyConfigure execute(String packagePath, String loadResource) {
         // 通用逻辑
         generalLogic(packagePath, loadResource);
         //初始化容器
@@ -154,7 +148,7 @@ public class MySimpleConfigure implements Serializable {
         this.loadResource = loadResource;
     }
 
-    public void decorationBeanFactory(MySimpleBeanFactory beanFactory) {
+    public void decorationBeanFactory(MyBeanFactory beanFactory) {
         beanFactory.configure = this;
         addInterface();
         beanFactory.loaded = loaded;
@@ -273,7 +267,7 @@ public class MySimpleConfigure implements Serializable {
             baseUrl = getUrlPath(requestMapping.value());
         }
         Method[] methods = bean.getDeclaredMethods();
-        Map<String, MyRequestHandler> handlerMap = new HashMap<>();
+        Map<MyRequestHandler, String> handlerMap = new HashMap<>();
         for (Method method : methods) {
             MyRequestMapping request = (MyRequestMapping) method.getAnnotation(component.get("MyRequestMapping"));
             if (request != null) {
@@ -282,7 +276,7 @@ public class MySimpleConfigure implements Serializable {
                 MyRequestHandler handler = new MyRequestHandler();
                 handler.setUrl(StringUntils.isNotEmpty(baseUrl) ? baseUrl + url : url);
                 if (!handlerMap.containsKey(keyId)) {
-                    handlerMap.put(keyId, handler);
+                    handlerMap.put(handler, keyId);
                 } else {
                     try {
                         throw new MyRequestMappingException("The URL mapping path cannot be repeated");
@@ -342,17 +336,17 @@ public class MySimpleConfigure implements Serializable {
             }
             MyInsert insert = method.getAnnotation(MyInsert.class);
             if (insert != null) {
-                //parseMySelect(mappingMap, method, insert);
+                parseMyInsert(mappingMap, method, insert);
                 continue;
             }
             MyUpdate update = method.getAnnotation(MyUpdate.class);
             if (update != null) {
-                //parseMySelect(mappingMap, method, update);
+                parseMyUpdate(mappingMap, method, update);
                 continue;
             }
             MyDelete delete = method.getAnnotation(MyDelete.class);
             if (delete != null) {
-                //parseMySelect(mappingMap, method, update);
+                parseMyDelete(mappingMap, method, delete);
                 continue;
             }
 
@@ -373,25 +367,49 @@ public class MySimpleConfigure implements Serializable {
         mappingMap.put(bean.getName() + "&" + method.getName(), mapping);
     }
 
+    /**
+     * 解析 mySelect 注解
+     */
     private void parseMySelect(Map<String, Object> mappingMap, Method method, MySelect mySelect) {
         try {
             MySelectMapping select = new MySelectMapping(mySelect.value(), mySelect.nameSpace());
 
-            Pattern pattern = Pattern.compile(SQL_PATTERN);
-            Matcher matcher = pattern.matcher(mySelect.value());
+            Matcher matcher = PatternUtils.getSqlMatcher(mySelect.value());
             List<String> paramList = select.getParamList();
             List<String> paramNameList = select.getParamNameList();
             Class<?> model = Class.forName(mySelect.nameSpace());
             while (matcher.find()) {
-                String fieldlName = matcher.group().substring(2, matcher.group().length() - 1);
-                paramList.add(model.getDeclaredField(fieldlName).getType().getName());
-                paramNameList.add(fieldlName);
+                String fieldName = matcher.group().substring(2, matcher.group().length() - 1);
+                paramList.add(model.getDeclaredField(fieldName).getType().getName());
+                paramNameList.add(fieldName);
             }
-
             mappingMap.put(bean.getName() + "#" + method.getName(), select);
         } catch (ClassNotFoundException | NoSuchFieldException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 解析 MyDelete 注解
+     */
+    private void parseMyDelete(Map<String, Object> mappingMap, Method method, MyDelete myDelete) {
+        MyDeleteMapping deleteMapping = new MyDeleteMapping(myDelete.value(), myDelete.nameSpace());
+        mappingMap.put(bean.getName() + "#" + method.getName(), deleteMapping);
+    }
+
+    /**
+     * 解析 MyInsert 注解
+     */
+    private void parseMyUpdate(Map<String, Object> mappingMap, Method method, MyUpdate update) {
+        MyUpdateMapping updateMapping = new MyUpdateMapping(update.value(), update.nameSpace());
+        mappingMap.put(bean.getName() + "#" + method.getName(), updateMapping);
+    }
+    /**
+     * 解析 MyInsert 注解
+     */
+    private void parseMyInsert(Map<String, Object> mappingMap, Method method, MyInsert insert) {
+        MyInsertMapping select = new MyInsertMapping(insert.value(), insert.nameSpace());
+        mappingMap.put(bean.getName() + "#" + method.getName(), select);
     }
 
     /**

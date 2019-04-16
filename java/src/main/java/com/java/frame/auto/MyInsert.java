@@ -8,12 +8,10 @@ import java.lang.annotation.*;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target(ElementType.METHOD)
 public @interface MyInsert {
 
-
     String value();
-
 
     String nameSpace();
 

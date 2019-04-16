@@ -5,11 +5,12 @@ import com.java.frame.auto.*;
 import com.java.frame.exception.MultipleInterfaces;
 import com.java.frame.exception.MyApplicationException;
 import com.java.frame.exception.MyComponentException;
+import com.java.frame.http.HttpServer;
 import com.java.frame.jdbc.DataSource;
 import com.java.frame.jdbc.DataSourcePool;
 import com.java.frame.proxy.MyMapperProxy;
 import com.java.frame.util.LogUtils;
-import com.java.frame.util.MyResourcesUtils;
+import com.java.frame.util.ResourcesUtils;
 import com.java.frame.util.StringUntils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -32,7 +33,7 @@ import static com.java.frame.exception.ComponentConstance.BEAN_KEY;
  * @date 2019/04/11 22:38
  */
 @Slf4j
-public class MySimpleBeanFactory implements BeanFactory {
+public class MyBeanFactory implements BeanFactory {
 
     //private final Map<String, Object> singletonFactory = new HashMap<>(16);
     //
@@ -48,12 +49,12 @@ public class MySimpleBeanFactory implements BeanFactory {
     /**
      * 加载配置
      */
-    MySimpleConfigure configure;
+    MyConfigure configure;
 
     /**
      * 加载资源
      */
-    MyResourcesUtils resources = new MyResourcesUtils();
+    ResourcesUtils resources = new ResourcesUtils();
 
     /**
      * Bean 对应的 class 对象们
@@ -110,14 +111,14 @@ public class MySimpleBeanFactory implements BeanFactory {
             new NamedThreadLocal<>("Prototype beans currently in creation");
 
 
-    protected static MySimpleBeanFactory builder() {
-        return new MySimpleBeanFactory();
+    protected static MyBeanFactory builder() {
+        return new MyBeanFactory();
     }
 
     /**
      * 哈哈 .......
      */
-    public static MySimpleBeanFactory run(Class<?> clazz, Object... args) {
+    public static MyBeanFactory run(Class<?> clazz, Object... args) {
         return builder().init(clazz);
     }
 
@@ -125,7 +126,7 @@ public class MySimpleBeanFactory implements BeanFactory {
      * 初始化 bean 们
      */
     @Override
-    public MySimpleBeanFactory init(Class<?> clazz) {
+    public MyBeanFactory init(Class<?> clazz) {
         MyApplication application = clazz.getAnnotation(MyApplication.class);
         if (application != null) {
             // 1. 获取包扫描、额外的包扫描空间、以及排除的包扫描空间,初始化配置
@@ -153,6 +154,14 @@ public class MySimpleBeanFactory implements BeanFactory {
                     e.printStackTrace();
                 }
             }
+            // 6. 启动服务器
+            HttpServer server = new HttpServer(8081,this.singletonObject,this.configure.controllerMethods);
+            try {
+                server.start();
+                LogUtils.printLog(log, "Netty started on port(s): 8081 (http) with context path ''!");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return this;
         }
         throw new MyApplicationException(clazz.getName() + "Class is not MyApplication startup class, can't be parsed!");
@@ -163,7 +172,7 @@ public class MySimpleBeanFactory implements BeanFactory {
      */
     @Override
     public void initConfigure(MyApplication application, String packageName) {
-        MySimpleConfigure.builder().execute(packageName, application.loadResources()).decorationBeanFactory(this);
+        MyConfigure.builder().execute(packageName, application.loadResources()).decorationBeanFactory(this);
     }
 
     /**
@@ -256,10 +265,10 @@ public class MySimpleBeanFactory implements BeanFactory {
                         if (field.getAnnotation(MyResource.class) != null) {
                             String alias = field.getAnnotation(MyResource.class).value();
                             o = singletonObject.get(alias);
-                            if(o!=null){
+                            if (o != null) {
                                 o = (T) singletonObject.get(alias);
                                 field.set(old, o);
-                            }else {
+                            } else {
                                 beanName = transformedBeanName(alias);
                                 o = (T) singletonObject.get(beanName);
                                 field.set(old, o);
@@ -303,7 +312,7 @@ public class MySimpleBeanFactory implements BeanFactory {
             if (StringUntils.isNotEmpty(scan.packageName())) {
                 packageName = new StringBuilder(scan.packageName());
             } else {
-                packageName = new StringBuilder(clazz.getPackageName());
+                packageName = new StringBuilder(clazz.getPackage().getName());
             }
 
             getPackageSet(scan.includeFilters(), in);

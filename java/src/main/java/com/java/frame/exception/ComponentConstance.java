@@ -20,5 +20,16 @@ public class ComponentConstance {
 
     public final static String ALIAS_KEY = "&";
 
+    /**
+     * 获取 #{}中的内容
+     */
     public final static String SQL_PATTERN = "\\#\\{(.+?)\\}";
+
+    /**
+     * 获取括号内部正则表达式
+     */
+    public final static String BRACKETS_IN_PATTERN = "(?<=\\()(.+?)(?=\\))";
+
+    public final static String ALL_DATA = "*";
+
 }

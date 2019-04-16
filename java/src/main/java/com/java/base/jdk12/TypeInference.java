@@ -40,14 +40,14 @@ public class TypeInference {
         TypeInference.say(System.out::println, "男人");
 
         // var 类型 类型推断
-        var str = "11";
-        System.out.println(str.getClass());
-
-        //str = 1; 显然不行，因为str在进行赋值的时候已经确定了其静态变量类型为java.lang.String.
-
-        str = String.valueOf(Integer.valueOf(str));
-
-        System.out.println(str.getClass());
+        //var str = "11";
+        //System.out.println(str.getClass());
+        //
+        ////str = 1; 显然不行，因为str在进行赋值的时候已经确定了其静态变量类型为java.lang.String.
+        //
+        //str = String.valueOf(Integer.valueOf(str));
+        //
+        //System.out.println(str.getClass());
 
         // 首先声明 Woman 为静态类型，编译期确定；
         // new Women() 和 new Man()为动态类型，运行期采取动态链接确定其真正类型。
@@ -101,9 +101,9 @@ interface Woman {
         }
     }
 
-    private static void hello() {
-        System.out.println("Java  9 新特性，接口使用静态方法，添加自己的默认实现；");
-    }
+    //private static void hello() {
+    //    System.out.println("Java  9 新特性，接口使用静态方法，添加自己的默认实现；");
+    //}
 }
 
 

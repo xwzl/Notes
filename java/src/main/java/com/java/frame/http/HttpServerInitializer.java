@@ -1,15 +1,27 @@
 package com.java.frame.http;
 
+import com.java.frame.handler.MyRequestHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
+import java.util.Map;
+
 /**
  * @author xuweizhi
  */
 public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
+
+    Map<String, Object> single;
+
+    Map<String, Map<MyRequestHandler, String>> handlers;
+
+    public HttpServerInitializer(Map<String, Object> single, Map<String, Map<MyRequestHandler, String>> handlers) {
+        this.single = single;
+        this.handlers = handlers;
+    }
 
     @Override
     protected void initChannel(SocketChannel channel) throws Exception {
@@ -25,7 +37,7 @@ public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
         pipeline.addLast("httpAggregator", new HttpObjectAggregator(512 * 1024));
 
         // 请求处理器
-        pipeline.addLast(new HttpRequestHandler());
+        pipeline.addLast(new HttpRequestHandler(single,handlers));
 
     }
 

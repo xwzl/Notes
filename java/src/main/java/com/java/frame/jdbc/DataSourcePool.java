@@ -29,8 +29,9 @@ public class DataSourcePool {
             for (int i = 0; i < 10; i++) {
                 poolConnection.add(DriverManager.getConnection(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword()));
             }
-            LogUtils.printLog(log, "数据库初始化成功");
+            LogUtils.printLog(log, "The database connection pool was successfully initialized !");
         } catch (ClassNotFoundException | SQLException e) {
+            LogUtils.printLog(log, "数据库连接失败");
             e.printStackTrace();
         }
     }

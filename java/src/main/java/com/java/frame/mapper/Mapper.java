@@ -1,9 +1,6 @@
 package com.java.frame.mapper;
 
-import com.java.frame.auto.MyLocalMethod;
-import com.java.frame.auto.MyLocalMethodReinforce;
-import com.java.frame.auto.MyMapper;
-import com.java.frame.auto.MySelect;
+import com.java.frame.auto.*;
 import com.java.frame.model.Blog;
 import com.java.frame.model.User;
 
@@ -43,4 +40,20 @@ public interface Mapper {
 
     @MySelect(value = "select * from user", nameSpace = "com.java.frame.model.User")
     List<User> getUserC();
+
+    @MyInsert(value = " insert into user (u_id,address,role) values (null,#{address},#{role})",
+            nameSpace = "com.java.frame.model.User")
+    boolean addUser(User uer);
+
+
+    @MyUpdate(value = " update user set address =#{address},apartment=#{apartment},create_time=#{createTime}" +
+            ",password=#{password},phone_number=#{phoneNumber},username=#{username},role=#{role} where u_id = #{uId}",
+            nameSpace = "com.java.frame.model.User")
+    void updateUser(User user);
+
+    @MyDelete(value = "delete from user where u_id = #{uId} and role = #{role}", nameSpace = "com.java.frame.model.User")
+    void delectUser(User user);
+
+    @MyDelete(value = "delete from user where u_id = #{uId}", nameSpace = "com.java.frame.model.User")
+    void delectUser(Integer id);
 }

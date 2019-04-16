@@ -1,7 +1,10 @@
 package com.java.frame.controller;
 
 import com.java.frame.auto.*;
+import com.java.frame.model.User;
 import com.java.frame.service.MyServices;
+
+import java.util.List;
 
 /**
  * @author xuweizhi
@@ -19,9 +22,9 @@ public class MyControllers {
     public MyServices getMyServices;
 
     @MyRequestMapping("we/we")
-    public void say() {
-        System.out.println(myServices.getClass());
-        System.out.println(getMyServices.getClass());
+    public String say() {
+        List<User> run = myServices.run();
+        return run.toString();
     }
 
 }

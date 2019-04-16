@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  * @author xuweizhi
  * @date 2019/04/11 23:06
  */
-public class MyResourcesUtils {
+public class ResourcesUtils {
 
     Map<String, List<String>> map = new HashMap<>();
 

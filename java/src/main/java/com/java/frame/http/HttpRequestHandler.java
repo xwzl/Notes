@@ -1,5 +1,6 @@
 package com.java.frame.http;
 
+import com.java.frame.handler.MyRequestHandler;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -7,6 +8,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,6 +18,15 @@ import static io.netty.handler.codec.http.HttpUtil.is100ContinueExpected;
  * @author xuweizhi
  */
 public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
+
+    Map<String, Object> single;
+
+    Map<String, Map<MyRequestHandler, String>> handlers;
+
+    public HttpRequestHandler(Map<String, Object> single, Map<String, Map<MyRequestHandler, String>> handlers) {
+        this.single = single;
+        this.handlers = handlers;
+    }
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
@@ -35,10 +46,30 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         }
         // 获取请求的uri
         String uri = req.uri();
+        Object invoke=null;
+        for (Map.Entry<String, Map<MyRequestHandler, String>> entry : handlers.entrySet()) {
+            String className = entry.getKey();
+            Map<MyRequestHandler, String> entryValue = entry.getValue();
+            for (Map.Entry<MyRequestHandler, String> v : entryValue.entrySet()) {
+                if (uri.equalsIgnoreCase(v.getKey().getUrl())) {
+                    Object o = single.get(className);
+                    Class<?> clazz = Class.forName(className);
+                    String methodName = v.getValue().substring(v.getValue().indexOf("#") + 1);
+                    Method[] methods = clazz.getDeclaredMethods();
+                    for (Method method : methods) {
+                        if (method.getName().equals(methodName)) {
+                            method.setAccessible(true);
+                            invoke= method.invoke(o);
+                        }
+                    }
+                }
+            }
+        }
+        String msss= (String)invoke;
         Map<String, String> resMap = new HashMap<>();
         resMap.put("method", req.method().name());
         resMap.put("uri", uri);
-        String msg = "<html><head><title>test</title></head><body>你请求uri为：" + uri + "</body></html>";
+        String msg = "<html><head><title>test</title></head><body>你请求uri为：" + msss + "</body></html>";
         // 创建http响应
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1,
