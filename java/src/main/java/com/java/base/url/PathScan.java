@@ -5,7 +5,7 @@ import com.java.frame.auto.MyController;
 import com.java.frame.auto.MyMapper;
 import com.java.frame.auto.MyService;
 import com.java.frame.util.LogUtils;
-import com.java.frame.util.StringUntils;
+import com.java.frame.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,15 +78,15 @@ public class PathScan {
         }
         regex = INCLUDE_PACKAGE_PATTERN;
         if (path.contains(INCLUDE_PACKAGE_PATTERN)) {
-            if (StringUntils.isEmpty(basePath)) {
+            if (StringUtils.isEmpty(basePath)) {
                 basePath = path.substring(0, path.indexOf(regex));
             }
             remainPath = getExcludePath(getRemainPath(path, regex), inPath);
         }
-        if (StringUntils.isEmpty(remainPath)) {
+        if (StringUtils.isEmpty(remainPath)) {
             LogUtils.printLog(logger, "Start scanning package path !");
         }
-        if (StringUntils.isEmpty(basePath)) {
+        if (StringUtils.isEmpty(basePath)) {
             basePath = path;
         }
         inPath.add(basePath);

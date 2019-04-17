@@ -4,7 +4,7 @@ package com.java.frame.util;
  * @author xuweizhi
  * @date 2019/01/04 10:50
  */
-public class StringUntils {
+public class StringUtils {
 
     private static final String PACKAGE_SEPARATOR_CHAR = ".";
 

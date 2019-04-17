@@ -1,6 +1,5 @@
 package com.java.frame.factory;
 
-import com.java.base.url.PathScan;
 import com.java.frame.auto.*;
 import com.java.frame.exception.MultipleInterfaces;
 import com.java.frame.exception.MyApplicationException;
@@ -10,8 +9,9 @@ import com.java.frame.jdbc.DataSource;
 import com.java.frame.jdbc.DataSourcePool;
 import com.java.frame.proxy.MyMapperProxy;
 import com.java.frame.util.LogUtils;
+import com.java.frame.util.PathUtils;
 import com.java.frame.util.ResourcesUtils;
-import com.java.frame.util.StringUntils;
+import com.java.frame.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.cglib.proxy.Enhancer;
@@ -155,7 +155,7 @@ public class MyBeanFactory implements BeanFactory {
                 }
             }
             // 6. 启动服务器
-            HttpServer server = new HttpServer(8081,this.singletonObject,this.configure.controllerMethods);
+            HttpServer server = new HttpServer(8080,this.singletonObject,this.configure.controllerMethods);
             try {
                 server.start();
                 LogUtils.printLog(log, "Netty started on port(s): 8081 (http) with context path ''!");
@@ -261,7 +261,7 @@ public class MyBeanFactory implements BeanFactory {
                 String beanName = "";
                 if (o instanceof MultipleInterfaces) {
                     beanName = transformedBeanName(fieldAlias);
-                    if (StringUntils.isEmpty(beanName)) {
+                    if (StringUtils.isEmpty(beanName)) {
                         if (field.getAnnotation(MyResource.class) != null) {
                             String alias = field.getAnnotation(MyResource.class).value();
                             o = singletonObject.get(alias);
@@ -284,7 +284,7 @@ public class MyBeanFactory implements BeanFactory {
 
                 } else {
                     beanName = transformedBeanName(fieldAlias);
-                    if (StringUntils.isNotEmpty(fieldAlias)) {
+                    if (StringUtils.isNotEmpty(fieldAlias)) {
                         o = (T) singletonObject.get(beanName);
                     }
                     field.set(old, o);
@@ -309,7 +309,7 @@ public class MyBeanFactory implements BeanFactory {
             Set<String> in = new HashSet<>();
             Set<String> ex = new HashSet<>();
             ex.add(MyComponent.class.getPackage().getName());
-            if (StringUntils.isNotEmpty(scan.packageName())) {
+            if (StringUtils.isNotEmpty(scan.packageName())) {
                 packageName = new StringBuilder(scan.packageName());
             } else {
                 packageName = new StringBuilder(clazz.getPackage().getName());
@@ -319,18 +319,18 @@ public class MyBeanFactory implements BeanFactory {
             getPackageSet(scan.excludeFilters(), ex);
             if (ex.size() > 0) {
                 for (String e : ex) {
-                    packageName.append(PathScan.EXCLUDE_PACKAGE_PATTERN).append(e);
+                    packageName.append(PathUtils.EXCLUDE_PACKAGE_PATTERN).append(e);
                 }
             }
             if (in.size() > 0) {
                 for (String i : in) {
-                    packageName.append(PathScan.INCLUDE_PACKAGE_PATTERN).append(i);
+                    packageName.append(PathUtils.INCLUDE_PACKAGE_PATTERN).append(i);
                 }
             }
         } else {
             //如果未设置包扫描路径，默认解析当前路径及子目录
             packageName = new StringBuilder(clazz.getPackage().getName());
-            packageName.append(PathScan.EXCLUDE_PACKAGE_PATTERN).append(MyComponent.class.getPackage().getName());
+            packageName.append(PathUtils.EXCLUDE_PACKAGE_PATTERN).append(MyComponent.class.getPackage().getName());
         }
         return packageName.toString();
     }
@@ -486,7 +486,7 @@ public class MyBeanFactory implements BeanFactory {
         String alias;
         if (b) {
             alias = alias2;
-            if (StringUntils.isNotEmpty(alias)) {
+            if (StringUtils.isNotEmpty(alias)) {
                 singletonObject.put(clazz.getInterfaces()[0].getName(), new MultipleInterfaces());
             } else {
                 throw new MyComponentException("If the " + clazz.getInterfaces()[0].getName() + " implementation class " +

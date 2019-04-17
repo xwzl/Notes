@@ -76,15 +76,15 @@ public class PathUtils {
         }
         regex = INCLUDE_PACKAGE_PATTERN;
         if (path.contains(INCLUDE_PACKAGE_PATTERN)) {
-            if (StringUntils.isEmpty(basePath)) {
+            if (StringUtils.isEmpty(basePath)) {
                 basePath = path.substring(0, path.indexOf(regex));
             }
             remainPath = getExcludePath(getRemainPath(path, regex), inPath);
         }
-        if (StringUntils.isEmpty(remainPath)) {
+        if (StringUtils.isEmpty(remainPath)) {
             LogUtils.printLog(logger, "Start scanning package path !");
         }
-        if (StringUntils.isEmpty(basePath)) {
+        if (StringUtils.isEmpty(basePath)) {
             basePath = path;
         }
         inPath.add(basePath);

@@ -5,7 +5,7 @@ import com.java.frame.exception.MyComponentException;
 import com.java.frame.handler.*;
 import com.java.frame.jdbc.DataSourcePool;
 import com.java.frame.util.PatternUtils;
-import com.java.frame.util.StringUntils;
+import com.java.frame.util.StringUtils;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
@@ -278,7 +278,7 @@ public class MyMapperProxy implements MethodInterceptor {
                 break;
             case STRING:
                 String resultSetString = resultSet.getString(sqlDateType);
-                if (StringUntils.isNotEmpty(resultSetString)) {
+                if (StringUtils.isNotEmpty(resultSetString)) {
                     type.set(newInstance, resultSetString);
                 }
                 break;
@@ -328,6 +328,7 @@ public class MyMapperProxy implements MethodInterceptor {
                 boolean resultSetBoolean = resultSet.getBoolean(sqlDateType);
                 type.set(newInstance, Boolean.valueOf(resultSetBoolean));
                 break;
+            default:
         }
     }
 
@@ -363,6 +364,7 @@ public class MyMapperProxy implements MethodInterceptor {
             case BOOLEAN:
                 access = false;
                 break;
+            default:
         }
         return access;
     }
@@ -399,6 +401,7 @@ public class MyMapperProxy implements MethodInterceptor {
             case BOOLEAN:
                 preparedStatement.setBoolean(tag, object == null ? false : (Boolean) object);
                 break;
+            default:
         }
     }
 
@@ -434,6 +437,7 @@ public class MyMapperProxy implements MethodInterceptor {
             case BOOLEAN:
                 preparedStatement.setBoolean(tag, objects[i] == null ? false : (Boolean) objects[i]);
                 break;
+            default:
         }
     }
 
@@ -449,7 +453,7 @@ public class MyMapperProxy implements MethodInterceptor {
             if (mapping != null) {
                 mapping = (MyLocalMethodMapping) mapper.get(reinforceKey);
                 c = Class.forName(mapping.getClassName());
-                if (StringUntils.isNotEmpty(mapping.getMethodName())) {
+                if (StringUtils.isNotEmpty(mapping.getMethodName())) {
                     proxyMethod = c.getDeclaredMethod(mapping.getMethodName(), getClasses(objects));
                 } else {
                     proxyMethod = c.getDeclaredMethod(method.getName(), getClasses(objects));

@@ -1,6 +1,7 @@
 package com.java.frame.http;
 
 import com.java.frame.handler.MyRequestHandler;
+import com.java.frame.util.StringUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
@@ -19,6 +20,7 @@ public class HttpServer {
 
     int port;
 
+
     Map<String, Object> single;
 
     Map<String, Map<MyRequestHandler, String>> handlers;
@@ -35,6 +37,11 @@ public class HttpServer {
     }
 
     public void start() throws Exception {
+        MyPort port = (MyPort) single.get("com.java.frame.http.MyPort");
+        if (StringUtils.isNotEmpty(port.getPort())) {
+            this.port = Integer.valueOf(port.getPort());
+        }
+
         ServerBootstrap bootstrap = new ServerBootstrap();
         EventLoopGroup boss = new NioEventLoopGroup();
         EventLoopGroup work = new NioEventLoopGroup();
@@ -43,8 +50,12 @@ public class HttpServer {
                 .channel(NioServerSocketChannel.class)
                 .childHandler(new HttpServerInitializer(single, handlers));
 
-        ChannelFuture f = bootstrap.bind(new InetSocketAddress(port)).sync();
-        System.out.println(" server start up on port : " + port);
+        ChannelFuture f = bootstrap.bind(new InetSocketAddress(this.port)).sync();
+        if (StringUtils.isNotEmpty(port.getContext())) {
+            System.out.println(" server start up on port : " + this.port + " and Application context :" + port.context);
+        } else {
+            System.out.println(" server start up on port : " + this.port);
+        }
         f.channel().closeFuture().sync();
 
     }

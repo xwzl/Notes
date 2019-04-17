@@ -6,6 +6,8 @@ import com.java.frame.mapper.Mapper;
 import com.java.frame.model.User;
 import com.java.frame.service.MyServices;
 
+import java.util.List;
+
 /**
  * @author xuweizhi
  * @date 2019/04/14 18:58
@@ -20,5 +22,10 @@ public class MyServiceImpl implements MyServices {
     @Override
     public User getUserById(Integer id) {
         return mapper.getUserById(id);
+    }
+
+    @Override
+    public List<User> getUsers() {
+        return mapper.getUserC();
     }
 }

@@ -1,0 +1,9 @@
+Ctrl+alt+s
+
+builder> Compiler > Java Compiler
+
+添加
+
+-parameters
+
+完整参数 javac -parameters

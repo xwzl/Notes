@@ -1,6 +1,7 @@
 package com.java.frame.http;
 
 import com.java.frame.handler.MyRequestHandler;
+import com.java.frame.util.StringUtils;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -54,21 +55,27 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
         FullHttpResponse response = null;
         String uri = req.uri();
-        Object invoke = "1";
+        Object invoke = "请求错误，该值为默认返回值！";
         if (uri.equalsIgnoreCase(FAVICON)) {
             plus.getFavicaon(ctx);
             return;
         }
 
+        MyPort port = (MyPort) single.get("com.java.frame.http.MyPort");
+        String context = port.getContext();
+
         if (req.method() == HttpMethod.GET) {
             Map<String, Object> params = plus.getGetParamsFromChannel(req);
 
+
             if (HttpMethod.GET.equals(req.method())) {
-                uri = uri.substring(0, uri.indexOf("?"));
+                if (uri.contains("?")) {
+                    uri = uri.substring(0, uri.indexOf("?"));
+                }
                 // 缓存获取 url 路径
                 if (requestMapping.get(uri) != null) {
                     MyRequestHandler handler = requestMapping.get(uri);
-                    invoke = parseGet(uri, invoke, params, handler.getControllerName(), handler);
+                    invoke = parseGet(uri, invoke, params, handler.getControllerName(), handler, context);
                     plus.responseMessage(ctx, req, uri, invoke);
                     return;
                 }
@@ -77,15 +84,22 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                     Map<MyRequestHandler, String> entryValue = entry.getValue();
                     for (Map.Entry<MyRequestHandler, String> v : entryValue.entrySet()) {
                         MyRequestHandler requestHandler = v.getKey();
-                        invoke = parseGet(uri, invoke, params, className, requestHandler);
+                        invoke = parseGet(uri, invoke, params, className, requestHandler, context);
                     }
                 }
             }
+
         } else if (req.method() == HttpMethod.POST) {
+
             Map<String, Object> params = plus.getPostParamsFromChannel(req);
+
+            if (uri.contains("?")) {
+                uri = uri.substring(0, uri.indexOf("?"));
+            }
+
             if (requestMapping.get(uri) != null) {
                 MyRequestHandler handler = requestMapping.get(uri);
-                invoke = parseGet(uri, invoke, params, handler.getControllerName(), handler);
+                invoke = parseGet(uri, invoke, params, handler.getControllerName(), handler, context);
                 plus.responseMessage(ctx, req, uri, invoke);
                 return;
             }
@@ -94,7 +108,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
                 Map<MyRequestHandler, String> entryValue = entry.getValue();
                 for (Map.Entry<MyRequestHandler, String> v : entryValue.entrySet()) {
                     MyRequestHandler requestHandler = v.getKey();
-                    invoke = parseGet(uri, invoke, params, className, requestHandler);
+                    invoke = parseGet(uri, invoke, params, className, requestHandler, context);
                 }
             }
             //String data = "POST method over";
@@ -107,9 +121,15 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     }
 
 
-    private Object parseGet(String uri, Object invoke, Map<String, Object> params, String className, MyRequestHandler requestHandler) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private Object parseGet(String uri, Object invoke, Map<String, Object> params, String className, MyRequestHandler requestHandler, String context) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         String url = requestHandler.getUrl();
-
+        if (StringUtils.isNotEmpty(context)) {
+            if (context.contains("/")) {
+                url = context + url;
+            } else {
+                url = "/" + context + url;
+            }
+        }
         if (uri.equalsIgnoreCase(url)) {
 
             Object o = single.get(className);
@@ -121,18 +141,26 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
             requestMapping.put(url, requestHandler);
 
             Object[] param = new Object[list.size()];
-            for (int i = 0; i < list.size(); i++) {
-                boolean b = params.containsKey(list.get(i));
-                if (b) {
-                    param[i] = plus.getValue(methodParamTypes[i], params.get(list.get(i)), true);
+            if (list.size() == 0) {
+                method.setAccessible(true);
+                invoke = method.invoke(o);
+            } else {
+                for (int i = 0; i < list.size(); i++) {
+                    boolean b = params.containsKey(list.get(i));
+                    if (b) {
+                        param[i] = plus.getValue(methodParamTypes[i], params.get(list.get(i)), true);
+                    } else {
+                        param[i] = plus.getValue(methodParamTypes[i], params.get(list.get(i)), false);
+                    }
+                }
+                method.setAccessible(true);
+                if (list.size() > 0) {
+                    invoke = method.invoke(o, param);
                 } else {
-                    param[i] = plus.getValue(methodParamTypes[i], params.get(list.get(i)), false);
+                    invoke = method.invoke(o);
                 }
             }
 
-            method.setAccessible(true);
-            System.out.println(param[0].getClass());
-            invoke = method.invoke(o, param);
         }
         return invoke;
     }

@@ -193,15 +193,15 @@ public class MyConfigure implements Serializable {
             //}
             if (components != null && components.size() > 0) {
                 // 解析 mapper,service,controller
-                LogUtils.printLog(log, "Start parsing MyMapper 、MyService、MyController!");
+                printLog(log, "Start parsing MyMapper 、MyService、MyController!");
                 addConcreteComponent();
-                LogUtils.printLog(log, "Start register MyComponent bean Class!");
+                printLog(log, "Start register MyComponent bean Class!");
                 registerComponent();
             }
             parseResources();
         } catch (IOException e) {
             for (String packages : split) {
-                LogUtils.printLog(log, packages + "packet scan failed !");
+                printLog(log, packages + "packet scan failed !");
             }
         }
     }
@@ -296,7 +296,7 @@ public class MyConfigure implements Serializable {
                 handler.setMethodName(method.getName());
                 handler.setMethodParamTypes(classes);
 
-                handler.setUrl(StringUntils.isNotEmpty(baseUrl) ? baseUrl + url : url);
+                handler.setUrl(StringUtils.isNotEmpty(baseUrl) ? baseUrl + url : url);
 
                 if (!handlerMap.containsKey(keyId)) {
                     handlerMap.put(handler, keyId);
@@ -383,7 +383,7 @@ public class MyConfigure implements Serializable {
         String className = ((MyLocalMethodReinforce) reinforce).className();
         MyLocalMethodMapping mapping = new MyLocalMethodMapping();
         String methodName = ((MyLocalMethodReinforce) reinforce).methodName();
-        if (StringUntils.isNotEmpty(methodName)) {
+        if (StringUtils.isNotEmpty(methodName)) {
             mapping.setMethodName(methodName);
         }
         mapping.setClassName(className);
@@ -482,7 +482,7 @@ public class MyConfigure implements Serializable {
                 alias = myController.alias();
             }
         }
-        if (StringUntils.isNotEmpty(alias)) {
+        if (StringUtils.isNotEmpty(alias)) {
             aliasRegistry.registerAlias(bean.getName(), alias);
         }
     }

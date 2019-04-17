@@ -55,8 +55,10 @@ public class ResourcesUtils {
         for (String line; (line = reader.readLine()) != null; ) {
             int i = line.indexOf(".");
             int i1 = line.indexOf("=");
-            List<String> list = map.computeIfAbsent(line.substring(0, i).toUpperCase(), k -> new ArrayList<>());
-            list.add(line.substring(i + 1, i1).trim() + "#" + line.substring(i1 + 1).trim());
+            if (StringUtils.isNotEmpty(line) && line.length() > 0) {
+                List<String> list = map.computeIfAbsent(line.substring(0, i).toUpperCase(), k -> new ArrayList<>());
+                list.add(line.substring(i + 1, i1).trim() + "#" + line.substring(i1 + 1).trim());
+            }
         }
         in.close();
         reader.close();
@@ -69,8 +71,8 @@ public class ResourcesUtils {
         String param = myValue.value();
         if (checkFieldName(param)) {
             param = param.substring(param.indexOf("{") + 1, param.indexOf("}"));
-        }else {
-            throw new MyValueException(clazz.getName()+"."+field.getName()+" syntax error，Please use ${"+field.getName()+"}");
+        } else {
+            throw new MyValueException(clazz.getName() + "." + field.getName() + " syntax error，Please use ${" + field.getName() + "}");
         }
         if (list != null) {
             for (String value : list) {
@@ -96,7 +98,9 @@ public class ResourcesUtils {
                         // todo
                         continue;
                     }
-                    field.set(instance, value.substring(i + 1));
+                    if (StringUtils.isNotEmpty(value.substring(i + 1))) {
+                        field.set(instance, value.substring(i + 1));
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
