@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @author xuweizhi
@@ -29,6 +30,7 @@ public class GsonTypeToken {
         Gson gson = new Gson();
         String jsonArray = "[\"Android\",\"Java\",\"PHP\"]";
         String[] strings = gson.fromJson(jsonArray, String[].class);
+        Stream.of(strings).forEach(System.out::println);
         // TypeToken的构造方法是protected修饰的,所以上面才会写成new TypeToken<List<String>>() {}.getType()
         // 而不是 new TypeToken<List<String>>().getType()
         List<String> stringList = gson.fromJson(jsonArray, new TypeToken<List<String>>() {}.getType());

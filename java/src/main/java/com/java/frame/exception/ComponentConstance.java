@@ -32,4 +32,14 @@ public class ComponentConstance {
 
     public final static String ALL_DATA = "*";
 
+    public final static String GET = "get";
+
+    public final static String POST = "POST";
+
+    public final static String FAVICON = "/favicon.ico";
+
+    public final static String ICON = "icon.png";
+
+    public final static String GITHUB = "static/GitBub.png";
+
 }

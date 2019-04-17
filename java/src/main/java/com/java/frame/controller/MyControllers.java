@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2019/04/14 16:01
  */
 @MyController
-@MyRequestMapping("we")
+@MyRequestMapping("user")
 public class MyControllers {
 
     @MyResource("com.java.frame.service.impl.MyServiceImpl")
@@ -21,10 +21,12 @@ public class MyControllers {
     @MyQualifier("myServiceImpl2")
     public MyServices getMyServices;
 
-    @MyRequestMapping("we/we")
-    public String say() {
-        List<User> run = myServices.run();
-        return run.toString();
+    @MyRequestMapping("getUser")
+    public User getUserById(Integer id, String name, Long age, User user, List<User> lists) {
+        System.out.println(id);
+        System.out.println(name);
+        System.out.println(age);
+        return myServices.getUserById(id);
     }
 
 }

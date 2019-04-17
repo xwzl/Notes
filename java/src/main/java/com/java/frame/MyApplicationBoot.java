@@ -1,7 +1,6 @@
 package com.java.frame;
 
 import com.java.frame.auto.MyApplication;
-import com.java.frame.controller.MyControllers;
 import com.java.frame.factory.MyBeanFactory;
 
 /**
@@ -20,9 +19,7 @@ import com.java.frame.factory.MyBeanFactory;
 public class MyApplicationBoot {
 
     public static void main(String[] args) {
-        MyBeanFactory factory = MyBeanFactory.run(MyApplicationBoot.class, (Object[]) args);
-        MyControllers controller = factory.getBean(MyControllers.class);
-        controller.say();
+        MyBeanFactory.run(MyApplicationBoot.class, (Object[]) args);
         //Mapper bean = factory.getBean(Mapper.class);
         //bean.badBlog(new Date());
         //bean.getBlog(new Blog(), "22", "333");
@@ -73,3 +70,4 @@ public class MyApplicationBoot {
 
 
 }
+

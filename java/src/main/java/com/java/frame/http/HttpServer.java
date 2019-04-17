@@ -39,9 +39,9 @@ public class HttpServer {
         EventLoopGroup boss = new NioEventLoopGroup();
         EventLoopGroup work = new NioEventLoopGroup();
         bootstrap.group(boss, work)
-                .handler(new LoggingHandler(LogLevel.DEBUG))
+                .handler(new LoggingHandler(LogLevel.INFO))
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new HttpServerInitializer(single,handlers));
+                .childHandler(new HttpServerInitializer(single, handlers));
 
         ChannelFuture f = bootstrap.bind(new InetSocketAddress(port)).sync();
         System.out.println(" server start up on port : " + port);

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -82,7 +83,7 @@ public class MyConfigure implements Serializable {
     /**
      * 一个MyRequestMapping注解对应一个MyRequesstHandler 实例
      */
-    final Map<String, Map< MyRequestHandler,String>> controllerMethods = new ConcurrentHashMap<>(256);
+    final Map<String, Map<MyRequestHandler, String>> controllerMethods = new ConcurrentHashMap<>(256);
 
     /**
      * 已经注册好了 bean 的 Class 对象
@@ -271,10 +272,32 @@ public class MyConfigure implements Serializable {
         for (Method method : methods) {
             MyRequestMapping request = (MyRequestMapping) method.getAnnotation(component.get("MyRequestMapping"));
             if (request != null) {
+
                 String keyId = bean.getName() + CONTROLLER_KEY + method.getName();
                 String url = getUrlPath(request.value());
+
                 MyRequestHandler handler = new MyRequestHandler();
+
+                Map<String, Class<?>> mapping = handler.getMapping();
+                List<String> list = handler.getList();
+                Parameter[] methodParameters = method.getParameters();
+                Class<?>[] classes = new Class[methodParameters.length];
+
+                for (int i = 0; i < methodParameters.length; i++) {
+                    String methodParameterName = methodParameters[i].getName();
+                    Class<?> type = methodParameters[i].getType();
+                    classes[i] = type;
+                    list.add(methodParameterName);
+                    mapping.put(methodParameterName, type);
+                }
+
+                handler.setControllerName(bean.getName());
+                handler.setMapping(mapping);
+                handler.setMethodName(method.getName());
+                handler.setMethodParamTypes(classes);
+
                 handler.setUrl(StringUntils.isNotEmpty(baseUrl) ? baseUrl + url : url);
+
                 if (!handlerMap.containsKey(keyId)) {
                     handlerMap.put(handler, keyId);
                 } else {
@@ -404,6 +427,7 @@ public class MyConfigure implements Serializable {
         MyUpdateMapping updateMapping = new MyUpdateMapping(update.value(), update.nameSpace());
         mappingMap.put(bean.getName() + "#" + method.getName(), updateMapping);
     }
+
     /**
      * 解析 MyInsert 注解
      */

@@ -26,7 +26,7 @@ ext {
     protobufVersion = '3.6.1'
     sdkCoreVersion = "4.2.2"
     sdkDysmsapiVersion = "1.1.0"
-    nettyAllVersion = "4.1.32.Final"
+    nettyAllVersion = "4.1.34.Final"
     gsonVersion = "2.8.5"
     jodaTimeVersion = "2.10.1"
     lombokVersion = "1.18.4"

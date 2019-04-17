@@ -32,8 +32,8 @@ public interface Mapper {
     @MySelect(value = "select * from user where u_id = #{uId} and address = #{address}", nameSpace = "com.java.frame.model.User")
     User getUser(Map<String, Object> mapper);
 
-    @MySelect(value = "select * from user where u_id = #{uId} and address = #{address}", nameSpace = "com.java.frame.model.User")
-    User getUserA(User user);
+    @MySelect(value = "select * from user where u_id = #{uId}", nameSpace = "com.java.frame.model.User")
+    User getUserById(Integer id);
 
     @MySelect(value = "select * from user where u_id = #{uId} and address = #{address}", nameSpace = "com.java.frame.model.User")
     User getUserB(Integer integer, String address);

@@ -1,9 +1,13 @@
 package com.java.jvm.gson;
 
+import com.google.gson.Gson;
+
 import java.util.List;
 
 /**
  * 用GSON解析Json数组
+ *
+ * @author xuweizhi
  */
 public class GsonTest {
     public static void main(String[] args) {
@@ -13,12 +17,18 @@ public class GsonTest {
         List<Student> students = GsonUtil.parseJsonArrayWithGson(jsonData,
                 Student.class);
         System.out.println(students);
+        Gson gson = new Gson();
+        String json = gson.toJson(students);
+        System.out.println(json);
     }
 }
 
 class Student {
     private String name;
-    private List<Grade> grade; // 因为grade是个数组，所以要定义成List
+    /**
+     * 因为grade是个数组，所以要定义成List
+     */
+    private List<Grade> grade;
 
     public class Grade {
         private String course;
