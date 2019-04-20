@@ -40,6 +40,6 @@ public class ComponentConstance {
 
     public final static String ICON = "icon.png";
 
-    public final static String GITHUB = "static/GitBub.png";
+    public final static String GITHUB = "static/GitHub.png";
 
 }
