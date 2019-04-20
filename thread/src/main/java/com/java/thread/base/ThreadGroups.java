@@ -1,6 +1,5 @@
 package com.java.thread.base;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 
 /**
  * @author xuweizhi
