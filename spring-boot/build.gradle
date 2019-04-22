@@ -1,0 +1,37 @@
+task resources(type: Copy) {
+    copy {
+        from("src/main/java") {
+            include("**/*.png")
+            include("**/*.jpg")
+            include("**/*.xml")
+        }
+        into("${rootDir}/java/out/production/classes")
+    }
+}
+
+dependencies {
+    compile(
+            "com.baomidou:mybatis-plus-boot-starter:${baomidouVersion}",
+            "com.baomidou:mybatis-plus-generator:${baomidouVersion}",
+            "com.baomidou:mybatis-plus:${baomidouVersion}",
+            "io.netty:netty-all:${nettyAllVersion}",
+            "io.grpc:grpc-netty-shaded:${grpcVersion}",
+            "org.springframework.boot:spring-boot-starter-log4j2",
+            // 加上这个才能辨认到log4j2.yml文件
+            "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
+//            "com.alibaba:druid:${druidVersion}"
+            "com.alibaba:druid-spring-boot-starter:${druidVersion}",
+            "org.springframework.boot:spring-boot-starter-jdbc"
+    )
+
+}
+
+/**
+ * 由于springboot本身自带的logback，会导致冲突。所以这块需要排除默认日志。
+ */
+configurations {
+    // 用自带的日志注释第一行代码，注释 log 指定文件,log4j2依赖，yml指定文件名
+    all*.exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+//    all*.exclude module: 'logback-classic'
+//    all*.exclude module: 'log4j-over-slf4j'
+}

@@ -79,9 +79,9 @@ public class DateResource {
         LocalDate localDate3 = LocalDate.of(2017, 12, 12);
 
         Period period = Period.between(localDate2, localDate3);
-        System.out.println("间隔年数："+period.getYears());
-        System.out.println("间隔月数："+period.getMonths());
-        System.out.println("间隔天数："+period.getDays());
+        System.out.println("间隔年数：" + period.getYears());
+        System.out.println("间隔月数：" + period.getMonths());
+        System.out.println("间隔天数：" + period.getDays());
 
         LocalDateTime localDateTime = LocalDateTime.now();
 

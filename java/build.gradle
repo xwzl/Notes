@@ -33,6 +33,5 @@ dependencies {
             "com.baomidou:mybatis-plus:${baomidouVersion}",
             "io.netty:netty-all:${nettyAllVersion}",
             "io.grpc:grpc-netty-shaded:${grpcVersion}",
-            "net.sf.json-lib:json-lib:2.4"
     )
 }

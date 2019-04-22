@@ -1,0 +1,116 @@
+server:
+  port: 8083
+  address: 127.0.0.1
+  servlet:
+    context-path: /spring-boot
+
+spring:
+  profiles:
+    active: boot # 激活配置文件
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.26.20:3306/wtf?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+    username: root
+    password: 158262751
+    druid:
+      # 数据源其他配置,初始化大小，最小，最大
+      initialSize: 5
+      min-idle: 5
+      max-active: 20
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      validationQuery: SELECT 'x'
+#      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      # 监控
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+        session-stat-enable: true
+        session-stat-max-count: 100000
+        principal-session-name: admin
+        principal-cookie-name: admin
+        profile-enable: true
+      #基础监控配置（主要是配置监控的身份验证信息，毕竟系统运行状态也是个小秘密）
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        #禁止手动重置监控数据
+        reset-enable: true #false
+        login-username: root
+        login-password: 123456
+        allow:
+        #deny: 192.168.13.14
+      filter:
+        wall:
+          enabled: true
+          db-type: mysql
+          config:
+            alter-table-allow: false
+            truncate-allow: false
+            drop-table-allow: false
+            none-base-statement-allow: false
+            update-where-none-check: true
+            metadata-allow: true
+          log-violation: true
+          throw-exception: true
+      #Spring监控，对内部各接口调用的监控
+      #      aop-patterns: com.graduation.design.mapper.*,com.graduation.design.controller.*,com.graduation.design.service.*
+      aop-patterns: com.xwz.boot.controller.*,com.xwz.boot.mapper.*,com.xwz.boot.service.*
+      #打开PSCache，并且指定每个连接上PSCache的大小是否缓存,preparedStatement，也就是PSCache  官方建议MySQL下建议关闭   个人建议如果想用SQL防火墙 建议打开
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+      use-global-data-source-stat: true # 合并多个DruidDataSource的监控数据
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙  配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      # ！！！请勿配置timeBetweenLogStatsMillis 会定时输出日志 并导致统计的sql清零
+      #      time-between-log-stats-millis: 20000
+      filters: stat,wall,logback
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connection-properties: 'druid.stat.mergeSql=true;druid.stat.slowSqlMillis: 5000'
+
+# 日志文件配置,用之前需要排除 logback 的依赖
+logging:
+  level:
+    com.xwz.boot.mapper: debug
+  config: classpath:log4j/log4j2.yml
+#  config: classpath:log4j2-spring.xml #可行
+
+mybatis-plus:
+  #配置包扫描位置
+  configuration:
+    #适配驼峰命名法
+    map-underscore-to-camel-case: true #默认为true
+#    interceptors: MybatisInterceptor
+  type-aliases-package: com.xwz.boot.model
+  mapper-locations: classpath:com/xwz/design/boot/*.xml
+  #自定义类型转换
+  #  type-handlers-package: com.web.pro.model.handler
+#
+#  #开启注解班
+#
+##  cache:
+##    type: redis
+##    cache-names: redisCahe
+#logging:
+#  level:
+#    com.web.pro.mapper: debug
+#    root: debug
+#    org.org.mybatis: debug
+#    org.springframework: debug
+
+# 自定义属性
+com:
+  xwz:
+    sample: 我们
+    # 直接引用属性值
+    desc: ${com.xwz.sample}
+    # 使用随机数
+    value: ${random.value}

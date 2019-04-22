@@ -12,9 +12,9 @@ public class HandyTest {
         MybatisHandy handy = new MybatisHandy();
         //如果是子模块，必须设置
         handy.setChildModule(true);
-        handy.setChildModuleName("java");
-        handy.setBasePackageName("com.java");
-        handy.setAuthor("徐伟智");
+        handy.setChildModuleName("spring-boot");
+        handy.setBasePackageName("com.xwz");
+        handy.setAuthor("xwz");
        GeneratorUntil.generatorCode(handy);
     }
 }

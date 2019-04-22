@@ -3,18 +3,21 @@ package com.java.lambda.base;
 import java.io.IOException;
 
 /**
+ * 守护线程
+ *
  * @author xuweizhi
  * @date 2018/11/29 16:00
  */
-public class ThreadTest {
-    public static void main(String[] args){
-      thred1();
+public class ThreadDemo {
+    public static void main(String[] args) {
+        thred1();
     }
+
     public static void demo() {
-        Thread thread = new Thread(()->{
-            for (int i = 0 ; i < 100 ; i ++) {
+        Thread thread = new Thread(() -> {
+            for (int i = 0; i < 100; i++) {
                 try {
-                    Thread.sleep(100) ;
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -28,7 +31,7 @@ public class ThreadTest {
         System.out.println(thread.isDaemon());
 
         try {
-            System.in.read() ;
+            System.in.read();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
