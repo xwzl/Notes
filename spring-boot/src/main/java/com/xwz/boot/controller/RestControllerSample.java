@@ -1,15 +1,26 @@
 package com.xwz.boot.controller;
 
+import com.xwz.boot.configure.date.DateConfigure;
+import com.xwz.boot.configure.date.LocalDateTimeSerializerConfig;
 import com.xwz.boot.model.Book;
 import com.xwz.boot.model.Goods;
 import com.xwz.boot.model.ValueSample;
 import com.xwz.boot.property.ReadProperties;
 import com.xwz.boot.until.LogUtils;
+import io.swagger.annotations.Api;
+import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @author xuweizhi
@@ -17,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/rest")
+@Api
 public class RestControllerSample {
 
     private static final Logger logger = LoggerFactory.getLogger(RestControllerSample.class);
@@ -41,6 +53,7 @@ public class RestControllerSample {
      */
     private final ReadProperties readProperties;
 
+    @Contract(pure = true)
     public RestControllerSample(Book book, Goods goods, ValueSample valueSample, ReadProperties readProperties) {
         this.book = book;
         this.goods = goods;
@@ -48,6 +61,9 @@ public class RestControllerSample {
         this.readProperties = readProperties;
     }
 
+    /**
+     * http://localhost:8082/spring-boot/swagger-ui.html#/ 访问
+     */
     @GetMapping("/condition")
     public Book getBook() {
         logger.info("我们都是好孩子!");
@@ -90,5 +106,39 @@ public class RestControllerSample {
         logger.error("I am error log.");
 
         return "helloworld";
+    }
+
+    /**
+     * 处理 LocalDateTime 类型
+     * {@link LocalDateTimeSerializerConfig} 好像转换并没有效果
+     */
+    @GetMapping("date")
+    public Object date(@NotNull @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime date) {
+        return date.getClass();
+    }
+
+    /**
+     * 处理 LocalDate 类型
+     */
+    @GetMapping("date2")
+    public Object date(@NotNull @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+        return date.getClass();
+    }
+
+    /**
+     * date :         2021-12-13
+     * dateTime :     2021-12-13 12:12:11
+     * originalDate : 2021-12-13 12:12:11
+     *
+     * {@link DateConfigure}
+     */
+    @GetMapping("/getDate")
+    public LocalDateTime getDate(@RequestParam LocalDate date,
+                                 @RequestParam LocalDateTime dateTime,
+                                 @RequestParam Date originalDate) {
+        System.out.println(date);
+        System.out.println(dateTime);
+        System.out.println(originalDate);
+        return LocalDateTime.now();
     }
 }

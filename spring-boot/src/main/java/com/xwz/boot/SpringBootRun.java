@@ -3,16 +3,22 @@ package com.xwz.boot;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * 使用 @SpringBootApplication 注解，标明是 Spring Boot 应用。通过它，可以开启自动配置的功能
  * <p>
  * {@link SpringApplication} ，Spring 应用启动器。正如其代码上所添加的注释，它来提供启动 Spring 应用的功能。
+ * <p>
+ * redis 缓存， 数据库事务
  *
  * @author xuweizhi
  * @date 2019/04/22 10:50
  */
 @SpringBootApplication
+@EnableCaching
+@EnableTransactionManagement
 @MapperScan(basePackages = "com.xwz.boot.mapper")
 public class SpringBootRun {
 

@@ -1,26 +1,37 @@
 # 共有8个级别，按照从低到高为：ALL < TRACE < DEBUG < INFO < WARN < ERROR < FATAL < OFF。
 Configuration:
-  status: warn # 配置 configure 的日志级别
+  # 设置log4j2的自身log级别为warn,Configuration后面的status，这个用于设置log4j2自身内部的信息输出，可以不设置，
+  # 当设置成trace时，你会看到log4j2内部各种详细输出
+  status: warn
+  #Log4j能够自动检测修改配置 文件和重新配置本身，设置间隔秒数
   monitorInterval: 30
-
-  Properties: # 定义全局变量
+  # 定义全局变量
+  Properties:
     Property: # 缺省配置（用于开发环境）。其他环境需要在VM参数中指定，如下：
       #测试：-Dlog.level.console=warn -Dlog.level.xjj=trace
       #生产：-Dlog.level.console=warn -Dlog.level.xjj=info
-      - name: log.level.console  # 控制台日志输出的级别
-        value: info
-      - name: log.path           # 日志文件存储的位置
+      # 控制台日志输出的级别
+      - name: log.level.console
+        # 这里设置 logger的级别为 debug 否则 mybatis 日志无法打印
+        value: debug
+      # 日志文件存储的位置
+      - name: log.path
         value: D:/log
-      - name: project.name       # 项目名字
+      # 项目名字
+      - name: project.name
         value: spring-boot
       - name: log.pattern
         value: "%d{yyyy-MM-dd HH:mm:ss.SSS} -%5p ${PID:-} [%15.15t] %-30.30C{1.} : %m%n"
+  # 先定义所有的appender
   Appenders:
-    Console:  #输出到控制台
+    #这个输出控制台的配置
+    Console:
       name: CONSOLE
       target: SYSTEM_OUT
+      # 控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）
       ThresholdFilter:
-        level: ${sys:log.level.console} # “sys:”表示：如果VM参数中没指定这个变量值，则使用本文件中定义的缺省全局变量值
+        # “sys:”表示：如果VM参数中没指定这个变量值，则使用本文件中定义的缺省全局变量值
+        level: ${sys:log.level.console}
         onMatch: ACCEPT
         onMismatch: DENY
       PatternLayout:
@@ -30,10 +41,11 @@ Configuration:
           modulate: true
           interval: 1
         SizeBasedTriggeringPolicy:
-          size: "1 M"              # 最大日志文件大小
+          size: "1 MB"              # 最大日志文件大小
       DefaultRolloverStrategy:      # 文件最多100个
         max: 100
-    #   启动日志
+    # 这个会打印出所有的info及以下级别的信息，每次大小超过size，则这size大小的日志会自动存入按
+    # 年份-月份建立的文件夹下面并进行压缩，作为存档
     RollingFile: # 输出到文件，超过128MB归档
       - name: ROLLING_FILE # 日志名称
         fileName: ${log.path}/historyRunLog/${project.name}.log # 日志文件存储位置+文件名称
@@ -53,8 +65,9 @@ Configuration:
           TimeBasedTriggeringPolicy:  # 按天分类
             modulate: true
             interval: 1
+          # 定了当日志文件达到了指定的size时，触发rollover操作。size参数可以用KB、MB、GB等做后缀来指定具体的字节数
           SizeBasedTriggeringPolicy:
-            size: "1 M"              # 最大日志文件大小
+            size: "1 MB"              # 最大日志文件大小
         DefaultRolloverStrategy:      # 文件最多100个
           max: 100
       #   平台日志
@@ -69,7 +82,7 @@ Configuration:
             modulate: true
             interval: 1
           SizeBasedTriggeringPolicy:
-            size: "1 M"              # 最大日志文件大小
+            size: "1 MB"              # 最大日志文件大小
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
       #   业务日志
@@ -84,7 +97,7 @@ Configuration:
             modulate: true
             interval: 1
           SizeBasedTriggeringPolicy:
-            size: "300 b"              # 最大日志文件大小
+            size: "1 MB"              # 最大日志文件大小
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
       #   错误日志
@@ -103,7 +116,7 @@ Configuration:
             modulate: true
             interval: 1
           SizeBasedTriggeringPolicy:
-            size: "1 M"             # 最大日志文件大小
+            size: "1 MB"             # 最大日志文件大小
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
       #   DB 日志
@@ -118,9 +131,10 @@ Configuration:
             modulate: true
             interval: 1
           SizeBasedTriggeringPolicy:
-            size: "1 M"             # 最大日志文件大小
+            size: "1 MB"             # 最大日志文件大小
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
+  # -然后定义logger，只有定义了logger并引入的appender，appender才会生效
   Loggers:
     Root:
       level: info  #日志输出级别
@@ -128,7 +142,6 @@ Configuration:
         - ref: CONSOLE
         - ref: ROLLING_FILE
         - ref: EXCEPTION_ROLLING_FILE
-        - ref: PLATFORM_ROLLING_FILE
     Logger:
       - name: platform
         level: info
@@ -151,13 +164,8 @@ Configuration:
         additivity: false
         AppenderRef:
           - ref: DB_ROLLING_FILE
-      #监听具体包下面的日志
-    # 为com.xjj包配置特殊的Log级别，方便调试
-#      - name: com.xwz
+#      - name: com.xwz.boot.mapper
 #        additivity: false
-#        level: ${sys:log.level.com.xwz}
+#        level: debug
 #        AppenderRef:
 #          - ref: CONSOLE
-#          - ref: ROLLING_FILE
-#          - ref: PLATFORM_ROLLING_FILE
-#          - ref: DB_ROLLING_FILE

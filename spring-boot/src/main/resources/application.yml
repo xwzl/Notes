@@ -11,31 +11,7 @@ spring:
   profiles:
     active: boot # 激活配置文件
     #    include: boot,druid1 或者 ProtertyConfigure 类中激活配置文件
-    include: druid1 # 或者 ProtertyConfigure 类中激活配置文件 druid3 配置无效，数据源有效
-
-
-  ## 日志文件配置,用之前需要排除 logback 的依赖
-  #logging:
-  #  level:
-  #    com.xwz.boot.mapper: debug
-  #  config: classpath:log4j/log4j2.yml
-  #  config: classpath:log4j2-spring.xml #可行
-
-
-  #自定义类型转换
-  #  type-handlers-package: com.web.pro.model.handler
-#
-#  #开启注解班
-#
-##  cache:
-##    type: redis
-##    cache-names: redisCahe
-#logging:
-#  level:
-#    com.web.pro.mapper: debug
-#    root: debug
-#    org.org.mybatis: debug
-#    org.springframework: debug
+    include: druid1,redis # 或者 ProtertyConfigure 类中激活配置文件 druid3 配置无效，数据源有效
 
 # 自定义属性
 com:

@@ -3,9 +3,9 @@ server:
 
 # 日志文件配置,用之前需要排除 logback 的依赖
 logging:
+  config: classpath:log4j/log4j2.yml
   level:
     com.xwz.boot.mapper: debug
-  config: classpath:log4j/log4j2.yml
 
 mybatis-plus:
   #配置包扫描位置
@@ -15,3 +15,28 @@ mybatis-plus:
   #    interceptors: com.xwz.boot.configure.MybatisInterceptor 失败
   type-aliases-package: com.xwz.boot.model
   mapper-locations: classpath:com/xwz/boot/mapper/*.xml
+
+  ## 日志文件配置,用之前需要排除 logback 的依赖
+  #logging:
+  #    config: classpath:log4j/log4j2-spring.xml
+  #  config: classpath:log4j/log4j2.yml
+  #  level:
+  #      com.xwz.boot.mapper: debug
+  #  config: classpath:log4j/log4j2.yml
+  #  config: classpath:log4j2-spring.xml #可行
+
+
+  #自定义类型转换
+  #  type-handlers-package: com.web.pro.model.handler
+#
+#  #开启注解班
+#
+##  cache:
+##    type: redis
+##    cache-names: redisCahe
+#logging:
+#  level:
+#    com.web.pro.mapper: debug
+#    root: debug
+#    org.org.mybatis: debug
+#    org.springframework: debug

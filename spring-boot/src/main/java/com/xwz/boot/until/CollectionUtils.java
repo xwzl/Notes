@@ -10,6 +10,6 @@ import java.util.List;
  */
 public class CollectionUtils {
     public static boolean isNotEmpty(List<ParameterMapping> parameterMappings) {
-        return parameterMappings.size() > 0 ? true : false;
+        return parameterMappings.size() > 0;
     }
 }

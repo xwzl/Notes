@@ -3,6 +3,10 @@ package com.xwz.boot.controller;
 
 import com.xwz.boot.model.User;
 import com.xwz.boot.service.UserService;
+import com.xwz.boot.until.redis.RedisService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,13 +26,64 @@ public class UserController {
 
     private final UserService userService;
 
+    /**
+     * 使用实现类 Redis 进行redis 操作
+     */
+    private final RedisService redisService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RedisService redisService) {
         this.userService = userService;
+        this.redisService = redisService;
     }
 
-    @RequestMapping("/getUser")
-    public List<User> getUsers() {
+    /**
+     * http://localhost:8082/spring-boot/swagger-ui.html#/ 访问
+     */
+    @ApiOperation(value = "第一个接口", notes = "hello接口")
+    @ApiParam(value = "api 测试")
+    @GetMapping("/getUser")
+    public List<User> getUsers(String api) {
+        System.out.println(api);
+        User user = new User();
+        user.setUId(3);
+        User service = userService.getById(user);
+        redisService.setBean(service.getUId() + service.getAddress(), service);
+        User redisUser = (User) redisService.getBean(service.getUId() + service.getAddress());
+        System.out.println(redisUser);
         return userService.getALl();
+    }
+    @ApiOperation(value = "save", notes = "hello接口")
+    @GetMapping("/save")
+    public User save() {
+        User user = new User(null, "123456", "123456", null, "11", "12323", 1, "2312");
+        return userService.insert(user);
+    }
+
+    @ApiOperation(value = "get", notes = "hello接口")
+    @GetMapping("/get")
+    public User getUser(Integer id) {
+        return userService.findById(id);
+    }
+
+    @ApiOperation(value = "update", notes = "hello接口")
+    @GetMapping("/update")
+    public User update(String name, Integer id) {
+        User byId = userService.getById(id);
+        byId.setUsername(name);
+        return userService.update(byId);
+    }
+
+    @ApiOperation(value = "delete", notes = "hello接口")
+    @GetMapping("/delete")
+    public void delete(Integer id) {
+        User user = new User();
+        user.setUId(id);
+        userService.delete(user);
+    }
+
+    @ApiOperation(value = "getPlus", notes = "hello接口")
+    @GetMapping("/getPlus")
+    public User getPlus(Integer id) {
+        return userService.getById(id);
     }
 }

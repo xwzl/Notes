@@ -1,5 +1,6 @@
 package com.xwz.boot.property;
 
+
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -8,19 +9,19 @@ import org.springframework.stereotype.Component;
  *
  * @author xuweizhi
  */
-@EnableConfigurationProperties({Redis.class})
+@EnableConfigurationProperties({RedisProperties.class})
 @Component
 public class ReadProperties {
 
 
-    private Redis redis;
+    private RedisProperties redisProperties;
 
-    public ReadProperties(Redis redis) {
-        this.redis = redis;
+    public ReadProperties(RedisProperties redisProperties) {
+        this.redisProperties = redisProperties;
     }
 
     public void read() {
-        System.out.println(redis);
+        System.out.println(redisProperties);
     }
 
 }
