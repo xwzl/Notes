@@ -1,8 +1,6 @@
 package com.xwz.boot.configure;
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 /**
  * 配置文件注入
@@ -12,10 +10,23 @@ import org.springframework.stereotype.Component;
  * @author xuweizhi
  * @date 2019/04/22 16:02
  */
-@Component
 @Configuration
-@EnableAutoConfiguration
 public class PropertyConfigure {
 
+    ///**
+    // * 激活配置文件
+    // *
+    // */
+    //@Bean
+    //public static PropertySourcesPlaceholderConfigurer properties() {
+    //    PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
+    //    YamlPropertiesFactoryBean yaml = new YamlPropertiesFactoryBean();
+    //    //File引入
+    //    //yaml.setResources(new FileSystemResource("config.yml"));
+    //    //class引入
+    //    yaml.setResources(new ClassPathResource("application-druid1.yml"));
+    //    configurer.setProperties(Objects.requireNonNull(yaml.getObject()));
+    //    return configurer;
+    //}
 
 }

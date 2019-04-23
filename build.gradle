@@ -36,6 +36,7 @@ ext {
     log4jAPIVersion = "2.11.2"
 //    druidVersion="1.1.12"
     druidVersion = "1.1.16"
+    swaggerVersion = "2.9.2"
 }
 
 configure(allprojects) { project ->

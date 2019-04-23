@@ -25,10 +25,18 @@ Configuration:
         onMismatch: DENY
       PatternLayout:
         pattern: ${log.pattern} # 日志打印格式
+      Policies:
+        TimeBasedTriggeringPolicy:  # 按天分类
+          modulate: true
+          interval: 1
+        SizeBasedTriggeringPolicy:
+          size: "1 M"              # 最大日志文件大小
+      DefaultRolloverStrategy:      # 文件最多100个
+        max: 100
     #   启动日志
     RollingFile: # 输出到文件，超过128MB归档
       - name: ROLLING_FILE # 日志名称
-        fileName: ${log.path}/${project.name}.log # 日志文件存储位置+文件名称
+        fileName: ${log.path}/historyRunLog/${project.name}.log # 日志文件存储位置+文件名称
         filePattern: "${log.path}/historyRunLog/$${date:yyyy-MM}/${project.name}-%d{yyyy-MM-dd}-%i.log.gz"
         PatternLayout:
           pattern: ${log.pattern}
@@ -46,7 +54,7 @@ Configuration:
             modulate: true
             interval: 1
           SizeBasedTriggeringPolicy:
-            size: "1 kb"              # 最大日志文件大小
+            size: "1 M"              # 最大日志文件大小
         DefaultRolloverStrategy:      # 文件最多100个
           max: 100
       #   平台日志
@@ -61,7 +69,7 @@ Configuration:
             modulate: true
             interval: 1
           SizeBasedTriggeringPolicy:
-            size: "1 kb"              # 最大日志文件大小
+            size: "1 M"              # 最大日志文件大小
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
       #   业务日志
@@ -76,7 +84,7 @@ Configuration:
             modulate: true
             interval: 1
           SizeBasedTriggeringPolicy:
-            size: "1 kb"              # 最大日志文件大小
+            size: "300 b"              # 最大日志文件大小
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
       #   错误日志
@@ -95,7 +103,7 @@ Configuration:
             modulate: true
             interval: 1
           SizeBasedTriggeringPolicy:
-            size: "1 kb"             # 最大日志文件大小
+            size: "1 M"             # 最大日志文件大小
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
       #   DB 日志
@@ -110,7 +118,7 @@ Configuration:
             modulate: true
             interval: 1
           SizeBasedTriggeringPolicy:
-            size: "1 kb"             # 最大日志文件大小
+            size: "1 M"             # 最大日志文件大小
         DefaultRolloverStrategy:     # 文件最多100个
           max: 100
   Loggers:
@@ -120,6 +128,7 @@ Configuration:
         - ref: CONSOLE
         - ref: ROLLING_FILE
         - ref: EXCEPTION_ROLLING_FILE
+        - ref: PLATFORM_ROLLING_FILE
     Logger:
       - name: platform
         level: info

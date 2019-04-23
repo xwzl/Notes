@@ -82,6 +82,7 @@ public class RestControllerSample {
         log.error("getExceptionLogger===日志测试");
         log1.info("getBussinessLogger===日志测试");
         log2.debug("getDBLogger===日志测试");
+        log2.info("1111111");
 
         logger.trace("I am trace log.");
         logger.debug("I am debug log.");

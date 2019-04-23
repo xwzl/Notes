@@ -1,6 +1,6 @@
 package com.xwz.boot.configure;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.xwz.boot.until.CollectionUtils;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.ParameterMapping;
@@ -20,9 +20,12 @@ import java.util.Properties;
 import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 
-@Intercepts({ @Signature(type = Executor.class, method = "update", args = { MappedStatement.class, Object.class }),
-        @Signature(type = Executor.class, method = "query", args = { MappedStatement.class, Object.class,
-                RowBounds.class, ResultHandler.class }) })
+/**
+ * @author xuweizhi
+ */
+@Intercepts({@Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),
+        @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class,
+                RowBounds.class, ResultHandler.class})})
 public class MybatisInterceptor implements Interceptor {
 
     private Logger logger = Logger.getLogger(MybatisInterceptor.class);
@@ -43,7 +46,7 @@ public class MybatisInterceptor implements Interceptor {
             Configuration configuration = mappedStatement.getConfiguration();
             String sql = getSql(configuration, boundSql, sqlId, 0);
             logger.info("*************");
-            logger.info("***"+sql);
+            logger.info("***" + sql);
             logger.info("*************");
         } catch (Exception e) {
             e.printStackTrace();

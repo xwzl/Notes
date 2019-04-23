@@ -12,7 +12,7 @@ task resources(type: Copy) {
             include("**/*.xml")
         }
 //        into("${buildDir}/classes/main")
-        into("${rootDir}/java/out/production/classes")
+        into("${rootDir}/${project.name}/out/production/classes")
     }
 //    print "${getRootProject()}";
 //    print "${projectDir}xxxx";

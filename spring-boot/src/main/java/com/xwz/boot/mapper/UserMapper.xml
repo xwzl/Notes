@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.xwz.boot.mapper.UserMapper">
-    <resultMap id="baseUser" type="com.java.mybatis.model.User">
+    <resultMap id="baseUser" type="com.xwz.boot.model.User">
         <id column="u_id" jdbcType="INTEGER" property="uId"/>
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
@@ -19,20 +19,20 @@
     </sql>
 
     <sql id="user_less">
-         u_id,address,apartment,create_time,password
+         u_id,address,apartment,password
     </sql>
 
     <!--
        ${}代表一个字符串，注入不安全
        #{} 相当于一个？，类型安全
     -->
-    <insert id="addUserByXml" parameterType="com.java.mybatis.model.User">
+    <insert id="addUserByXml" parameterType="com.xwz.boot.model.User">
            insert into user (u_id,address,role) values (null,#{address},#{role});
     </insert>
 
     <select id="getAllByXml" resultMap="baseUser">
         SELECT
-        <include refid="base_user"></include>
+        <include refid="user_less"></include>
         FROM user
     </select>
 
@@ -105,7 +105,7 @@
         WHERE u_id = #{uId}
     </select>
 
-    <insert id="insertUserOtherTag" parameterType="com.java.mybatis.model.User">
+    <insert id="insertUserOtherTag" parameterType="com.xwz.boot.model.User">
         insert into user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="uId != 0">
@@ -147,7 +147,7 @@
           ...
         </trim>
     -->
-    <update id="updateUserOtherTag" parameterType="com.java.mybatis.model.User">
+    <update id="updateUserOtherTag" parameterType="com.xwz.boot.model.User">
         update user
         <set>
             <if test="createTime != null">

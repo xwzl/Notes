@@ -5,7 +5,7 @@ task resources(type: Copy) {
             include("**/*.jpg")
             include("**/*.xml")
         }
-        into("${rootDir}/java/out/production/classes")
+        into("${rootDir}/${project.name}/out/production/classes")
     }
 }
 
@@ -17,11 +17,14 @@ dependencies {
             "io.netty:netty-all:${nettyAllVersion}",
             "io.grpc:grpc-netty-shaded:${grpcVersion}",
             "org.springframework.boot:spring-boot-starter-log4j2",
+//            "org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.1",
             // 加上这个才能辨认到log4j2.yml文件
             "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml",
-//            "com.alibaba:druid:${druidVersion}"
             "com.alibaba:druid-spring-boot-starter:${druidVersion}",
-            "org.springframework.boot:spring-boot-starter-jdbc"
+            "org.springframework.boot:spring-boot-starter-jdbc",
+            "io.springfox:springfox-swagger2:${swaggerVersion}",
+            "io.springfox:springfox-swagger-ui:${swaggerVersion}",
+
     )
 
 }

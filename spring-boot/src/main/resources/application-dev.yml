@@ -1,2 +1,7 @@
 server:
   port: 8081
+
+logging:
+  level:
+    com.xwz.boot.mapper: debug
+  config: classpath:log4j/log4j2-spring.xml
