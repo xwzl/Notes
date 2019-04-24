@@ -1,4 +1,4 @@
-package com.xwz.boot.configure;
+package com.xwz.boot.configure.data;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;

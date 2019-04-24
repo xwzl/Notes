@@ -1,4 +1,4 @@
-package com.xwz.boot.configure;
+package com.xwz.boot.configure.data;
 
 import com.xwz.boot.until.CollectionUtils;
 import org.apache.ibatis.mapping.BoundSql;
