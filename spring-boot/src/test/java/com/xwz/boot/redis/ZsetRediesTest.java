@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.RedisZSetCommands;
 import org.springframework.data.redis.core.*;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ public class ZsetRediesTest  extends SpringBootsTest {
     @Autowired
     private ZSetOperations opsForZSet;
 
+    @Test
     public void testAdd() {
         redisTemplate.delete("fan1");
         //将值添加到键中的排序集合，如果已存在，则更新其分数。
@@ -36,6 +38,16 @@ public class ZsetRediesTest  extends SpringBootsTest {
         System.out.println(opsForZSet.add("fan1", tuples));//2
         //通过索引区间返回有序集合指定区间内的成员，其中有序集成员按分数值递增(从小到大)顺序排列
         System.out.println(opsForZSet.range("fan1", 0, -1));//[a, b, c]
+
+    }
+
+    @Test
+    public void test(){
+        ValueOperations<String, Object> opsForValue = redisTemplate.opsForValue();
+        opsForValue.set("11", LocalDateTime.now());
+        Object o = opsForValue.get("11");
+        System.out.println(o.getClass());
+        System.out.println(o);
     }
 
     public void testRemove() {

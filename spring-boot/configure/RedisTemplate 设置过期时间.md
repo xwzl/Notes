@@ -1,3 +1,6 @@
+[Redis 缓存](https://www.jianshu.com/p/275cb42080d9)
+
+
 <div class="show-content-free">
 <h1>问题描述</h1>
 <p>Spring  Cache提供的@Cacheable注解不支持配置过期时间，还有缓存的自动刷新。<br>
