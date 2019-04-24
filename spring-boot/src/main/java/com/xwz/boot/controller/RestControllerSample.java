@@ -113,7 +113,7 @@ public class RestControllerSample {
      * {@link LocalDateTimeSerializerConfig} 好像转换并没有效果
      */
     @GetMapping("date")
-    public Object date(@NotNull @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime date) {
+    public Object date(@RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime date) {
         return date.getClass();
     }
 
@@ -129,7 +129,7 @@ public class RestControllerSample {
      * date :         2021-12-13
      * dateTime :     2021-12-13 12:12:11
      * originalDate : 2021-12-13 12:12:11
-     *
+     * <p>
      * {@link DateConfigure}
      */
     @GetMapping("/getDate")

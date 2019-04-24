@@ -39,6 +39,7 @@ ext {
     swaggerVersion = "2.9.2"
     redisVersion = "1.4.7.RELEASE"
     jacksonVersion = "2.9.8"
+    jannotationVersion="17.0.0"
 }
 
 configure(allprojects) { project ->
@@ -92,7 +93,8 @@ configure(allprojects) { project ->
                 "junit:junit:${junitVersion}",
                 "com.google.code.gson:gson:${gsonVersion}",
                 "joda-time:joda-time:${jodaTimeVersion}",
-                "org.projectlombok:lombok:${lombokVersion}"
+                "org.projectlombok:lombok:${lombokVersion}",
+                "org.jetbrains:annotations:${jannotationVersion}"
         )
 
         implementation('org.springframework.boot:spring-boot-starter-web')

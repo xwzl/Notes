@@ -164,8 +164,9 @@ Configuration:
         additivity: false
         AppenderRef:
           - ref: DB_ROLLING_FILE
-#      - name: com.xwz.boot.mapper
-#        additivity: false
-#        level: debug
-#        AppenderRef:
-#          - ref: CONSOLE
+      - name: com.xwz.boot.mapper
+        additivity: false
+        level: debug
+        AppenderRef:
+          - ref: CONSOLE
+          - ref: DB_ROLLING_FILE

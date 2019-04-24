@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * <p>
  * {@link SpringApplication} ，Spring 应用启动器。正如其代码上所添加的注释，它来提供启动 Spring 应用的功能。
  * <p>
- * redis 缓存， 数据库事务
+ * EnableCaching redis 缓存， 数据库事务
  *
  * @author xuweizhi
  * @date 2019/04/22 10:50

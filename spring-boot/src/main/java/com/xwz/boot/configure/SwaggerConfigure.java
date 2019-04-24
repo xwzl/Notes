@@ -54,6 +54,7 @@ public class SwaggerConfigure {
     @Value("${server.servlet.context-path}")
     private String context;
 
+    @SuppressWarnings("deprecation")
     @Bean
     public Docket createRestApi() {
         Predicate<RequestHandler> predicate = input -> {

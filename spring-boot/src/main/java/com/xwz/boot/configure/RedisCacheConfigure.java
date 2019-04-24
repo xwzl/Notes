@@ -33,34 +33,6 @@ import java.time.Duration;
 @EnableCaching
 public class RedisCacheConfigure extends CachingConfigurerSupport {
 
-    private Duration timeToLive = Duration.ZERO;
-
-    public void setTimeToLive(Duration timeToLive) {
-        this.timeToLive = timeToLive;
-    }
-
-    //RedisCacheManager的基本属性
-    //@SuppressWarnings("rawtypes") //
-    //配置redisTemplate 通过构造函数
-    //private final RedisOperations redisOperations;
-    ////是否使用前缀
-    //private boolean usePrefix = false;
-    ////默认前缀 为":"。使用前缀可以对缓存进行分组，避免缓存的冲突
-    //private RedisCachePrefix cachePrefix = new DefaultRedisCachePrefix();
-    ////远程加载缓存
-    //private boolean loadRemoteCachesOnStartup = false;
-    ////是否动态生成缓存。默认为true。这个就是上面如果缓存不存在，则创建
-    ////是通过这个属性进行配置。配置为false则不会去创建缓存
-    //private boolean dynamic = true;
-    //
-    //// 过期时间 0为永不过期
-    //private long defaultExpiration = 0;
-    ////可以配置指定key的过期时间 可以通过定制化配置过期时间
-    //private Map<String, Long> expires = null;
-    ////配置缓存名称集合
-    //private Set<String> configuredCacheNames;
-    ////缓存是否可以为null
-    //private final boolean cacheNullValues;
 
     /**
      * Spring Cache提供的@Cacheable注解不支持配置过期时间，还有缓存的自动刷新。
@@ -94,31 +66,6 @@ public class RedisCacheConfigure extends CachingConfigurerSupport {
     @Contract(" -> new")
     private RedisSerializer<Object> valueSerializer() {
         return new GenericJackson2JsonRedisSerializer();
-    }
-
-    /**
-     * 定义 UserRedisTemplate ，指定序列化和反序列化的处理类
-     *
-     * @param factory redis连接工厂
-     * @return 模板
-     */
-    @Bean("UserRedisTemplate")
-    public RedisTemplate<Serializable, Object> userRedisTemplate(RedisConnectionFactory factory) {
-        RedisTemplate<Serializable, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(factory);
-        Jackson2JsonRedisSerializer<Object> j2jrs = new Jackson2JsonRedisSerializer<>(Object.class);
-        ObjectMapper om = getObjectMapper();
-        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
-        j2jrs.setObjectMapper(om);
-        // 序列化 value 时使用此序列化方法
-        template.setValueSerializer(j2jrs);
-        template.setHashValueSerializer(j2jrs);
-        // 序列化 key 时
-        StringRedisSerializer srs = new StringRedisSerializer();
-        template.setKeySerializer(srs);
-        template.setHashKeySerializer(srs);
-        template.afterPropertiesSet();
-        return template;
     }
 
     @NotNull
@@ -158,6 +105,31 @@ public class RedisCacheConfigure extends CachingConfigurerSupport {
         rt.setEnableDefaultSerializer(true);
         rt.afterPropertiesSet();
         return rt;
+    }
+
+    /**
+     * 定义 UserRedisTemplate ，指定序列化和反序列化的处理类
+     *
+     * @param factory redis连接工厂
+     * @return 模板
+     */
+    @Bean("UserRedisTemplate")
+    public RedisTemplate<Serializable, Object> userRedisTemplate(RedisConnectionFactory factory) {
+        RedisTemplate<Serializable, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(factory);
+        Jackson2JsonRedisSerializer<Object> j2jrs = new Jackson2JsonRedisSerializer<>(Object.class);
+        ObjectMapper om = getObjectMapper();
+        om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+        j2jrs.setObjectMapper(om);
+        // 序列化 value 时使用此序列化方法
+        template.setValueSerializer(j2jrs);
+        template.setHashValueSerializer(j2jrs);
+        // 序列化 key 时
+        StringRedisSerializer srs = new StringRedisSerializer();
+        template.setKeySerializer(srs);
+        template.setHashKeySerializer(srs);
+        template.afterPropertiesSet();
+        return template;
     }
 
     @Bean(name = "redisGenericTemplate")
@@ -200,27 +172,27 @@ public class RedisCacheConfigure extends CachingConfigurerSupport {
      * 根据方法名注入对象
      */
     @Bean
-    public ValueOperations opsForValue(RedisTemplate redisTemplate) {
+    public ValueOperations opsForValue(@NotNull RedisTemplate redisTemplate) {
         return redisTemplate.opsForValue();
     }
 
     @Bean
-    public ListOperations opsForList(RedisTemplate redisTemplate) {
+    public ListOperations opsForList(@NotNull RedisTemplate redisTemplate) {
         return redisTemplate.opsForList();
     }
 
     @Bean
-    public HashOperations opsForHash(RedisTemplate redisTemplate) {
+    public HashOperations opsForHash(@NotNull RedisTemplate redisTemplate) {
         return redisTemplate.opsForHash();
     }
 
     @Bean
-    public SetOperations opsForSet(RedisTemplate redisTemplate) {
+    public SetOperations opsForSet(@NotNull RedisTemplate redisTemplate) {
         return redisTemplate.opsForSet();
     }
 
     @Bean
-    public ZSetOperations opsForZSet(RedisTemplate redisTemplate) {
+    public ZSetOperations opsForZSet(@NotNull RedisTemplate redisTemplate) {
         return redisTemplate.opsForZSet();
     }
 
@@ -240,6 +212,37 @@ public class RedisCacheConfigure extends CachingConfigurerSupport {
             return sb.toString();
         };
     }
+
+      /*
+    private Duration timeToLive = Duration.ZERO;
+
+    public void setTimeToLive(Duration timeToLive) {
+        this.timeToLive = timeToLive;
+    }
+    RedisCacheManager的基本属性
+    @SuppressWarnings("rawtypes") //
+    配置redisTemplate 通过构造函数
+    private final RedisOperations redisOperations;
+    //是否使用前缀
+    private boolean usePrefix = false;
+    //默认前缀 为":"。使用前缀可以对缓存进行分组，避免缓存的冲突
+    private RedisCachePrefix cachePrefix = new DefaultRedisCachePrefix();
+    //远程加载缓存
+    private boolean loadRemoteCachesOnStartup = false;
+    //是否动态生成缓存。默认为true。这个就是上面如果缓存不存在，则创建
+    //是通过这个属性进行配置。配置为false则不会去创建缓存
+    private boolean dynamic = true;
+
+    // 过期时间 0为永不过期
+    private long defaultExpiration = 0;
+    //可以配置指定key的过期时间 可以通过定制化配置过期时间
+    private Map<String, Long> expires = null;
+    //配置缓存名称集合
+    private Set<String> configuredCacheNames;
+    //缓存是否可以为null
+    private final boolean cacheNullValues;
+    */
+
 
     /**
      * 自定义CacheManager
