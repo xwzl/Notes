@@ -34,9 +34,6 @@ public class MyResponseBodyAdvice implements ResponseBodyAdvice {
      */
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType, Class selectedConverterType, ServerHttpRequest request, ServerHttpResponse response) {
-        if (body == null) {
-            return body;
-        }
         if (body instanceof ErrorInfo) {
             RestResultVO<ErrorInfo<Object>> restResult = new RestResultVO<>();
             restResult.setSuccess(ResultEnum.FAILURE.getStatus());

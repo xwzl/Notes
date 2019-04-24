@@ -84,7 +84,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      * {@link User#getCreateTime()} 解决 LocalDateTime 序列化出错问题
      */
     @Override
-    @Cacheable(key = "'user'+#id", sync = true)
+    @Cacheable(key = "'user'+#id", condition = "#result != null", sync = true)
     //@Cacheable(value = "findById", keyGenerator = "keyGenerator",sync = true)
     public User findById(Integer id) {
         return userMapper.selectById(id);
