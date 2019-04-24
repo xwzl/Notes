@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 
 /**
  * @author xuweizhi
+ * @date 2019/04/24 20:07
  */
 @Intercepts({@Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),
         @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class,

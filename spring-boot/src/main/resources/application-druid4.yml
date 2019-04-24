@@ -1,10 +1,12 @@
 #主数据源配置
 spring:
   datasource:
-    driverClassName: com.mysql.jdbc.Driver
+    driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.26.20:3306/wtf?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
     username: root
     password: 158262751
+    type: com.alibaba.druid.pool.DruidDataSource
+    readSize:
     filters: stat,wall
     druid:
       # 初始化大小，最小，最大
@@ -32,8 +34,8 @@ spring:
       useGlobalDataSourceStat: true
   # 从数据源
   salve:
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://192.168.26.20:3306/wtf?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.26.20:3306/sys?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
     username: root
     password: 158262751
     filters: stat,wall
@@ -62,9 +64,9 @@ spring:
       # 合并多个DruidDataSource的监控数据
       useGlobalDataSourceStat: true
   # 从数据源
-  reade:
-    driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://192.168.26.20:3306/wtf?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+  read2:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.26.20:3306/sys?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
     username: root
     password: 158262751
     filters: stat,wall

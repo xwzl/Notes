@@ -3,7 +3,7 @@ spring:
     url: jdbc:mysql://${linux.myport}:3306/property?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: 158262751
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       max-active: 30                           #初始化连接池的连接数量 大小，最小，最大
