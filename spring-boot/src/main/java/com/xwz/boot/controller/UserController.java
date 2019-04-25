@@ -1,6 +1,7 @@
 package com.xwz.boot.controller;
 
 
+import com.xwz.boot.condition.DataSource;
 import com.xwz.boot.model.User;
 import com.xwz.boot.service.UserService;
 import com.xwz.boot.until.redis.RedisService;
@@ -41,7 +42,7 @@ public class UserController {
      */
     @ApiOperation(value = "第一个接口", notes = "hello接口")
     @ApiParam(value = "api 测试")
-    @GetMapping("/getUser")
+    @GetMapping("/getUsers")
     public List<User> getUsers(String api) {
         System.out.println(api);
         User user = new User();
@@ -52,20 +53,16 @@ public class UserController {
         System.out.println(redisUser);
         return userService.getALl();
     }
-    @ApiOperation(value = "save", notes = "hello接口")
-    @GetMapping("/save")
-    public User save() {
+
+    @ApiOperation(value = "insertUser", notes = "hello接口")
+    @GetMapping("/insertUser")
+    public User insertUser() {
         User user = new User(null, "123456", "123456", null, "11", "12323", 1, "2312");
         return userService.insert(user);
     }
 
-    @ApiOperation(value = "get", notes = "hello接口")
-    @GetMapping("/get")
-    public User getUser(Integer id) {
-        return userService.findById(id);
-    }
 
-    @ApiOperation(value = "update", notes = "hello接口")
+    @ApiOperation(value = "update", notes = "更新")
     @GetMapping("/update")
     public User update(String name, Integer id) {
         User byId = userService.getById(id);
@@ -73,16 +70,25 @@ public class UserController {
         return userService.update(byId);
     }
 
-    @ApiOperation(value = "delete", notes = "hello接口")
+    @ApiOperation(value = "master", notes = "获取")
+    @GetMapping("/getUser")
+    @DataSource
+    public User getUser(Integer id) {
+        return userService.findById(id);
+    }
+
+    @ApiOperation(value = "slave2", notes = "hello接口")
     @GetMapping("/delete")
+    @DataSource("slave2")
     public void delete(Integer id) {
         User user = new User();
         user.setUId(id);
         userService.delete(user);
     }
 
-    @ApiOperation(value = "getPlus", notes = "hello接口")
+    @ApiOperation(value = "slave1", notes = "hello接口")
     @GetMapping("/getPlus")
+    @DataSource("slave1")
     public User getPlus(Integer id) {
         return userService.getById(id);
     }

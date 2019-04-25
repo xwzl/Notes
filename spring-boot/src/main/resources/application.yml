@@ -14,7 +14,6 @@ spring:
     include: druid4,redis # 或者 ProtertyConfigure 类中激活配置文件 druid3 配置无效，数据源有效
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    type: com.alibaba.druid.pool.DruidDataSource
     readSize: 2 # 从数据库个数
   main:
     allow-bean-definition-overriding: true

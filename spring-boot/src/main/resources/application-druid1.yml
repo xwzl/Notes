@@ -1,10 +1,9 @@
 spring:
   datasource:
-    driverClassName: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://192.168.26.20:3306/wtf?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
     username: root
     password: 158262751
-    type: com.alibaba.druid.pool.DruidDataSource
     # 不清楚要放在这个地方
     filters: stat,wall,log4j2
     #连接池配置(通常来说，只需要修改initialSize、minIdle、maxActive

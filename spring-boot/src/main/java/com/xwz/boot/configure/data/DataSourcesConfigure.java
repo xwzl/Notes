@@ -1,5 +1,8 @@
 package com.xwz.boot.configure.data;
 
+import com.xwz.boot.aop.DynamicDataSourceAnnotationAdvisor;
+import com.xwz.boot.aop.DynamicDataSourceAnnotationInterceptor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -21,6 +24,11 @@ public class DataSourcesConfigure {
     //    return new DruidDataSource();
     //}
 
+    @Bean
+    public DynamicDataSourceAnnotationAdvisor dynamicDatasourceAnnotationAdvisor() {
+        return new DynamicDataSourceAnnotationAdvisor(new DynamicDataSourceAnnotationInterceptor());
+    }
+
     /**
      * Druid的最强大之处在于它有着强大的监控，可以监控我们发送到数据库的所有sql语句。方便我们后期排插错误。
      * <p>
@@ -33,7 +41,7 @@ public class DataSourcesConfigure {
     //public ServletRegistrationBean statViewServlet() {
     //    ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new StatViewServlet(), "/druid/*");
     //    // 添加IP白名单
-    //    servletRegistrationBean.addInitParameter("allow", "127.0.0.1");
+    //    //servletRegistrationBean.addInitParameter("allow", "127.0.0.1");
     //    // 添加IP黑名单，当白名单和黑名单重复时，黑名单优先级更高
     //    //servletRegistrationBean.addInitParameter("deny", "127.0.0.1");
     //    // 添加控制台管理用户

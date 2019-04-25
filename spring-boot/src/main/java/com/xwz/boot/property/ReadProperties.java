@@ -1,6 +1,7 @@
 package com.xwz.boot.property;
 
 
+import org.jetbrains.annotations.Contract;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ public class ReadProperties {
 
     private RedisProperties redisProperties;
 
+    @Contract(pure = true)
     public ReadProperties(RedisProperties redisProperties) {
         this.redisProperties = redisProperties;
     }
