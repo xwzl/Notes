@@ -11,14 +11,25 @@ spring:
   profiles:
     active: boot # 激活配置文件
     #    include: boot,druid1 或者 ProtertyConfigure 类中激活配置文件
-    include: druid4,redis # 或者 ProtertyConfigure 类中激活配置文件 druid3 配置无效，数据源有效
+    include: hikari,redis # 或者 ProtertyConfigure 类中激活配置文件 druid3 配置无效，数据源有效
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     readSize: 2 # 从数据库个数
   main:
     allow-bean-definition-overriding: true
+#  elasticsearch:
+#    jest:
+#      uris: 118.24.44.169:9200
+  data:
+    elasticsearch:
+      cluster-name:  elasticsearch #默认为elasticsearch
+      cluster-nodes: 192.168.26.20:9300 #配置es节点信息，逗号分隔，如果没有指定，则启动ClientNode
+#      properties:
+#        enable: true #是否开启本地存储
+#        path:
+#          logs: ./elasticsearch/log #elasticsearch日志存储目录
+#          data: ./elasticsearch/data #elasticsearch数据存储目录
 
-# 自定义属性
 com:
   xwz:
     sample: 我们
