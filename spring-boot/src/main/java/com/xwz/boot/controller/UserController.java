@@ -1,7 +1,6 @@
 package com.xwz.boot.controller;
 
 
-import com.xwz.boot.condition.DataSource;
 import com.xwz.boot.model.User;
 import com.xwz.boot.service.UserService;
 import com.xwz.boot.until.redis.RedisService;
@@ -72,14 +71,12 @@ public class UserController {
 
     @ApiOperation(value = "master", notes = "获取")
     @GetMapping("/getUser")
-    @DataSource
     public User getUser(Integer id) {
         return userService.findById(id);
     }
 
     @ApiOperation(value = "slave2", notes = "hello接口")
     @GetMapping("/delete")
-    @DataSource("slave2")
     public void delete(Integer id) {
         User user = new User();
         user.setUId(id);
@@ -88,7 +85,6 @@ public class UserController {
 
     @ApiOperation(value = "slave1", notes = "hello接口")
     @GetMapping("/getPlus")
-    @DataSource("slave1")
     public User getPlus(Integer id) {
         return userService.getById(id);
     }

@@ -2,25 +2,29 @@ package com.xwz.boot.aop;
 
 
 import com.xwz.boot.condition.DataSource;
+import com.xwz.boot.configure.data.DataSourcesConfigure;
 import com.xwz.boot.configure.data.DynamicDataSourceContextHolder;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 
 /**
  * 其中他的默认值是master,因为我们默认数据源的key也是master。也就是说如果你直接用注解，而不指定value的话，那么
  * 默认就使用master默认数据源。
  * <p>
- * 不起作用了，
+ * 不起作用了，使用 AOP 关闭 {@link DataSourcesConfigure#dynamicDatasourceAnnotationAdvisor()} @bena
  *
  * @author xuweizhi
  * @date 2019/04/25 10:07
  */
-//@Aspect
-//@Component
-//@Order(-1900)
+@Aspect
+@Component
+@Order(-1900)
 public class DynamicDataSourceAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamicDataSourceAspect.class);
@@ -33,6 +37,7 @@ public class DynamicDataSourceAspect {
             DynamicDataSourceContextHolder.setDataSourceRouterKey(dsId);
         } else {
             logger.info("数据源[{}]不存在，使用默认数据源 >{}", dsId, point.getSignature());
+            DynamicDataSourceContextHolder.setDataSourceRouterKey(dsId);
         }
     }
 

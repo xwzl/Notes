@@ -1,5 +1,6 @@
 package com.xwz.boot;
 
+import com.xwz.boot.configure.data.DataSourcesConfigure;
 import com.xwz.boot.configure.data.DynamicDataSourceRegister;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -8,6 +9,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+
 /**
  * 使用 @SpringBootApplication 注解，标明是 Spring Boot 应用。通过它，可以开启自动配置的功能
  * <p>
@@ -15,14 +17,29 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * <p>
  * EnableCaching redis 缓存， 数据库事务
  *
+ * <h2>数据源切换注意事项</h2>
+ * SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
+ * <p>
+ * 测试数据源的时候，最好把 Redis 缓存关掉，即注释掉相关的Redis缓存注解
+ * <h3>druid 数据源切换：</h3>
+ * <ul>
+ * <li>{@link SpringBootRun} 注解@Import(DynamicDataSourceRegister.class) 注释</li>
+ * <li>{@link DataSourcesConfigure#dynamicDatasourceAnnotationAdvisor} 注解@Bean 注释</li>
+ * <li>application.yml include 换成druid1</li>
+ * </ul>
+ * <h3>hikari 多数据源切换：</h3>
+ * 与上面相反，application.yml include hikari
+ * <h3>druid 多数据源切换：</h3>
+ * 与上面相反，application.yml include 换成druid2 无法监控 sql
+ *
  * @author xuweizhi
  * @date 2019/04/22 10:50
  */
-@SpringBootApplication
 @EnableCaching
 @Import(DynamicDataSourceRegister.class)
 @EnableTransactionManagement
 @MapperScan(basePackages = "com.xwz.boot.mapper")
+@SpringBootApplication
 public class SpringBootRun {
 
     public static void main(String[] args) {

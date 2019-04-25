@@ -20,7 +20,7 @@ import java.util.List;
  */
 @Service
 @CacheConfig(cacheNames = "user")
-@Transactional
+
 public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implements UserService {
 
     private final UserMapper userMapper;
@@ -40,9 +40,11 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      * @param user 入参
      */
     @Override
+    @Transactional
     //@CacheEvict(key = "'user'+#user.UId", beforeInvocation = false)
     public void delete(@NotNull User user) {
         userMapper.deleteById(user.getUId());
+        throw new ArithmeticException("11");
     }
 
 

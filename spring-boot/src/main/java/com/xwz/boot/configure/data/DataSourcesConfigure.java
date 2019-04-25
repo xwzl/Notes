@@ -2,7 +2,6 @@ package com.xwz.boot.configure.data;
 
 import com.xwz.boot.aop.DynamicDataSourceAnnotationAdvisor;
 import com.xwz.boot.aop.DynamicDataSourceAnnotationInterceptor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -24,7 +23,7 @@ public class DataSourcesConfigure {
     //    return new DruidDataSource();
     //}
 
-    @Bean
+    //@Bean
     public DynamicDataSourceAnnotationAdvisor dynamicDatasourceAnnotationAdvisor() {
         return new DynamicDataSourceAnnotationAdvisor(new DynamicDataSourceAnnotationInterceptor());
     }

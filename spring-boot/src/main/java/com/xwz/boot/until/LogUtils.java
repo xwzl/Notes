@@ -1,5 +1,6 @@
 package com.xwz.boot.until;
 
+import com.xwz.boot.enums.LogEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package com.xwz.boot.until;
+package com.xwz.boot.enums;
 
 /**
  * 本地日志枚举
