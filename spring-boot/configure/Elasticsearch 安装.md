@@ -49,3 +49,5 @@ http://linuxport:9200/
     plugin -install mobz/elasticsearch-head
     
 http://linuxport:9200/_plugin/head/
+
+

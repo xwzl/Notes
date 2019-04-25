@@ -1,10 +1,14 @@
 package com.xwz.boot.service.impl;
 
+import com.xwz.boot.condition.DataSource;
 import com.xwz.boot.mapper.UserMapper;
 import com.xwz.boot.model.User;
 import com.xwz.boot.service.UserService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +45,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      */
     @Override
     @Transactional
-    //@CacheEvict(key = "'user'+#user.UId", beforeInvocation = false)
+    @CacheEvict(key = "'user'+#user.UId", beforeInvocation = false)
     public void delete(@NotNull User user) {
         userMapper.deleteById(user.getUId());
         throw new ArithmeticException("11");
@@ -58,7 +62,8 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      * 如下面只有id < 3才进行缓存
      */
     @Override
-    //@CachePut(condition = "#result != 'null'", key = "'user'+#user.UId")
+    @CachePut(condition = "#result != 'null'", key = "'user'+#user.UId")
+    @DataSource
     public User update(@NotNull User user) {
         User checkResult = userMapper.selectById(user.getUId());
         if (checkResult == null) {
@@ -83,7 +88,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
      * {@link User#getCreateTime()} 解决 LocalDateTime 序列化出错问题
      */
     @Override
-    //@Cacheable(key = "'user'+#id", condition = "#result != null", sync = true)
+    @Cacheable(key = "'user'+#id", condition = "#result != null", sync = true)
     //@Cacheable(value = "findById", keyGenerator = "keyGenerator",sync = true)
     public User findById(Integer id) {
         return userMapper.getUserByIdXml(id);
@@ -95,7 +100,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     }
 
     @Override
-    //@CachePut(key = "'user'+#result.UId")
+    @CachePut(key = "'user'+#result.UId")
     public User insert(User user) {
         userMapper.addUserByXml(user);
         return user;
