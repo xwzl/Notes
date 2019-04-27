@@ -26,43 +26,36 @@ public class Article implements Serializable {
     /**
      * 标题
      */
-    @Field
     private String title;
 
     /**
      * 摘要
      */
-    @Field
     private String abstracts;
 
     /**
      * 内容
      */
-    @Field
     private String content;
 
     /**
      * 发表时间
      */
-    @Field
     private String postTime;
 
     /**
      * 点击率
      */
-    @Field
     private String clickCount;
 
     /**
      * 作者
      */
-    @Field
     private Author author;
 
     /**
      * 所属教程
      */
-    @Field
     private Tutorial tutorial;
 
     public Long getId() {

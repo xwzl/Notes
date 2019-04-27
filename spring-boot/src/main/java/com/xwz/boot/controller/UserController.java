@@ -37,7 +37,7 @@ public class UserController {
     }
 
     /**
-     * http://localhost:8082/spring-boot/swagger-ui.html#/ 访问
+     * http://localhost:8083/spring-boot/swagger-ui.html#/ 访问
      */
     @ApiOperation(value = "第一个接口", notes = "hello接口")
     @ApiParam(value = "api 测试")

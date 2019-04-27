@@ -1,6 +1,8 @@
 package com.xwz.boot.controller;
 
 import com.xwz.boot.entity.*;
+import com.xwz.boot.repository.ArticleSearchRepository;
+import com.xwz.boot.repository.GoodsRepository;
 import io.swagger.annotations.Api;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.springframework.web.bind.annotation.GetMapping;

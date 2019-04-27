@@ -14,7 +14,7 @@ import java.io.Serializable;
  */
 @Document(indexName = "wtf", type = "goods")
 public class GoodsInfo implements Serializable {
-
+    
     private Long id;
 
     private String name;

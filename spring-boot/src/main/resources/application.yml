@@ -1,11 +1,11 @@
-server:
-  port: 8083
-  address: 127.0.0.1
-  servlet:
-    context-path: /spring-boot
-
 linux:
-  myport: 192.168.26.20
+  port:
+    base: 192.168.26.22            # Linux 主服务器端口
+    master:
+      mysql: 192.168.26.22:3306    # Linux 主 Mysql 端口 写
+    slave:
+      slave1: 192.168.26.23:3306   # Linux 从 Mysql 端口 读
+      slave2: 192.168.26.23:3307   # Linux 从 Mysql 端口 读
 
 spring:
   profiles:
@@ -17,13 +17,13 @@ spring:
     readSize: 2 # 从数据库个数
   main:
     allow-bean-definition-overriding: true
-#  elasticsearch:
-#    jest:
-#      uris: 127.0.01:9200
+  #  elasticsearch:
+  #    jest:
+  #      uris: 127.0.01:9200
   data:
     elasticsearch:
-      cluster-name:  elasticsearch #默认为elasticsearch
-      cluster-nodes: 127.0.0.1:9300 #配置es节点信息，逗号分隔，如果没有指定，则启动ClientNode
+      cluster-name: elasticsearch-cluster   #默认为elasticsearch
+      cluster-nodes: ${linux.port.base}:9300,${linux.port.base}:9301,${linux.port.base}:9302 #配置es节点信息，逗号分隔，如果没有指定，则启动ClientNode
 #      properties:
 #        enable: true #是否开启本地存储
 #        path:
