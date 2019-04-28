@@ -1,4 +1,4 @@
-package com.xwz.boot.condition;
+package com.xwz.boot.annotation;
 
 import org.springframework.boot.autoconfigure.condition.OnPropertyListCondition;
 import org.springframework.context.annotation.Conditional;

@@ -1,6 +1,5 @@
 package com.xwz.boot.configure;
 
-import com.xwz.boot.condition.ConditionSample;
 import com.xwz.boot.controller.RestControllerSample;
 import com.xwz.boot.model.Book;
 import org.springframework.context.annotation.Bean;

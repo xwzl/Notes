@@ -1,8 +1,8 @@
 task resources(type: Copy) {
     copy {
         from("src/main/java") {
-            include("**/*.png")
-            include("**/*.jpg")
+//            include("**/*.png")
+//            include("**/*.jpg")
             include("**/*.xml")
         }
         into("${rootDir}/${project.name}/out/production/classes")

@@ -5,7 +5,7 @@ import com.xwz.boot.configure.date.LocalDateTimeSerializerConfig;
 import com.xwz.boot.model.Book;
 import com.xwz.boot.model.Goods;
 import com.xwz.boot.model.ValueSample;
-import com.xwz.boot.property.ReadProperties;
+import com.xwz.boot.configure.property.ReadProperties;
 import com.xwz.boot.until.LogUtils;
 import io.swagger.annotations.Api;
 import org.jetbrains.annotations.Contract;

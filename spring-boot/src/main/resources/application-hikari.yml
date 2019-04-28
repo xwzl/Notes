@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     master:
-      url: jdbc:mysql://192.168.26.22:3306/wtf?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+      url: jdbc:mysql://${linux.port.master.mysql}/wtf?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
       username: root
       password: 158262751
       type: com.zaxxer.hikari.HikariDataSource
@@ -13,14 +13,14 @@ spring:
   # 添加新的一个数据源 就在cluster下新增一个数据源即可，其中key为必须项，用于数据源的唯一标识，以及接下来切换数据源的标识。
     cluster:
       - key: slave1
-        url: jdbc:mysql://192.168.26.23:3306/wtf1?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+        url: jdbc:mysql://${linux.port.slave.slave1}/wtf?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
         idle-timeout: 20000
         username: root
         password: 158262751
         type: com.zaxxer.hikari.HikariDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
       - key: slave2
-        url: jdbc:mysql://192.168.26.24:3307/wtf2?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+        url: jdbc:mysql://${linux.port.slave.slave2}/wtf?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
         username: root
         password: 158262751
         driver-class-name: com.mysql.cj.jdbc.Driver

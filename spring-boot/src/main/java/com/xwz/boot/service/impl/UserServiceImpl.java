@@ -1,6 +1,6 @@
 package com.xwz.boot.service.impl;
 
-import com.xwz.boot.condition.DataSource;
+import com.xwz.boot.annotation.DataSource;
 import com.xwz.boot.mapper.UserMapper;
 import com.xwz.boot.model.User;
 import com.xwz.boot.service.UserService;
@@ -48,7 +48,6 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     @CacheEvict(key = "'user'+#user.UId", beforeInvocation = false)
     public void delete(@NotNull User user) {
         userMapper.deleteById(user.getUId());
-        throw new ArithmeticException("11");
     }
 
 
@@ -91,7 +90,9 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     @Cacheable(key = "'user'+#id", condition = "#result != null", sync = true)
     //@Cacheable(value = "findById", keyGenerator = "keyGenerator",sync = true)
     public User findById(Integer id) {
-        return userMapper.getUserByIdXml(id);
+        //User userByIdXml = userMapper.getUserByIdXml(id);
+        User mapperUser = userMapper.getUser(id);
+        return mapperUser;
     }
 
     @Override
@@ -102,7 +103,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implement
     @Override
     @CachePut(key = "'user'+#result.UId")
     public User insert(User user) {
-        userMapper.addUserByXml(user);
+        userMapper.insert(user);
         return user;
     }
 

@@ -1,22 +1,5 @@
 package com.xwz.boot.configure.exception;
 
-import com.xwz.boot.enums.HttpStatusEnum;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.ConversionNotSupportedException;
-import org.springframework.beans.TypeMismatchException;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-
 /**
  * 以上都正常时，在controller里执行逻辑代码时出的异常。譬如NullPointerException
  * <p>
@@ -67,148 +50,148 @@ import java.io.IOException;
  * @author xuweizhi
  * @date 2019/04/24 12:14
  */
-@Slf4j
-@RestControllerAdvice
+//@Slf4j
+//@RestControllerAdvice
 public class GlobalDefaultExceptionHandler {
 
 
-    /**
-     * 运行时异常
-     */
-    @ExceptionHandler(RuntimeException.class)
-    public ErrorInfo<Object> runtimeExceptionHandler(RuntimeException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "运行时异常", request, ex);
-    }
+    ///**
+    // * 运行时异常
+    // */
+    //@ExceptionHandler(RuntimeException.class)
+    //public ErrorInfo<Object> runtimeExceptionHandler(RuntimeException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "运行时异常", request, ex);
+    //}
 
-    /**
-     * 空指针异常
-     */
-    @ExceptionHandler(NullPointerException.class)
-    public ErrorInfo<Object> nullPointerExceptionHandler(NullPointerException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "空指针异常", request, ex);
-    }
-
-    /**
-     * 类型转换异常
-     */
-    @ExceptionHandler(ClassCastException.class)
-    public ErrorInfo<Object> classCastExceptionHandler(ClassCastException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "类型转换异常", request, ex);
-    }
-
-    /**
-     * IO异常
-     */
-    @ExceptionHandler(IOException.class)
-    public ErrorInfo<Object> iOExceptionHandler(IOException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "IO异常", request, ex);
-    }
-
-    /**
-     * 未知方法异常
-     */
-    @ExceptionHandler(NoSuchMethodException.class)
-    public ErrorInfo<Object> noSuchMethodExceptionHandler(NoSuchMethodException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "未知方法异常", request, ex);
-    }
-
-    /**
-     * 数组越界异常
-     */
-    @ExceptionHandler(IndexOutOfBoundsException.class)
-    public ErrorInfo<Object> indexOutOfBoundsExceptionHandler(IndexOutOfBoundsException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "数组越界异常", request, ex);
-    }
-
-    /**
-     * 400错误
-     */
-    @ExceptionHandler({HttpMessageNotReadableException.class})
-    public ErrorInfo<Object> requestNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.BAD_REQUEST, "400错误", request, ex);
-    }
-
-    /**
-     * 400错误
-     */
-    @ExceptionHandler({TypeMismatchException.class})
-    public ErrorInfo<Object> requestTypeMismatch(TypeMismatchException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.BAD_REQUEST, "400错误", request, ex);
-    }
-
-    /**
-     * 400错误
-     */
-    @ExceptionHandler({MissingServletRequestParameterException.class})
-    public ErrorInfo<Object> requestMissingServletRequest(MissingServletRequestParameterException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.BAD_REQUEST, "400错误", request, ex);
-    }
-
-    /**
-     * 405错误
-     */
-    @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
-    public ErrorInfo<Object> request405(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.METHOD_NOT_ALLOWED, "405错误", request, ex);
-    }
-
-    /**
-     * 406错误
-     */
-    @ExceptionHandler({HttpMediaTypeNotAcceptableException.class})
-    public ErrorInfo<Object> request406(HttpMediaTypeNotAcceptableException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.NOT_ACCEPTABLE, "406错误", request, ex);
-    }
-
-    /**
-     * 500错误
-     */
-    @ExceptionHandler({ConversionNotSupportedException.class, HttpMessageNotWritableException.class})
-    public ErrorInfo<Object> server500(RuntimeException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "500错误", request, ex);
-    }
-
-    /**
-     * 栈溢出
-     */
-    /*@ExceptionHandler({StackOverflowError.class})
-    public ErrorInfo<Object> requestStackOverflow(StackOverflowError ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "IO异常 = {}", request, ex);
-    }*/
-
-    /**
-     * 除数不能为0
-     */
-    @ExceptionHandler({ArithmeticException.class})
-    public ErrorInfo<Object> arithmeticException(ArithmeticException ex, HttpServletRequest request) {
-        return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "数学运算异常", request, ex);
-    }
-
-    /**
-     * 统一处理某一类异常，从而能够减少代码重复率和复杂度
-     * 指定具体要处理的异常:@ExceptionHandler(value = ExceptionResult.class)
-     * 处理所有异常:  @ExceptionHandler
-     */
-    @ExceptionHandler(value = Exception.class)
-    public ErrorInfo<Object> defaultErrorHandler(@NotNull HttpServletRequest req, @NotNull RuntimeException ex) {
-        return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "全局异常", req, ex);
-    }
-
-    @Contract("_, _, _, _ -> new")
-    @NotNull
-    private ErrorInfo<Object> getExceptionApiResultVO(@NotNull HttpStatusEnum httpStatusEnum, String message, HttpServletRequest request, @NotNull Exception ex) {
-
-        ErrorInfo<Object> errorInfo = new ErrorInfo<>();
-        String message1 = ex.fillInStackTrace().getMessage();
-        errorInfo.setCode(httpStatusEnum.getCode());
-        errorInfo.setMessage(message);
-        errorInfo.setData(ex.fillInStackTrace().toString());
-        errorInfo.setUrl(request.getRequestURI());
-
-        log.info(message + " = {}", ex.fillInStackTrace().toString());
-
-        ex.printStackTrace();
-
-        return errorInfo;
-    }
+    ///**
+    // * 空指针异常
+    // */
+    //@ExceptionHandler(NullPointerException.class)
+    //public ErrorInfo<Object> nullPointerExceptionHandler(NullPointerException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "空指针异常", request, ex);
+    //}
+    //
+    ///**
+    // * 类型转换异常
+    // */
+    //@ExceptionHandler(ClassCastException.class)
+    //public ErrorInfo<Object> classCastExceptionHandler(ClassCastException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "类型转换异常", request, ex);
+    //}
+    //
+    ///**
+    // * IO异常
+    // */
+    //@ExceptionHandler(IOException.class)
+    //public ErrorInfo<Object> iOExceptionHandler(IOException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "IO异常", request, ex);
+    //}
+    //
+    ///**
+    // * 未知方法异常
+    // */
+    //@ExceptionHandler(NoSuchMethodException.class)
+    //public ErrorInfo<Object> noSuchMethodExceptionHandler(NoSuchMethodException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "未知方法异常", request, ex);
+    //}
+    //
+    ///**
+    // * 数组越界异常
+    // */
+    //@ExceptionHandler(IndexOutOfBoundsException.class)
+    //public ErrorInfo<Object> indexOutOfBoundsExceptionHandler(IndexOutOfBoundsException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "数组越界异常", request, ex);
+    //}
+    //
+    ///**
+    // * 400错误
+    // */
+    //@ExceptionHandler({HttpMessageNotReadableException.class})
+    //public ErrorInfo<Object> requestNotReadable(HttpMessageNotReadableException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.BAD_REQUEST, "400错误", request, ex);
+    //}
+    //
+    ///**
+    // * 400错误
+    // */
+    //@ExceptionHandler({TypeMismatchException.class})
+    //public ErrorInfo<Object> requestTypeMismatch(TypeMismatchException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.BAD_REQUEST, "400错误", request, ex);
+    //}
+    //
+    ///**
+    // * 400错误
+    // */
+    //@ExceptionHandler({MissingServletRequestParameterException.class})
+    //public ErrorInfo<Object> requestMissingServletRequest(MissingServletRequestParameterException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.BAD_REQUEST, "400错误", request, ex);
+    //}
+    //
+    ///**
+    // * 405错误
+    // */
+    //@ExceptionHandler({HttpRequestMethodNotSupportedException.class})
+    //public ErrorInfo<Object> request405(HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.METHOD_NOT_ALLOWED, "405错误", request, ex);
+    //}
+    //
+    ///**
+    // * 406错误
+    // */
+    //@ExceptionHandler({HttpMediaTypeNotAcceptableException.class})
+    //public ErrorInfo<Object> request406(HttpMediaTypeNotAcceptableException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.NOT_ACCEPTABLE, "406错误", request, ex);
+    //}
+    //
+    ///**
+    // * 500错误
+    // */
+    //@ExceptionHandler({ConversionNotSupportedException.class, HttpMessageNotWritableException.class})
+    //public ErrorInfo<Object> server500(RuntimeException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "500错误", request, ex);
+    //}
+    //
+    ///**
+    // * 栈溢出
+    // */
+    ///*@ExceptionHandler({StackOverflowError.class})
+    //public ErrorInfo<Object> requestStackOverflow(StackOverflowError ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "IO异常 = {}", request, ex);
+    //}*/
+    //
+    ///**
+    // * 除数不能为0
+    // */
+    //@ExceptionHandler({ArithmeticException.class})
+    //public ErrorInfo<Object> arithmeticException(ArithmeticException ex, HttpServletRequest request) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "数学运算异常", request, ex);
+    //}
+    //
+    ///**
+    // * 统一处理某一类异常，从而能够减少代码重复率和复杂度
+    // * 指定具体要处理的异常:@ExceptionHandler(value = ExceptionResult.class)
+    // * 处理所有异常:  @ExceptionHandler
+    // */
+    //@ExceptionHandler(value = Exception.class)
+    //public ErrorInfo<Object> defaultErrorHandler(@NotNull HttpServletRequest req, @NotNull RuntimeException ex) {
+    //    return getExceptionApiResultVO(HttpStatusEnum.INTERNAL_SERVER_ERROR, "全局异常", req, ex);
+    //}
+    //
+    //@Contract("_, _, _, _ -> new")
+    //@NotNull
+    //private ErrorInfo<Object> getExceptionApiResultVO(@NotNull HttpStatusEnum httpStatusEnum, String message, HttpServletRequest request, @NotNull Exception ex) {
+    //
+    //    ErrorInfo<Object> errorInfo = new ErrorInfo<>();
+    //    String message1 = ex.fillInStackTrace().getMessage();
+    //    errorInfo.setCode(httpStatusEnum.getCode());
+    //    errorInfo.setMessage(message);
+    //    errorInfo.setData(ex.fillInStackTrace().toString());
+    //    errorInfo.setUrl(request.getRequestURI());
+    //
+    //    log.info(message + " = {}", ex.fillInStackTrace().toString());
+    //
+    //    ex.printStackTrace();
+    //
+    //    return errorInfo;
+    //}
 }

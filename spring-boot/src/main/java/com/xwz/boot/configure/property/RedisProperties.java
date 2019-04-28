@@ -1,4 +1,4 @@
-package com.xwz.boot.property;
+package com.xwz.boot.configure.property;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;

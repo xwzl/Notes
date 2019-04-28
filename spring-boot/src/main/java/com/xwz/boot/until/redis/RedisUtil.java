@@ -1,20 +1,12 @@
 package com.xwz.boot.until.redis;
 
-import com.xwz.boot.property.RedisProperties;
+import com.xwz.boot.configure.property.RedisProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.List;
-import java.util.Map;
 
 @EnableConfigurationProperties({RedisProperties.class})
 @Component

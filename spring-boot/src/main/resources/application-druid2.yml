@@ -2,18 +2,18 @@ spring:
   datasource:
     master:
       type: com.alibaba.druid.pool.DruidDataSource
-      url: jdbc:mysql://${linux.prot.master.mysql}/wtf?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
+      url: jdbc:mysql://${linux.port.master.mysql}/wtf?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&useSSL=false
       username: root
       password: 158262751
     cluster:
       - key: slave1
-        url: jdbc:mysql://${linux.prot.slave.slave1}/wtf1?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+        url: jdbc:mysql://${linux.port.slave.slave1}/wtf?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
         username: root
         password: 158262751
         type: com.alibaba.druid.pool.DruidDataSource
         driver-class-name: com.mysql.cj.jdbc.Driver
       - key: slave2
-        url: jdbc:mysql://${linux.prot.slave.slave2}/wtf2?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+        url: jdbc:mysql://${linux.port.slave.slave2}/wtf?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
         username: root
         password: 158262751
         driver-class-name: com.mysql.cj.jdbc.Driver

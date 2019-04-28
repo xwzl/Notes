@@ -1,7 +1,7 @@
 package com.xwz.boot.aop;
 
 
-import com.xwz.boot.condition.DataSource;
+import com.xwz.boot.annotation.DataSource;
 import com.xwz.boot.configure.data.DataSourcesConfigure;
 import com.xwz.boot.configure.data.DynamicDataSourceContextHolder;
 import org.aspectj.lang.JoinPoint;
@@ -33,7 +33,7 @@ public class DynamicDataSourceAspect {
     public void changeDataSource(JoinPoint point, DataSource ds) throws Throwable {
         String dsId = ds.value();
         if (DynamicDataSourceContextHolder.dataSourceIds.contains(dsId)) {
-            logger.debug("Use DataSource :{} >", dsId, point.getSignature());
+            logger.info("Use DataSource :{} >", dsId, point.getSignature());
             DynamicDataSourceContextHolder.setDataSourceRouterKey(dsId);
         } else {
             logger.info("数据源[{}]不存在，使用默认数据源 >{}", dsId, point.getSignature());

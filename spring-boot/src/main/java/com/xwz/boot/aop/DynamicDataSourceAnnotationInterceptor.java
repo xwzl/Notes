@@ -1,6 +1,6 @@
 package com.xwz.boot.aop;
 
-import com.xwz.boot.condition.DataSource;
+import com.xwz.boot.annotation.DataSource;
 import com.xwz.boot.configure.data.DynamicDataSourceContextHolder;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;

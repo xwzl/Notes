@@ -1,7 +1,6 @@
 package com.xwz.boot.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.xwz.boot.condition.DataSource;
 import com.xwz.boot.model.User;
 import org.apache.ibatis.annotations.*;
 
@@ -75,7 +74,6 @@ public interface UserMapper extends BaseMapper<User> {
      * @param uId id
      * @return user
      */
-    @DataSource
     User getUserByIdXml(Integer uId);
 
     /**

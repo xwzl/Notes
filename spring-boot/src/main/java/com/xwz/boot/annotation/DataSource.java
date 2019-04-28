@@ -1,4 +1,4 @@
-package com.xwz.boot.condition;
+package com.xwz.boot.annotation;
 
 import java.lang.annotation.*;
 

@@ -1,4 +1,4 @@
-package com.xwz.boot.condition;
+package com.xwz.boot.configure;
 
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;

@@ -1,6 +1,6 @@
 package com.xwz.boot.aop;
 
-import com.xwz.boot.condition.DataSource;
+import com.xwz.boot.annotation.DataSource;
 import org.aopalliance.aop.Advice;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.aop.Pointcut;
