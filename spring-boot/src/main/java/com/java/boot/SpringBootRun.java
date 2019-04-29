@@ -1,7 +1,7 @@
 package com.java.boot;
 
-import com.java.boot.source.config.data.DataSourcesConfig;
-import com.java.boot.source.config.data.DynamicDataSourceRegister;
+import com.java.boot.system.config.data.DataSourcesConfig;
+import com.java.boot.system.config.data.DynamicDataSourceRegister;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

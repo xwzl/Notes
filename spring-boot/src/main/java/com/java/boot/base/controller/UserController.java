@@ -2,7 +2,7 @@ package com.java.boot.base.controller;
 
 
 import com.java.boot.base.model.People;
-import com.java.boot.source.annotation.DataSource;
+import com.java.boot.system.annotation.DataSource;
 import com.java.boot.base.service.PeopleService;
 import com.java.boot.base.until.redis.RedisService;
 import io.swagger.annotations.ApiOperation;

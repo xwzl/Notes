@@ -1,8 +1,8 @@
 package com.java.boot.base.controller;
 
-import com.java.boot.source.config.date.DateConfig;
-import com.java.boot.source.config.date.LocalDateTimeSerializerConfig;
-import com.java.boot.source.property.ReadProperties;
+import com.java.boot.system.config.date.DateConfig;
+import com.java.boot.system.config.date.LocalDateTimeSerializerConfig;
+import com.java.boot.system.property.ReadProperties;
 import com.java.boot.base.model.Book;
 import com.java.boot.base.model.Goods;
 import com.java.boot.base.model.ValueSample;

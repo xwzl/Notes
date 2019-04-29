@@ -1,6 +1,6 @@
 package com.java.boot.base.service.impl;
 
-import com.java.boot.source.annotation.DataSource;
+import com.java.boot.system.annotation.DataSource;
 import com.java.boot.base.model.People;
 import com.java.boot.base.mapper.PeopleMapper;
 import com.java.boot.base.service.PeopleService;
