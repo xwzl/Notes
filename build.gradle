@@ -31,7 +31,7 @@ ext {
     jodaTimeVersion = "2.10.1"
     lombokVersion = "1.18.4"
     junitVersion = "4.13-beta-1"
-    baomidouVersion = "3.0.5"
+    baomidouVersion = "3.1.1"
     mysqlVersion = "8.0.15"
     log4jAPIVersion = "2.11.2"
 //    druidVersion="1.1.12"
@@ -39,7 +39,12 @@ ext {
     swaggerVersion = "2.9.2"
     redisVersion = "1.4.7.RELEASE"
     jacksonVersion = "2.9.8"
-    jannotationVersion="17.0.0"
+    jannotationVersion = "17.0.0"
+    fastJsonVersion = "1.2.46"
+    shiroVersion = "1.4.0"
+    shiroRedis="3.2.3"
+    commonLangVerion="3.9"
+    fastjsonVserion="1.2.57"
 }
 
 configure(allprojects) { project ->

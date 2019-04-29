@@ -25,13 +25,22 @@ dependencies {
             "org.springframework.boot:spring-boot-starter-redis:${redisVersion}",
             "org.springframework.boot:spring-boot-starter-aop:${springBootVersion}",
             "org.springframework.boot:spring-boot-starter-data-elasticsearch:${springBootVersion}",
+//            "io.searchbox:jest:5.3.3",
+            "com.alibaba:fastjson:${fastJsonVersion}",
             "io.springfox:springfox-swagger2:${swaggerVersion}",
             "io.springfox:springfox-swagger-ui:${swaggerVersion}",
             "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}",
             "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}",
             "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}",
             "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}",
-            "org.apache.shiro:shiro-spring:1.4.0"
+            "org.apache.shiro:shiro-spring:${shiroVersion}",
+            "org.apache.shiro:shiro-core:${shiroVersion}",
+            "org.apache.shiro:shiro-ehcache:${shiroVersion}",
+            "org.crazycake:shiro-redis:${shiroRedis}",
+            "org.apache.commons:commons-lang3:${commonLangVerion}",
+            "com.alibaba:fastjson:${fastjsonVserion}"
+
+
     )
 
 }

@@ -16,8 +16,8 @@ mybatis-plus:
     #适配驼峰命名法
     map-underscore-to-camel-case: true #默认为true
   #    interceptors: com.xwz.boot.configure.data.MybatisInterceptor 失败
-  type-aliases-package: com.xwz.boot.model
-  mapper-locations: classpath:com/xwz/boot/mapper/*.xml
+  type-aliases-package: com.java.boot.base.model
+  mapper-locations: classpath:com/java/boot/base/mapper/*.xml
 
   ## 日志文件配置,用之前需要排除 logback 的依赖
   #logging:
