@@ -8,28 +8,24 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * <p>
- * 
- * </p>
- *
  * @author xwz
  * @since 2019-04-29
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class User implements Serializable {
+public class Role implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId(value = "uid", type = IdType.AUTO)
-    private Integer uid;
+    @TableId(value = "rid", type = IdType.AUTO)
+    private Integer rid;
 
-    private String username;
+    private String description;
 
-    private String password;
+    private String keyword;
 
-    private Integer age;
+    private String name;
 
 
 }

@@ -1,6 +1,6 @@
 package com.xwz.boot.redis;
 
-import com.xwz.boot.model.User;
+import com.xwz.boot.model.People;
 import com.xwz.boot.until.RedisService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class RedisTemplateImple {
     private RedisService redisService;
 
 
-    public List<User> saveUserWithRedis(List<User> users) {
+    public List<People> saveUserWithRedis(List<People> users) {
 
         ListOperations<String, Object> listOperations = template.opsForList();
 

@@ -22,8 +22,9 @@ spring:
   #      uris: 127.0.01:9200
   data:
     elasticsearch:
-      cluster-name: elasticsearch-cluster   #默认为elasticsearch
-      cluster-nodes: ${linux.port.base}:9300,${linux.port.base}:9301,${linux.port.base}:9302 #配置es节点信息，逗号分隔，如果没有指定，则启动ClientNode
+      cluster-name: myapp   #默认为默认为elasticsearch
+#      cluster-nodes: ${linux.port.base}:9300,${linux.port.base}:9301,${linux.port.base}:9302 #配置es节点信息，逗号分隔，如果没有指定，则启动ClientNode
+      cluster-nodes: ${linux.port.base}:9300 #配置es节点信息，逗号分隔，如果没有指定，则启动ClientNode
 #      properties:
 #        enable: true #是否开启本地存储
 #        path:

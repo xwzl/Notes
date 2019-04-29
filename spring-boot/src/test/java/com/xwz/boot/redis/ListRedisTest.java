@@ -1,7 +1,7 @@
 package com.xwz.boot.redis;
 
 import com.xwz.boot.SpringBootsTest;
-import com.xwz.boot.model.User;
+import com.xwz.boot.model.People;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.ListOperations;
@@ -137,7 +137,7 @@ public class ListRedisTest extends SpringBootsTest {
         redisTemplate.delete("li16");
         opsForList.rightPush("li16", "a");
         opsForList.rightPush("li16", 1);
-        opsForList.rightPush("li16", new User());
+        opsForList.rightPush("li16", new People());
         opsForList.rightPush("li16", "c");
         opsForList.rightPush("li16", "b");
         Object index = opsForList.index("li16", 2);

@@ -1,6 +1,6 @@
 package com.xwz.boot.service;
 
-import com.xwz.boot.model.User;
+import com.xwz.boot.model.Permission;
 import com.xwz.boot.service.BaseService;
 
 /**
@@ -11,6 +11,6 @@ import com.xwz.boot.service.BaseService;
  * @author xwz
  * @since 2019-04-29
  */
-public interface UserService extends BaseService<User> {
+public interface PermissionService extends BaseService<Permission> {
 
 }

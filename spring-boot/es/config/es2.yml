@@ -1,0 +1,13 @@
+cluster.name: mycluster
+node.name: node2
+network.bind_host: 0.0.0.0
+network.publish_host: 192.168.26.22
+network.host: 0.0.0.0
+http.port: 9201
+transport.tcp.port: 9301
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+node.master: true
+node.data: true
+http.enabled: true
+discovery.zen.minimum_master_nodes: 2

@@ -1,8 +1,8 @@
 package com.xwz.boot.service.impl;
 
-import com.xwz.boot.model.User;
-import com.xwz.boot.mapper.UserMapper;
-import com.xwz.boot.service.UserService;
+import com.xwz.boot.model.Role;
+import com.xwz.boot.mapper.RoleMapper;
+import com.xwz.boot.service.RoleService;
 import com.xwz.boot.service.impl.BaseServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2019-04-29
  */
 @Service
-public class UserServiceImpl extends BaseServiceImpl<UserMapper, User> implements UserService {
+public class RoleServiceImpl extends BaseServiceImpl<RoleMapper, Role> implements RoleService {
 
 }

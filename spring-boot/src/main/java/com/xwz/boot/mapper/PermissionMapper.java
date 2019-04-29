@@ -1,6 +1,6 @@
 package com.xwz.boot.mapper;
 
-import com.xwz.boot.model.User;
+import com.xwz.boot.model.Permission;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @author xwz
  * @since 2019-04-29
  */
-public interface UserMapper extends BaseMapper<User> {
+public interface PermissionMapper extends BaseMapper<Permission> {
 
 }

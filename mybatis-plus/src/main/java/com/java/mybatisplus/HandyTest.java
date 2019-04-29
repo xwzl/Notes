@@ -15,6 +15,7 @@ public class HandyTest {
         handy.setChildModuleName("spring-boot");
         handy.setBasePackageName("com.xwz");
         handy.setAuthor("xwz");
+        handy.setUrl("192.168.26.22:3306/wtf");
        GeneratorUntil.generatorCode(handy);
     }
 }

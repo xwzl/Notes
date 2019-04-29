@@ -1,6 +1,6 @@
 package com.xwz.boot.redis;
 
-import com.xwz.boot.model.User;
+import com.xwz.boot.model.People;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -40,10 +40,10 @@ public class SetRedisTest {
     }
     public void testRemove(){
         redisTemplate.delete("zhou2");
-        User user = new User();
+        People user = new People();
         user.setUId(1);
         opsForSet.add("zhou2", "a","b","c","d","e",user);
-        User user1 = new User();
+        People user1 = new People();
         //移除集合中一个或多个成员
         System.out.println(opsForSet.remove("zhou2", "a","d","f",user1));//2
         System.out.println(opsForSet.members("zhou2"));//[e, b, c]

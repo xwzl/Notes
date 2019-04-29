@@ -2,8 +2,8 @@ package com.xwz.boot.controller;
 
 
 import com.xwz.boot.annotation.DataSource;
-import com.xwz.boot.model.User;
-import com.xwz.boot.service.UserService;
+import com.xwz.boot.model.People;
+import com.xwz.boot.service.PeopleService;
 import com.xwz.boot.until.redis.RedisService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -26,15 +26,15 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    private final UserService userService;
+    private final PeopleService peopleService;
 
     /**
      * 使用实现类 Redis 进行redis 操作
      */
     private final RedisService redisService;
 
-    public UserController(UserService userService, RedisService redisService) {
-        this.userService = userService;
+    public UserController(PeopleService peopleService, RedisService redisService) {
+        this.peopleService = peopleService;
         this.redisService = redisService;
     }
 
@@ -45,54 +45,54 @@ public class UserController {
     @ApiParam(value = "api 测试")
     @GetMapping("/getUsers")
     @DataSource("slave1")
-    public List<User> getUsers(String api) {
+    public List<People> getUsers(String api) {
         System.out.println(api);
-        User user = new User();
+        People user = new People();
         user.setUId(3);
-        User service = userService.getById(user);
+        People service = peopleService.getById(user);
         if (service != null) {
             redisService.setBean(service.getUId() + service.getAddress(), service);
-            User redisUser = (User) redisService.getBean(service.getUId() + service.getAddress());
+            People redisUser = (People) redisService.getBean(service.getUId() + service.getAddress());
             System.out.println(redisUser);
         }
-        return userService.getALl();
+        return peopleService.getALl();
     }
 
     @ApiOperation(value = "Master 插入值", notes = "hello接口")
     @GetMapping("/insertUser")
     @DataSource
-    public User insertUser() {
-        User user = new User(null, "山东", "仁和春天", LocalDateTime.now(), "158262751", "158262751", 2, "王柳");
-        return userService.insert(user);
+    public People insertUser() {
+        People user = new People(null, "山东", "仁和春天", LocalDateTime.now(), "158262751", "158262751", 2, "王柳");
+        return peopleService.insert(user);
     }
 
 
     @ApiOperation(value = "update", notes = "更新")
     @GetMapping("/update")
-    public User update(String name, Integer id) {
-        User byId = userService.getById(id);
+    public People update(String name, Integer id) {
+        People byId = peopleService.getById(id);
         byId.setUsername(name);
-        return userService.update(byId);
+        return peopleService.update(byId);
     }
 
     @ApiOperation(value = "Slave 2", notes = "获取")
     @GetMapping("/getUser")
     @DataSource("slave2")
-    public User getUser(Integer id) {
-        return userService.findById(id);
+    public People getUser(Integer id) {
+        return peopleService.findById(id);
     }
 
     @ApiOperation(value = "slave2", notes = "hello接口")
     @GetMapping("/delete")
     public void delete(Integer id) {
-        User user = new User();
+        People user = new People();
         user.setUId(id);
-        userService.delete(user);
+        peopleService.delete(user);
     }
 
     @ApiOperation(value = "slave1", notes = "hello接口")
     @GetMapping("/getPlus")
-    public User getPlus(Integer id) {
-        return userService.getById(id);
+    public People getPlus(Integer id) {
+        return peopleService.getById(id);
     }
 }
