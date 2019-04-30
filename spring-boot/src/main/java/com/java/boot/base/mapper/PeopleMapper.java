@@ -2,6 +2,7 @@ package com.java.boot.base.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.java.boot.base.model.People;
+import com.java.boot.system.annotation.MapperStatistics;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public interface PeopleMapper extends BaseMapper<People> {
      */
     @Insert("insert into people(address,role) values(#{address},#{role})")
     @Options(keyProperty = "uId", useGeneratedKeys = true, keyColumn = "u_id")
+    @MapperStatistics
     int addUser(People user);
 
     /**

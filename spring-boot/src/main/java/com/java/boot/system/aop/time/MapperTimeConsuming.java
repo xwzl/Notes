@@ -1,11 +1,12 @@
-package com.java.boot.system.aop;
+package com.java.boot.system.aop.time;
 
+
+import com.java.boot.system.annotation.MapperStatistics;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +16,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Aspect
-@Order(2)
+@Order(3)
 @Slf4j
-public class ServiceAop {
+public class MapperTimeConsuming {
 
     /**
      * 保证每个线程都有一个单独的实例
@@ -26,26 +27,18 @@ public class ServiceAop {
 
     private boolean flag = false;
 
-    /**
-     * 横切所有的cont方法
-     */
-    @Pointcut("execution(* com.graduation.design.service.impl.*.*(..))")
-    public void pointcut() {
-    }
-
-    @Before("pointcut()")
-    public void before(JoinPoint joinPoint) throws NoSuchMethodException {
+    @Before("@annotation(ms)")
+    public void before(JoinPoint joinPoint, MapperStatistics ms) throws NoSuchMethodException {
         threadLocal.set(System.currentTimeMillis());
-         //UrlControllerAop.otherLogPrint(joinPoint);
+        //UrlControllerAop.otherLogPrint(joinPoint);
     }
 
-    @AfterReturning("pointcut()")
-    public void afterReturning(JoinPoint joinPoint) {
+    @AfterReturning("@annotation(ms)")
+    public void afterReturning(JoinPoint joinPoint, MapperStatistics ms) {
         String className = joinPoint.getTarget().getClass().getInterfaces()[0].getSimpleName();
         String methodName =  joinPoint.getSignature().getName() + "  耗时" + ((System.currentTimeMillis() - threadLocal.get())) + "ms";
-        log.info("Service接口名称:{} 执行方法 :{}", className,methodName);
+        log.info("{} 执行方法 {}", className,methodName);
         threadLocal.remove();
     }
-
 
 }

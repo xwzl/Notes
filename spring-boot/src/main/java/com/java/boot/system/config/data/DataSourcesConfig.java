@@ -1,7 +1,7 @@
 package com.java.boot.system.config.data;
 
-import com.java.boot.system.aop.DynamicDataSourceAnnotationAdvisor;
-import com.java.boot.system.aop.DynamicDataSourceAnnotationInterceptor;
+import com.java.boot.system.aop.data.DynamicDataSourceAnnotationAdvisor;
+import com.java.boot.system.aop.data.DynamicDataSourceAnnotationInterceptor;
 import org.springframework.context.annotation.Configuration;
 
 /**

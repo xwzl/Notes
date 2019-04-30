@@ -4,6 +4,7 @@ import com.java.boot.system.annotation.DataSource;
 import com.java.boot.base.model.People;
 import com.java.boot.base.mapper.PeopleMapper;
 import com.java.boot.base.service.PeopleService;
+import com.java.boot.system.annotation.ServiceStatistics;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -102,8 +103,9 @@ public class PeopleServiceImpl extends BaseServiceImpl<PeopleMapper, People> imp
 
     @Override
     @CachePut(key = "'user'+#result.UId")
+    @ServiceStatistics
     public People insert(People user) {
-        peopleMapper.insert(user);
+        peopleMapper.addUser(user);
         return user;
     }
 

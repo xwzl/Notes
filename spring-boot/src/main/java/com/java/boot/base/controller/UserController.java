@@ -2,6 +2,7 @@ package com.java.boot.base.controller;
 
 
 import com.java.boot.base.model.People;
+import com.java.boot.system.annotation.ControllerStatistics;
 import com.java.boot.system.annotation.DataSource;
 import com.java.boot.base.service.PeopleService;
 import com.java.boot.base.until.redis.RedisService;
@@ -61,6 +62,7 @@ public class UserController {
     @ApiOperation(value = "Master 插入值", notes = "hello接口")
     @GetMapping("/insertUser")
     @DataSource
+    @ControllerStatistics
     public People insertUser() {
         People user = new People(null, "山东", "仁和春天", LocalDateTime.now(), "158262751", "158262751", 2, "王柳");
         return peopleService.insert(user);

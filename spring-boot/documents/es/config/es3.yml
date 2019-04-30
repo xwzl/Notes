@@ -1,8 +1,7 @@
-cluster.name: mycluster
+cluster.name: myapp
 node.name: node3
 network.bind_host: 0.0.0.0
-network.publish_host: 192.168.26.22
-network.host: 0.0.0.0
+network.publish_host: 192.168.150.21
 http.port: 9202
 transport.tcp.port: 9302
 http.cors.enabled: true

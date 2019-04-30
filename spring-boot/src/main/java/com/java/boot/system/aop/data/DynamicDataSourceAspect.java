@@ -1,4 +1,4 @@
-package com.java.boot.system.aop;
+package com.java.boot.system.aop.data;
 
 
 import com.java.boot.system.config.data.DataSourcesConfig;
@@ -8,6 +8,7 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
@@ -30,7 +31,7 @@ public class DynamicDataSourceAspect {
     private static final Logger logger = LoggerFactory.getLogger(DynamicDataSourceAspect.class);
 
     @Before("@annotation(ds)")
-    public void changeDataSource(JoinPoint point, DataSource ds) throws Throwable {
+    public void changeDataSource(JoinPoint point, @NotNull DataSource ds) throws Throwable {
         String dsId = ds.value();
         if (DynamicDataSourceContextHolder.dataSourceIds.contains(dsId)) {
             logger.info("Use DataSource :{} >", dsId, point.getSignature());
@@ -42,7 +43,7 @@ public class DynamicDataSourceAspect {
     }
 
     @After("@annotation(ds)")
-    public void restoreDataSource(JoinPoint point, DataSource ds) {
+    public void restoreDataSource(@NotNull JoinPoint point, @NotNull DataSource ds) {
         logger.debug("Revert DataSource : " + ds.value() + " > " + point.getSignature());
         DynamicDataSourceContextHolder.removeDataSourceRouterKey();
 
