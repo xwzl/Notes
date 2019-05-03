@@ -2,7 +2,7 @@ package com.java.thread.base;
 
 /**
  * @author xuweizhi
- * @date 2018/12/24 17:25
+ * @since  2018/12/24 17:25
  */
 public class MyThreadStop extends Thread {
 

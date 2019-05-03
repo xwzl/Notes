@@ -1,8 +1,7 @@
 package geym.conc.ch1;
 
 /**
- * @author Administrator
- *
+ * @author xuweizhi
  */
 public class MultiThreadLong {
 	public volatile static long t=0;
@@ -24,13 +23,14 @@ public class MultiThreadLong {
 		public void run() {
 			while(true){
 			 long tmp=MultiThreadLong.t;
-			 if(tmp!=111L && tmp!=-999L && tmp!=333L && tmp!=-444L)
-			     System.out.println(tmp);
+			 if(tmp!=111L && tmp!=-999L && tmp!=333L && tmp!=-444L) {
+				 System.out.println(tmp);
+			 }
 			Thread.yield();
 			}
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		new Thread(new ChangeT(111L)).start();
 		new Thread(new ChangeT(-999L)).start();

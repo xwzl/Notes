@@ -4,7 +4,7 @@ package com.java.thread.base;
  * 挂起（suspend）和 继续执行（resume）线程
  *
  * @author xuweizhi
- * @date 2019/04/06 11:33
+ * @since  2019/04/06 11:33
  */
 public class BadSuspend {
 

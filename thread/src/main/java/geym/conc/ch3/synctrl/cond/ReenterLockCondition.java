@@ -26,6 +26,6 @@ public class ReenterLockCondition implements Runnable{
 		//通知线程t1继续执行
 		lock.lock();
 		condition.signal();
-//		lock.unlock();
+		lock.unlock();
 	}
 }

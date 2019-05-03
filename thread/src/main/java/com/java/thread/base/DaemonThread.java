@@ -4,7 +4,7 @@ package com.java.thread.base;
  * 守护线程，随着用户线程的结束一起结束
  *
  * @author xuweizhi
- * @date 2018/12/24 18:34
+ * @since  2018/12/24 18:34
  */
 public class DaemonThread {
 

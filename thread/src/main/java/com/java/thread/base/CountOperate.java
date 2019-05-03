@@ -2,7 +2,7 @@ package com.java.thread.base;
 
 /**
  * @author xuweizhi
- * @date 2018/12/24 9:14
+ * @since  2018/12/24 9:14
  */
 public class CountOperate extends Thread {
 

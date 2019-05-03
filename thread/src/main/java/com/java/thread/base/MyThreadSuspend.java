@@ -7,7 +7,7 @@ import java.util.stream.Stream;
  * 暂停线程意味着此线程还可以恢复运行，在java多线程中，可以用suspend()方法暂停线程，使用resume()恢复线程的执行。
  *
  * @author xuweizhi
- * @date 2018/12/24 17:50
+ * @since  2018/12/24 17:50
  */
 public class MyThreadSuspend extends Thread {
 

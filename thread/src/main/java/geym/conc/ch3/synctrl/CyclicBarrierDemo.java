@@ -1,20 +1,27 @@
 
 package geym.conc.ch3.synctrl;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
+/**
+ * @author xuweizhi
+ */
 public class CyclicBarrierDemo {
     public static class Soldier implements Runnable {
         private String soldier;
         private final CyclicBarrier cyclic;
 
+        @Contract(pure = true)
         Soldier(CyclicBarrier cyclic, String soldierName) {
             this.cyclic = cyclic;
             this.soldier = soldierName;
         }
 
+        @Override
         public void run() {
             try {
                 //等待所有士兵到齐

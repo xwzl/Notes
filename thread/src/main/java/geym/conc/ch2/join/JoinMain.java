@@ -5,7 +5,8 @@ public class JoinMain {
     public static class AddThread extends Thread{
         @Override
         public void run() {
-            for(i=0;i<10000000;i++);
+            for(i=0;i<10000000;i++) {
+            }
         }
     }
     public static void main(String[] args) throws InterruptedException {

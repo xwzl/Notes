@@ -4,7 +4,7 @@ package com.java.thread.base;
  * 可靠的suspend方法
  *
  * @author xuweizhi
- * @date 2019/04/06 11:43
+ * @since  2019/04/06 11:43
  */
 public class GoodSuspend {
 

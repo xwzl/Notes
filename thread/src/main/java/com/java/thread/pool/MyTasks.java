@@ -1,18 +1,21 @@
 package com.java.thread.pool;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
  * 任务类，实现Runnable接口 重写run方法
- * @author Administrator
+ * @author xuweizhi
  */
 public class MyTasks implements Runnable{
 
 
     private int taskNum;
 
+    @Contract(pure = true)
     public MyTasks(int taskNum) {
         super();
         this.taskNum = taskNum;
@@ -23,7 +26,7 @@ public class MyTasks implements Runnable{
         System.out.println("正在执行task"+taskNum);
         try {
             //sleep 4秒模拟执行代码过程
-            Thread.currentThread().sleep(4000);
+            Thread.sleep(4000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

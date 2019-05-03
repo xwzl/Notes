@@ -105,7 +105,7 @@ public class PeopleServiceImpl extends BaseServiceImpl<PeopleMapper, People> imp
     @CachePut(key = "'user'+#result.UId")
     @ServiceStatistics
     public People insert(People user) {
-        peopleMapper.addUser(user);
+        peopleMapper.insert(user);
         return user;
     }
 
