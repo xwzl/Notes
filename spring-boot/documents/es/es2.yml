@@ -1,5 +1,5 @@
-cluster.name: myapp
-node.name: node2
+cluster.name: elasticsearch-cluster
+node.name: es-node2
 network.bind_host: 0.0.0.0
 network.publish_host: 192.168.26.22
 http.port: 9201
