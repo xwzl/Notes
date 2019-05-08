@@ -115,6 +115,9 @@ public class CurrentHashMap<K, V> {
      * “热点域”而影响并发性。
      */
     static final class Segment<K, V> extends ReentrantLock implements Serializable {
+
+        private static final long serialVersionUID = 399237741797576198L;
+
         /**
          * The per-segment table. Elements are accessed via
          * entryAt/setEntryAt providing volatile semantics.

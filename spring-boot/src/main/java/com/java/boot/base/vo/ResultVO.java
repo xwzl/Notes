@@ -2,6 +2,7 @@ package com.java.boot.base.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -12,8 +13,11 @@ import lombok.NoArgsConstructor;
  */
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 @Data
 public class ResultVO<T> extends BaseResultVO {
+
+    private static final long serialVersionUID = -4324132761871372735L;
 
     private T data;
 

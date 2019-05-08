@@ -42,9 +42,9 @@ ext {
     jannotationVersion = "17.0.0"
     fastJsonVersion = "1.2.46"
     shiroVersion = "1.4.0"
-    shiroRedis="3.2.3"
-    commonLangVerion="3.9"
-    fastjsonVserion="1.2.57"
+    shiroRedis = "3.2.3"
+    commonLangVerion = "3.9"
+    fastjsonVserion = "1.2.57"
 }
 
 configure(allprojects) { project ->
@@ -63,15 +63,15 @@ configure(allprojects) { project ->
 
     compileJava.options*.compilerArgs = commonCompilerArgs +
             ["-Xlint:varargs", "-Xlint:fallthrough", "-Xlint:rawtypes",
-             "-Xlint:deprecation", "-Xlint:unchecked", "-Werror"]
+             "-Xlint:deprecation", "-Xlint:unchecked"/*, "-Werror"*/]
 
     compileTestJava.options*.compilerArgs = commonCompilerArgs +
             ["-Xlint:-varargs", "-Xlint:-fallthrough", "-Xlint:-rawtypes",
              "-Xlint:-deprecation", "-Xlint:-unchecked"]
 
     compileJava {
-        sourceCompatibility = '1.11'  // can be switched to 8 for testing
-        targetCompatibility = '1.11'
+        sourceCompatibility = '11'  // can be switched to 8 for testing
+        targetCompatibility = '11'
         options.encoding = "UTF-8"
     }
 
@@ -88,6 +88,12 @@ configure(allprojects) { project ->
         mavenCentral()
     }
 
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+    
     dependencies {
 
         compile(
@@ -98,10 +104,12 @@ configure(allprojects) { project ->
                 "junit:junit:${junitVersion}",
                 "com.google.code.gson:gson:${gsonVersion}",
                 "joda-time:joda-time:${jodaTimeVersion}",
-                "org.projectlombok:lombok:${lombokVersion}",
+//                "org.projectlombok:lombok:${lombokVersion}",
                 "org.jetbrains:annotations:${jannotationVersion}"
         )
 
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
         implementation('org.springframework.boot:spring-boot-starter-web')
 
         annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"

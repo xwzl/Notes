@@ -163,6 +163,8 @@ public class HashSetUnderlying {
          * <p>
          * 底层实际调用HashMap的clone()方法，获取HashMap的浅表副本，并设置到HashSet中。
          */
+        @Override
+        @SuppressWarnings("unchecked")
         public Object clone() {
             try {
                 HashSet<E> newSet = (HashSet<E>) super.clone();

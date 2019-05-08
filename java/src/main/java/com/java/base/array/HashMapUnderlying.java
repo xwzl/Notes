@@ -36,6 +36,7 @@ public class HashMapUnderlying<K, V> {
 
     private int threshold;
 
+    @SuppressWarnings("rawtypes")
     private Map.Entry[] table;
 
     private boolean useAltHashing;
@@ -71,6 +72,7 @@ public class HashMapUnderlying<K, V> {
      * 了一个 next 的 Entry 指针。我们可以总结出：Entry 就是数组中的元素，每个 Entry 其实就是一个 key-value 对，
      * 它持有一个指向下一个元素的引用，这就构成了链表。
      */
+    @SuppressWarnings("rawtypes")
     public void HashMap(int initialCapacity, float loadFactor) {
         if (initialCapacity < 0) {
             throw new IllegalArgumentException("Illegal initial capacity: " +
@@ -147,10 +149,12 @@ public class HashMapUnderlying<K, V> {
      * (A <tt>null</tt> return can also indicate that the map
      * previously associated <tt>null</tt> with <tt>key</tt>.)
      */
+    @SuppressWarnings("unchecked")
     public V put(K key, V value) {
         //其允许存放null的key和null的value，当其key为null时，调用putForNullKey方法，放入到table[0]的这个位置
-        if (key == null)
+        if (key == null) {
             return putForNullKey(value);
+        }
         //通过调用hash方法对key进行哈希，得到哈希之后的数值。该方法实现可以通过看源码，其目的是为了尽可能的让键值对可以分不到不同的桶中
         int hash = hash(key);
         //根据上一步骤中求出的hash得到在数组中是索引i
@@ -191,7 +195,7 @@ public class HashMapUnderlying<K, V> {
         createEntry(hash, key, value, bucketIndex);
     }
 
-
+    @SuppressWarnings({"rawtypes","unchecked"})
     private void createEntry(int hash, K key, V value, int bucketIndex) {
         // 获取指定 bucketIndex 索引处的 Entry
         Entry<K, V> e = (Entry<K, V>) table[bucketIndex];
@@ -320,7 +324,7 @@ public class HashMapUnderlying<K, V> {
     private V getForNullKey() {
         return null;
     }
-
+    @SuppressWarnings({"rawtypes","unchecked"})
     final Entry<K, V> getEntry(Object key) {
         int hash = (key == null) ? 0 : hash(key);
         for (Entry<K, V> e = (Entry<K, V>) table[indexFor(hash, table.length)];
@@ -328,8 +332,9 @@ public class HashMapUnderlying<K, V> {
              e = e.next) {
             Object k;
             if (e.hash == hash &&
-                    ((k = e.key) == key || (key != null && key.equals(k))))
+                    ((k = e.key) == key || (key != null && key.equals(k)))) {
                 return e;
+            }
         }
         return null;
     }

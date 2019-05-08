@@ -15,6 +15,8 @@ import java.io.Serializable;
 @Document(indexName = "wtf", type = "goods")
 public class GoodsInfo implements Serializable {
 
+    private static final long serialVersionUID = -2044038806144087644L;
+
     private Long id;
 
     private String name;

@@ -47,7 +47,9 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T> implements BaseService<
         return SqlHelper.retBool(result);
     }
 
+    @SuppressWarnings("unchecked")
     protected Class<T> currentModelClass() {
+
         return (Class<T>) ReflectionKit.getSuperClassGenericType(getClass(), 1);
     }
 

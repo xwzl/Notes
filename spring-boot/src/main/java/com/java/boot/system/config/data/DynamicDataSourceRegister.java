@@ -77,6 +77,7 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
      * ImportBeanDefinitionRegistrar接口的实现方法，通过该方法可以按照自己的方式注册bean
      */
     @Override
+    @SuppressWarnings("rawtypes")
     public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry beanDefinitionRegistry) {
         // 获取所有数据源配置
         Map config, defaultDataSourceProperties;
@@ -126,6 +127,7 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
      * @param typeStr
      * @return
      */
+    @SuppressWarnings("unchecked")
     private Class<? extends DataSource> getDataSourceType(String typeStr) {
         Class<? extends DataSource> type;
         try {
@@ -145,10 +147,8 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
 
     /**
      * 绑定参数，以下三个方法都是参考DataSourceBuilder的bind方法实现的，目的是尽量保证我们自己添加的数据源构造过程与springboot保持一致
-     *
-     * @param result
-     * @param properties
      */
+    @SuppressWarnings("rawtypes")
     private void bind(DataSource result, Map properties) {
         ConfigurationPropertySource source = new MapConfigurationPropertySource(properties);
         Binder binder = new Binder(new ConfigurationPropertySource[]{source.withAliases(aliases)});
@@ -156,6 +156,7 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
         binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(result));
     }
 
+    @SuppressWarnings("rawtypes")
     private <T extends DataSource> T bind(Class<T> clazz, Map properties) {
         ConfigurationPropertySource source = new MapConfigurationPropertySource(properties);
         Binder binder = new Binder(new ConfigurationPropertySource[]{source.withAliases(aliases)});
@@ -169,6 +170,7 @@ public class DynamicDataSourceRegister implements ImportBeanDefinitionRegistrar,
      * @param <T>
      * @return
      */
+    @SuppressWarnings("rawtypes")
     private <T extends DataSource> T bind(Class<T> clazz, String sourcePath) {
         Map properties = binder.bind(sourcePath, Map.class).get();
         return bind(clazz, properties);

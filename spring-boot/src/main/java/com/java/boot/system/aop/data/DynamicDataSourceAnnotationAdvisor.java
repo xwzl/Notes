@@ -19,6 +19,8 @@ import org.springframework.beans.factory.BeanFactoryAware;
  */
 public class DynamicDataSourceAnnotationAdvisor extends AbstractPointcutAdvisor implements BeanFactoryAware {
 
+    private static final long serialVersionUID = -252712892753050891L;
+
     private Advice advice;
 
     private Pointcut pointcut;

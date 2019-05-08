@@ -73,6 +73,8 @@ public class ArrayListUnderlying {
     class ArrayList1<E> extends AbstractList<E>
             implements List<E>, RandomAccess, Cloneable, java.io.Serializable {
 
+        private static final long serialVersionUID = 7901317461978776525L;
+
         private static final int MAX_ARRAY_SIZE = 10;
 
         private int size;

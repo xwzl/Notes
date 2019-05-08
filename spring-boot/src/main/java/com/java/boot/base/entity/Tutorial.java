@@ -2,10 +2,19 @@ package com.java.boot.base.entity;
 
 import java.io.Serializable;
 
+/**
+ * @author xuweizhi
+ */
 public class Tutorial implements Serializable {
+
+    private static final long serialVersionUID = -638540580193126565L;
+
     private Long id;
-    //教程名称
-    private String name ;
+
+    /**
+     * 教程名称
+     */
+    private String name;
 
     public Long getId() {
         return id;

@@ -25,10 +25,11 @@ public class ExcelUtilSpringMVC {
      * 从数据库获取信息导出Excel
      */
     @RequestMapping("/export")
+    @SuppressWarnings({"rawtypes","unchecked"})
     public void exportExcel(HttpServletResponse response) {
 
         //1. 获取数据
-        List<String> items = new ArrayList();
+        List<String> items = new ArrayList<>();
 
         if (items.size() > 0) {
 

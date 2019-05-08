@@ -20,6 +20,7 @@ public class Dom4jTest {
         return bookList;
     }
 
+    @SuppressWarnings({"rawtypes"})
     private void dom4jReadXMLFile() {
         // Dom4j解析books.xml
         // 创建的对象reader

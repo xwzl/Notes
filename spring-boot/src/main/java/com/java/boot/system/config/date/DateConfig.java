@@ -57,7 +57,9 @@ public class DateConfig {
      */
     @Bean
     public Converter<String, LocalDate> localDateConverter() {
-        return new Converter<>() {
+        //return new Converter<>() {
+        return new Converter<String, LocalDate>() {
+
             @Override
             public LocalDate convert(String source) {
                 return LocalDate.parse(source, DateTimeFormatter.ofPattern(DEFAULT_DATE_FORMAT));
@@ -70,7 +72,8 @@ public class DateConfig {
      */
     @Bean
     public Converter<String, LocalDateTime> localDateTimeConverter() {
-        return new Converter<>() {
+        //return new Converter<>() {
+        return new Converter<String, LocalDateTime>() {
             @Override
             public LocalDateTime convert(String source) {
                 return LocalDateTime.parse(source, DateTimeFormatter.ofPattern(DEFAULT_DATE_TIME_FORMAT));
@@ -83,7 +86,8 @@ public class DateConfig {
      */
     @Bean
     public Converter<String, LocalTime> localTimeConverter() {
-        return new Converter<>() {
+        //return new Converter<>() {
+        return new Converter<String, LocalTime>() {
             @Override
             public LocalTime convert(String source) {
                 return LocalTime.parse(source, DateTimeFormatter.ofPattern(DEFAULT_TIME_FORMAT));
@@ -96,7 +100,8 @@ public class DateConfig {
      */
     @Bean
     public Converter<String, Date> dateConverter() {
-        return new Converter<>() {
+        //return new Converter<>() {
+        return new Converter<String, Date>() {
             @Override
             public Date convert(String source) {
                 SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT);
@@ -132,7 +137,8 @@ public class DateConfig {
 
 
         //Date序列化和反序列化
-        javaTimeModule.addSerializer(Date.class, new JsonSerializer<>() {
+        //javaTimeModule.addSerializer(Date.class, new JsonSerializer<>() {
+        javaTimeModule.addSerializer(Date.class, new JsonSerializer<Date>() {
             @Override
             public void serialize(Date date, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
                 SimpleDateFormat formatter = new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT);
@@ -140,7 +146,8 @@ public class DateConfig {
                 jsonGenerator.writeString(formattedDate);
             }
         });
-        javaTimeModule.addDeserializer(Date.class, new JsonDeserializer<>() {
+        //javaTimeModule.addDeserializer(Date.class, new JsonDeserializer<Date>() {
+        javaTimeModule.addDeserializer(Date.class, new JsonDeserializer<Date>() {
             @Override
             public Date deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
                 SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT);

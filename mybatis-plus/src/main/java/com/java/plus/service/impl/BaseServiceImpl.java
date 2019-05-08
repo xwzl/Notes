@@ -298,6 +298,7 @@ public class BaseServiceImpl<M extends BaseMapper<T>, T> implements BaseService<
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Object getObj(Wrapper<T> queryWrapper) {
         return SqlHelper.getObject(baseMapper.selectObjs(queryWrapper));
     }

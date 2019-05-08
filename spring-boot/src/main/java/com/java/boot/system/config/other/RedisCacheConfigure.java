@@ -133,6 +133,7 @@ public class RedisCacheConfigure extends CachingConfigurerSupport {
     }
 
     @Bean(name = "redisGenericTemplate")
+    @SuppressWarnings({"unchecked","rawtypes"})
     public <T> RedisTemplate<String, T> redisGenericTemplate(RedisConnectionFactory rcf) {
 
         RedisTemplate<String, T> redisTemplate = new RedisTemplate<>();
@@ -152,6 +153,7 @@ public class RedisCacheConfigure extends CachingConfigurerSupport {
 
     /**配置其他类型的redisTemplate***/
     @Bean
+    @SuppressWarnings({"unchecked","rawtypes"})
     public RedisTemplate<Object, Object> redisTemplateKeyObject(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
@@ -172,26 +174,31 @@ public class RedisCacheConfigure extends CachingConfigurerSupport {
      * 根据方法名注入对象
      */
     @Bean
+    @SuppressWarnings("rawtypes")
     public ValueOperations opsForValue(@NotNull RedisTemplate redisTemplate) {
         return redisTemplate.opsForValue();
     }
 
     @Bean
+    @SuppressWarnings({"rawtypes"})
     public ListOperations opsForList(@NotNull RedisTemplate redisTemplate) {
         return redisTemplate.opsForList();
     }
 
     @Bean
+    @SuppressWarnings({"rawtypes"})
     public HashOperations opsForHash(@NotNull RedisTemplate redisTemplate) {
         return redisTemplate.opsForHash();
     }
 
     @Bean
+    @SuppressWarnings({"rawtypes"})
     public SetOperations opsForSet(@NotNull RedisTemplate redisTemplate) {
         return redisTemplate.opsForSet();
     }
 
     @Bean
+    @SuppressWarnings({"rawtypes"})
     public ZSetOperations opsForZSet(@NotNull RedisTemplate redisTemplate) {
         return redisTemplate.opsForZSet();
     }

@@ -19,6 +19,8 @@ import java.io.Serializable;
 @Document(indexName = "project",type = "article",indexStoreType = "fs",shards = 5,replicas = 1,refreshInterval = "-1")
 public class Article implements Serializable {
 
+    private static final long serialVersionUID = -1430273295535121790L;
+
     @Id
     private Long id;
 
