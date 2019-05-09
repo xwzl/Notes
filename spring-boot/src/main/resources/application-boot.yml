@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 8080
   address: 127.0.0.1
   servlet:
     context-path: /spring-boot
@@ -16,6 +16,7 @@ mybatis-plus:
     #适配驼峰命名法
     map-underscore-to-camel-case: true #默认为true
   #    interceptors: com.xwz.boot.configure.data.MybatisInterceptor 失败
+  #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   type-aliases-package: com.java.boot.base.model
   mapper-locations: classpath:com/java/boot/base/mapper/*.xml
 
