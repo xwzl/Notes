@@ -1237,29 +1237,80 @@ public abstract class DateUtil {
         //DateUtil.workdayConfig().addMonthDayOff(5, new Integer[]{29, 30, 31});
         //workdayConfig.addMonthDayOff(6, new Integer[]{29, 30});
 
-        for (int j = 1; j <= 12; j++) {
-            DateTime date = DateUtil.date(2019, j, 1);
+        //for (int j = 1; j <= 12; j++) {
+        //    DateTime date = DateUtil.date(2019, j, 1);
+        //
+        //    DateTime date1 = DateUtil.date(2019, j, 1);
+        //    date1.monthLastDate();
+        //    String mm = new SimpleDateFormat("dd").format(date1);
+        //    int day = Integer.valueOf(mm);
+        //    System.out.printf(j + "月份上班天数：%s天，上班时间安排：\n", date.compareWorkdays(date1));
+        //    for (int i = 1; i <= day; i++) {
+        //        date.day(i);
+        //        System.out.print(String.format("%s(%s)  ", date.toString("MM/dd"),
+        //                date.day(i).isWorkday() ? "班" : "休"));
+        //        if (i % 7 == 0) {
+        //            System.out.println();
+        //        }
+        //    }
+        //    System.out.println();
+        //}
 
-            DateTime date1 = DateUtil.date(2019, j, 1);
-            date1.monthLastDate();
+        string("2019-05-31", "2019-09-12");
+
+    }
+
+    public static void string(String vlaue1, String value2) {
+
+        DateTime dateTime = DateUtil.parseDate(vlaue1);
+        System.out.println("开始时间：" + vlaue1);
+        DateTime dateTime1 = DateUtil.parseDate(value2);
+        System.out.println("结束时间：" + value2);
+
+        String[] split1 = vlaue1.split("-");
+        String[] split2 = value2.split("-");
+        for (int j = Integer.valueOf(split1[1]); j <= Integer.valueOf(split2[1]); j++) {
+            DateTime date;
+            if (j == Integer.valueOf(split1[1])) {
+                date = DateUtil.parseDate(vlaue1);
+            } else {
+                date = DateUtil.date(Integer.valueOf(split1[0]), j, 1);
+            }
+            //System.out.println(date);
+            String ss = new SimpleDateFormat("dd").format(date);
+            int days = Integer.valueOf(ss);
+            DateTime date1;
+
+            if (j == Integer.valueOf(split2[1])) {
+                date1 = DateUtil.parseDate(value2);
+            } else {
+                if (j == Integer.valueOf(split1[1])) {
+                    date1 = DateUtil.parseDate(vlaue1);
+                } else {
+                    date1 = DateUtil.date(Integer.valueOf(split1[0]), j, 1);
+                }
+                date1.monthLastDate();
+            }
+            //System.out.println(date1);
 
             String mm = new SimpleDateFormat("dd").format(date1);
             int day = Integer.valueOf(mm);
 
-            System.out.printf(j + "月份上班天数：%s天，上班时间安排：\n", date.compareWorkdays(date1));
-
-
-
-            for (int i = 1; i <= day; i++) {
+            int count = 0;
+            for (int i = days; i <= day; i++) {
                 date.day(i);
-                System.out.print(String.format("%s(%s)  ", date.toString("MM/dd"),
-                        date.day(i).isWorkday() ? "班" : "休"));
+                if (date.day(i).isWorkday()) {
+                    count++;
+                }
+                System.out.print(String.format("%s(%s)  ", date.toString("MM/dd"), date.day(i).isWorkday() ? "班" : "休"));
                 if (i % 7 == 0) {
                     System.out.println();
                 }
             }
+
+            System.out.println();
+            System.out.printf(j + "月份上班天数：%s天，上班时间安排：\n", count);
             System.out.println();
         }
-
     }
 }
