@@ -1256,7 +1256,7 @@ public abstract class DateUtil {
         //    System.out.println();
         //}
 
-        string("2019-05-31", "2019-09-12");
+        string("2019-05-31", "2020-09-12");
 
     }
 
@@ -1269,12 +1269,26 @@ public abstract class DateUtil {
 
         String[] split1 = vlaue1.split("-");
         String[] split2 = value2.split("-");
-        for (int j = Integer.valueOf(split1[1]); j <= Integer.valueOf(split2[1]); j++) {
+
+        int year = Integer.valueOf(split1[0]);
+        // start or offset
+        int start = Integer.valueOf(split1[1]);
+        Integer integer = Integer.valueOf(split2[0]);
+        int i1 = integer - year;
+        int end = 12 * i1 + Integer.valueOf(split2[1]) - Integer.valueOf(split2[2]) + start;
+        // 年数计数器
+        int index = 0;
+
+        for (int j = Integer.valueOf(split1[1]); j <= end; j++) {
             DateTime date;
+            if (j % 12 == 0) {
+                index++;
+                year += 1;
+            }
             if (j == Integer.valueOf(split1[1])) {
                 date = DateUtil.parseDate(vlaue1);
             } else {
-                date = DateUtil.date(Integer.valueOf(split1[0]), j, 1);
+                date = DateUtil.date(year, j - index * 12, 1);
             }
             //System.out.println(date);
             String ss = new SimpleDateFormat("dd").format(date);
@@ -1287,7 +1301,7 @@ public abstract class DateUtil {
                 if (j == Integer.valueOf(split1[1])) {
                     date1 = DateUtil.parseDate(vlaue1);
                 } else {
-                    date1 = DateUtil.date(Integer.valueOf(split1[0]), j, 1);
+                    date1 = DateUtil.date(year, j - index * 12, 1);
                 }
                 date1.monthLastDate();
             }
@@ -1297,6 +1311,7 @@ public abstract class DateUtil {
             int day = Integer.valueOf(mm);
 
             int count = 0;
+            System.out.println(year +"年"+ (j - index * 12) + "月上班时间安排:");
             for (int i = days; i <= day; i++) {
                 date.day(i);
                 if (date.day(i).isWorkday()) {
@@ -1309,7 +1324,8 @@ public abstract class DateUtil {
             }
 
             System.out.println();
-            System.out.printf(j + "月份上班天数：%s天，上班时间安排：\n", count);
+            System.out.printf(j + "月份上班天数：%s天", count);
+            System.out.println();
             System.out.println();
         }
     }
