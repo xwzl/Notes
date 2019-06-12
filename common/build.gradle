@@ -41,6 +41,7 @@ task resources(type: Copy) {
                 "org.apache.poi:poi:3.11",
                 "io.springfox:springfox-swagger2:2.9.2",
                 "io.springfox:springfox-swagger2:2.9.2",
-                "org.dom4j:dom4j:2.1.1"
+                "org.dom4j:dom4j:2.1.1",
+                "org.apache.commons:commons-lang3:3.8.1"
         )
     }
