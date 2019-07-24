@@ -1,10 +1,9 @@
-rootProject.name = 'Notes'
+rootProject.name = 'notes'
 
 //include 'lambda'
 //include 'netty'
-//include 'java'
+include 'java'
 //include 'jvm'
 //include 'thread'
 //include 'common'
 //include 'mybatis-plus'
-//include 'shiro'
