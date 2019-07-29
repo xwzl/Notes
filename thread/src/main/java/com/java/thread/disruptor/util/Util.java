@@ -15,15 +15,15 @@
  */
 package com.java.thread.disruptor.util;
 
+import com.java.thread.disruptor.EventProcessor;
+import com.java.thread.disruptor.Sequence;
+import sun.misc.Unsafe;
+
 import java.lang.reflect.Field;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
-
-import com.java.thread.disruptor.EventProcessor;
-import com.java.thread.disruptor.Sequence;
-import sun.misc.Unsafe;
 
 /**
  * Set of common functions used by the Disruptor
@@ -96,6 +96,7 @@ public final class Util
         {
             final PrivilegedExceptionAction<Unsafe> action = new PrivilegedExceptionAction<Unsafe>()
             {
+                @Override
                 public Unsafe run() throws Exception
                 {
                     Field theUnsafe = Unsafe.class.getDeclaredField("theUnsafe");

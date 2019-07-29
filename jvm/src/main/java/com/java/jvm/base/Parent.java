@@ -25,7 +25,8 @@ public class Parent {
     private String val1 = "val1";
 
     //同一个类中，同包可见,不同包子类、不同包非子类不可见
-    String val2 = "val2"; //默认权限修饰符，friendly
+    //默认权限修饰符，friendly
+    String val2 = "val2";
 
     //同一个类中、同包,不同包子类可见、不同包非子类不可见
     protected String val3 = "val3";
@@ -163,8 +164,8 @@ class Test {
         Parent.x = 22;
 
 
-        System.out.println(parent.x);
-        System.out.println(parent1.x);
+        //System.out.println(parent.x);
+        //System.out.println(parent1.x);
         System.out.println(parent.val2);
         System.out.println(parent1.val2);
     }

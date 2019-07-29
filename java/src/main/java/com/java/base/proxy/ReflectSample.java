@@ -144,9 +144,9 @@ class LruCache<K, V> {
         Integer put4 = l.put(1, 12);
         System.out.println(put4);
 
-        LinkedHashMap<Integer, Integer> a = new LinkedHashMap<>(10, 0.75f, true) {
+        LinkedHashMap a = new LinkedHashMap(10, 0.75f, true) {
             @Override
-            protected boolean removeEldestEntry(Map.Entry<Integer, Integer> eldest) {
+            protected boolean removeEldestEntry(Map.Entry eldest) {
                 System.out.println("Set 方法 内部");
                 return super.removeEldestEntry(eldest);
             }
