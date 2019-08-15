@@ -9,9 +9,9 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * 重入锁：Re-Entrant-Lock 从名字就可以看出，这种锁是可以反复进入的。当然，这里的反复进入
  * 是仅仅限于一个线程。
- *
+ * <p>
  * ReEntrantLock 与synchronize一样持有对象锁特征
- *
+ * <p>
  * 重入锁可以完全替代关键字synchronized.在 JDK 5.0 的早期版本中，重入锁的性能远优于关键字
  * synchronized，但从JDK 6.0 开始，JDK 在关键字 synchronized 关键字上做了大量的优化，使
  * 得两者的性能差距并不大。
@@ -35,7 +35,7 @@ public class ReEntrantLockSample {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             lock.unlock();
         }
     }

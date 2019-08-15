@@ -1,6 +1,7 @@
 package com.java.thread.lock.relock;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -16,7 +17,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author xuweizhi
  * @date 2019/04/07 14:56
  */
-public class TimeLock implements Runnable {
+public class LimitTimeLock implements Runnable {
 
     private static ReentrantLock lock = new ReentrantLock();
 
@@ -25,7 +26,8 @@ public class TimeLock implements Runnable {
         try {
             // 五秒内获取锁，获取成功则返回true
             if (lock.tryLock(5, TimeUnit.SECONDS)) {
-                Thread.sleep(6000);
+                Thread.sleep(7000);
+                System.out.println("get lock success");
             } else {
                 System.out.println("get lock fair ");
             }
@@ -43,7 +45,7 @@ public class TimeLock implements Runnable {
      * 因此会请求失败。
      */
     public static void main(String[] args) {
-        TimeLock timeLock = new TimeLock();
+        LimitTimeLock timeLock = new LimitTimeLock();
 
         Thread t1 = new Thread(timeLock);
         Thread t2 = new Thread(timeLock);
@@ -65,6 +67,10 @@ class TryLock implements Runnable {
 
     private static ReentrantLock lock2 = new ReentrantLock();
 
+    AtomicInteger  a1 = new AtomicInteger();
+
+    AtomicInteger  a2 = new AtomicInteger();
+
     private int lock;
 
     public TryLock(int lock) {
@@ -78,7 +84,9 @@ class TryLock implements Runnable {
                 if (lock1.tryLock()) {
                     try {
                         try {
-                            Thread.sleep(500);
+                            System.out.println("lock1 "+a1.getAndIncrement());
+                            //System.out.println("lock1 ");
+                            Thread.sleep(100);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -100,8 +108,11 @@ class TryLock implements Runnable {
                 if (lock2.tryLock()) {
                     try {
                         try {
-                            Thread.sleep(500);
+                            //System.out.println("lock2 "+a2.getAndIncrement());
+                            System.out.println("lock2 ");
+                            Thread.sleep(100);
                         } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
                         if (lock1.tryLock()) {
                             try {
