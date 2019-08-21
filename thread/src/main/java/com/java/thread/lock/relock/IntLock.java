@@ -34,19 +34,23 @@ public class IntLock extends Thread {
                 // lockInterruptibly方法是一个可以对中断进行响应的锁申请动作
                 // 即在等待锁的过程中，可以响应中断。
                 System.out.println("lock1:1");
-                lock1.lockInterruptibly();
+                //lock1.lockInterruptibly();
+                lock1.lock();
                 System.out.println("lock1:2");
                 Thread.sleep(500);
                 System.out.println("lock1:3");
-                lock2.lockInterruptibly();
+                //lock2.lockInterruptibly();
+                lock2.lock();
                 System.out.println("lock1:4");
             } else {
                 System.out.println("lock2:1");
                 lock2.lockInterruptibly();
+                //lock2.lock();
                 System.out.println("lock2:2");
                 Thread.sleep(500);
                 System.out.println("lock2:3");
                 lock1.lockInterruptibly();
+                //lock1.lock();
                 System.out.println("lock2:4");
             }
         } catch (InterruptedException e) {
@@ -67,8 +71,8 @@ public class IntLock extends Thread {
     public static void main(String[] args) throws InterruptedException {
         Thread t1 = new Thread(new IntLock(1));
         Thread t2 = new Thread(new IntLock(2));
-        t1.start();
         t2.start();
+        t1.start();
         Thread.sleep(1000);
         //t2线程放弃其任务直接退出，释放资源；实则只有t1完成了线程的执行
         t2.interrupt();
