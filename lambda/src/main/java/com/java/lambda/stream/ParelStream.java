@@ -7,11 +7,8 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @ClassName ParelStream
- * @Author XuWeiZhi
- * @Description
- * @Date 2018-11-28 00:02 星期三 Java8
- * @VER 1.0.0
+ * @author XuWeiZhi
+ * @date 2018-11-28 00:02 星期三 Java8
  **/
 public class ParelStream {
 
@@ -36,7 +33,7 @@ public class ParelStream {
             return length;
         }).filter(length -> length == 5).findFirst().ifPresent(System.out::println);
         for (String list : lists) {
-            Integer length = list.length();
+            int length = list.length();
             if (length == 5) {
                 System.out.println(length);
                 break;

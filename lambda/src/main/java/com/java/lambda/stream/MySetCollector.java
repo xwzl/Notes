@@ -11,13 +11,13 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * @author xuweizhi
- * @date 2018/11/30 10:40
- * <p>
  * Collector<T, A, R>
  * T -> T 流中遍历的数据类型
  * A -> Set<T> 中间结果容器类型
  * R -> Set<T> 返回的结果容器类型
+ *
+ * @author xuweizhi
+ * @date 2018/11/30 10:40
  */
 @Slf4j
 public class MySetCollector<T> implements Collector<T, Set<T>, Set<T>> {
@@ -63,6 +63,7 @@ public class MySetCollector<T> implements Collector<T, Set<T>, Set<T>> {
 
     /**
      * 中间容器类型和最终结果类型一致，则不会被调用，否则与之相反
+     *
      * @return 返回最终结果
      */
     @Override

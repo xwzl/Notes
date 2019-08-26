@@ -205,9 +205,10 @@ class PrintTriangle {
 class A {
 
     public static void main(String[] args) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                for (int k = 0; k < 3; k++) {
+        int end = 3;
+        for (int i = 0; i < end; i++) {
+            for (int j = 0; j < end; j++) {
+                for (int k = 0; k < end; k++) {
                     System.out.print("*");
                 }
             }

@@ -107,9 +107,10 @@ public class ArrayListUnderlying {
          */
         public ArrayList1(int initialCapacity) {
             super();
-            if (initialCapacity < 0)
+            if (initialCapacity < 0) {
                 throw new IllegalArgumentException("Illegal Capacity: " +
                         initialCapacity);
+            }
             this.elementData = new Object[initialCapacity];
         }
 

@@ -50,6 +50,9 @@ public class CollectorsApi {
 
     }
 
+    /**
+     * 区间段求值
+     */
     @Test
     public void test() {
         Map<Boolean, Map<Boolean, List<Student>>> collect = list.stream().collect(partitioningBy(student -> student.getScore() > 80, partitioningBy(student -> student.getScore() > 90)));
@@ -85,6 +88,8 @@ public class CollectorsApi {
         for (Map.Entry<Integer, Map<String, Long>> entry : collect.entrySet()) {
             System.out.println(entry.getValue());
         }
+        Map<Integer, List<Student>> collect1 = list.stream().collect(groupingBy(Student::getScore));
+        System.out.println(collect1);
     }
 
     /**

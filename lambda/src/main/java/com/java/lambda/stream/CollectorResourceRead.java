@@ -21,10 +21,11 @@ public class CollectorResourceRead {
         System.out.println(sj.toString());
     }
     /**
-     * <pre>{@code
-     *       Map<City, Set<String>> namesByCity = people.stream().collect(groupingBy(Person::getCity,
-     *                                            TreeMap::new,mapping(Person::getLastName,toSet())));
-     *       }</pre>
+     * <pre>
+     *     {@code
+     *     Map<City, Set<String>> namesByCity = people.stream().collect(groupingBy(Person::getCity,
+     *     TreeMap::new,mapping(Person::getLastName,toSet())));}
+     * </pre>
      */
     // 最终实现还是得看源码 我熟悉但是你不熟悉
     // Collector<T, ?, List<T>> toList() {

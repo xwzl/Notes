@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  * @author xuweizhi
  * @date 2018/11/28 9:14
  */
-public class FlatmapStream {
+public class FlatMapStream {
 
     public static void main(String[] args) {
 

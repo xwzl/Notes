@@ -13,23 +13,25 @@ public class ThreadInterrupt extends Thread {
     @Override
     public void run() {
         super.run();
-        try {
-            for (int i = 0; i < 500000; i++) {
-                if (interrupted()) {
-                    System.out.println("已经是停止状态，我要退出线程了");
-                    break;
-                    //throw new InterruptedException();
-                }
-                System.out.println("i=" + (i + 1));
-                Thread.sleep(10);
+
+        for (int i = 0; i < 500000; i++) {
+            if (interrupted()) {
+                System.out.println("已经是停止状态，我要退出线程了");
+                break;
+                //throw new InterruptedException();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            //Thread.sleep方法由于中断而抛出异常，此时，它会清除中断标记，如果不加处理，那么在下一次循环时，
-            //就无法捕捉到这个中断，故在异常处理中，再次设置中断标记位。
-            Thread.currentThread().interrupt();
+            System.out.println("i=" + (i + 1));
+            try {
+                Thread.sleep(10);
+            } catch (Exception e) {
+                e.printStackTrace();
+                //Thread.sleep方法由于中断而抛出异常，此时，它会清除中断标记，如果不加处理，那么在下一次循环时，
+                //就无法捕捉到这个中断，故在异常处理中，再次设置中断标记位。
+                Thread.currentThread().interrupt();
+            }
         }
-        System.out.println("如果磁县成");
+
+        System.out.println("如果线程");
     }
 
 
@@ -49,6 +51,7 @@ public class ThreadInterrupt extends Thread {
             ThreadInterrupt thread = new ThreadInterrupt();
             thread.start();
             Thread.sleep(2000);
+            // 如果当前线程实例中有睡眠操作，调用interrupt 方法会抛出 异常
             thread.interrupt();
         } catch (Exception e) {
             System.out.println("main");
