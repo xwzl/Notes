@@ -36,7 +36,6 @@ class ClientRequestThread implements Runnable {
     /**
      * 这个线程的编号
      *
-     * @param countDownLatch
      */
     private Integer clientIndex;
 

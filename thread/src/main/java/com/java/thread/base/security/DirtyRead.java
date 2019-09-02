@@ -1,4 +1,4 @@
-package com.java.thread.security;
+package com.java.thread.base.security;
 
 /**
  * 脏读，是指读取实例变量时，此值已经被其他线程修改了

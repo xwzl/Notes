@@ -25,7 +25,7 @@ package com.java.thread.pool;
  *
  * 2）无界任务队列LinkedBlockingQueue：基于链表的先进先出队列，如果创建时没有指定此队列大小，则默认为Integer.MAX_VALUE；
  *
- * 3）直接提交队列synchronousQueue：这个队列比较特殊，它不会保存提交的任务，而是将直接新建一个线程来执行新来的任务。
+ * 3）队列synchronousQueue：这个队列比较特殊，它不会保存提交的任务，而是将直接新建一个线程来执行新来的任务。
  *
  * 拒绝策略
  * AbortPolicy:丢弃任务并抛出RejectedExecutionException
@@ -56,4 +56,5 @@ package com.java.thread.pool;
  * @date 2019/01/02 13:56
  */
 public class ThreadPoolSource {
+
 }

@@ -1,4 +1,4 @@
-package com.java.thread.security;
+package com.java.thread.base.security;
 
 /**
  * 关键字synchronized拥有锁可重入的功能，也就是在使用synchronized的时候，当一个线程获取锁对象后，再次请求此对象锁是是可以再次获得该对象的

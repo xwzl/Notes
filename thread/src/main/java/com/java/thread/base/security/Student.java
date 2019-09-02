@@ -1,4 +1,4 @@
-package com.java.thread.security;
+package com.java.thread.base.security;
 
 /**
  * synchronized 解读

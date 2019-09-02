@@ -1,4 +1,4 @@
-package com.java.thread.security;
+package com.java.thread.base.security;
 
 /**
  * 发生异常 会释放锁
