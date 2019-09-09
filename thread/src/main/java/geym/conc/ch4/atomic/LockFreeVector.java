@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * COME FROM org.amino.ds.lockfree
  */
 
@@ -69,7 +69,7 @@ public class LockFreeVector<E> extends AbstractList<E> {
 
 		/**
 		 * Creating a new descriptor.
-		 * 
+		 *
 		 * @param addr Operation address
 		 * @param addr_ind	Index of address
 		 * @param oldV old operand
@@ -102,7 +102,7 @@ public class LockFreeVector<E> extends AbstractList<E> {
 
 		/**
 		 * Create a new descriptor.
-		 * 
+		 *
 		 * @param size Size of the vector
 		 * @param writeop Executor write operation
 		 */
@@ -112,7 +112,7 @@ public class LockFreeVector<E> extends AbstractList<E> {
 		}
 
 		/**
-		 * 
+		 *
 		 */
 		public void completeWrite() {
 			WriteDescriptor<E> tmpOp = writeop;
@@ -220,7 +220,8 @@ public class LockFreeVector<E> extends AbstractList<E> {
 	/**
 	  * {@inheritDoc}
 	  */
-	public E set(int index, E e) {
+	@Override
+    public E set(int index, E e) {
 		int pos = index + FIRST_BUCKET_SIZE;
 		int bucketInd = Integer.numberOfLeadingZeros(FIRST_BUCKET_SIZE)
 				- Integer.numberOfLeadingZeros(pos);
@@ -262,7 +263,8 @@ public class LockFreeVector<E> extends AbstractList<E> {
 	 *
 	 * @return size of vector
 	 */
-	public int size() {
+	@Override
+    public int size() {
 		return descriptor.get().size;
 	}
 

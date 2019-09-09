@@ -26,8 +26,8 @@ public class MoreToMore {
             try {
                 lock.lock();
                 while (hasValue) {
-                    log.info("当前线程保持锁定的个数,调用lock方法的次数"+lock.getHoldCount());
-                    log.info("有可能**连续，等待获取lock锁对象的线程数"+lock.getQueueLength()+"wait被唤醒的线程数"+lock.getWaitQueueLength(condition));
+                    log.info("当前线程保持锁定的个数,调用lock方法的次数" + lock.getHoldCount());
+                    log.info("有可能**连续，等待获取lock锁对象的线程数" + lock.getQueueLength() + "wait被唤醒的线程数" + lock.getWaitQueueLength(condition));
                     condition.await();
                 }
                 log.info("打印*");
@@ -44,8 +44,8 @@ public class MoreToMore {
             try {
                 lock.lock();
                 while (!hasValue) {
-                    log.info("当前线程保持锁定的个数,调用lock方法的次数"+lock.getHoldCount());
-                    log.info("有可能☆☆连续"+lock.getQueueLength()+"wait"+lock.getWaitQueueLength(condition));
+                    log.info("当前线程保持锁定的个数,调用lock方法的次数" + lock.getHoldCount());
+                    log.info("有可能☆☆连续" + lock.getQueueLength() + "wait" + lock.getWaitQueueLength(condition));
                     condition.await();
                 }
                 log.info("打印☆");

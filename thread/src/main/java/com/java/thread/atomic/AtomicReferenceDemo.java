@@ -1,4 +1,4 @@
-package geym.conc.ch4.atomic;
+package com.java.thread.atomic;
 
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;

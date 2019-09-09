@@ -1,4 +1,4 @@
-package com.java.thread;
+package com.java.thread.base;
 
 /**
  * @author xuweizhi
