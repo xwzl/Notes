@@ -14,7 +14,7 @@ public class ClassActiveLoading5 {
 
     public static void main(String[] args) {
 
-        //System.out.println(Child5.b);
+        System.out.println(Child5.b);
 
         System.out.println(Why.str);
     }

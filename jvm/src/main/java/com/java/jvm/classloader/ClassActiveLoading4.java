@@ -15,11 +15,11 @@ package com.java.jvm.classloader;
  */
 public class ClassActiveLoading4 {
     public static void main(String[] args) {
-        Parent4 parent4 = new Parent4();
+
 
         Parent4[] parent4s = new Parent4[1];
         System.out.println("Java虚拟机运行期动态生成" + parent4s.getClass());
-
+        Parent4 parent4 = new Parent4();
         Parent4[][] parent4s1 = new Parent4[1][1];
         System.out.println(parent4.getClass());
 

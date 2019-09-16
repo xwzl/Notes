@@ -1,13 +1,14 @@
 package com.java.jvm.classloader;
 
 /**
- *  一个类初始化分为三个阶段，加载，连接，初始化、
- *  对于静态字段来说，只有直接定义了该字段的类才会被初始化，但是有没有被加载呢？
- *  -XX:+TraceClassLoading,用于追踪类的加载信息并打印出来
+ * 一个类初始化分为三个阶段，加载，连接，初始化、
+ * 对于静态字段来说，只有直接定义了该字段的类才会被初始化，但是有没有被加载呢？
+ * -XX:+TraceClassLoading,用于追踪类的加载信息并打印出来
+ * <p>
+ * -XX:+<option> 表示开启option选项
+ * -XX:-<option> 表示关闭option选项
+ * -XX:<option>=<value> 表示设置option的值为value
  *
- *  -XX:+<option> 表示开启option选项
- *  -XX:-<option> 表示关闭option选项
- *  -XX:<option>=<value> 表示设置option的值为value
  * @author xuweizhi
  * @date 2019/02/19 10:19
  */
